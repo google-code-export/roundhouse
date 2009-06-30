@@ -1,7 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse", "product\roundhouse\roundhouse.csproj", "{A95DE649-D5BA-4402-9D9C-3D8D67E2FF44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse.tests", "product\roundhouse.tests\roundhouse.tests.csproj", "{0726928C-FDAC-4C79-B423-841C7E0DF5B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse.tasks", "product\roundhouse.tasks\roundhouse.tasks.csproj", "{7CC86537-E4F4-42F0-973F-39F38E43E347}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A95DE649-D5BA-4402-9D9C-3D8D67E2FF44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A95DE649-D5BA-4402-9D9C-3D8D67E2FF44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A95DE649-D5BA-4402-9D9C-3D8D67E2FF44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A95DE649-D5BA-4402-9D9C-3D8D67E2FF44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0726928C-FDAC-4C79-B423-841C7E0DF5B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0726928C-FDAC-4C79-B423-841C7E0DF5B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0726928C-FDAC-4C79-B423-841C7E0DF5B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0726928C-FDAC-4C79-B423-841C7E0DF5B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CC86537-E4F4-42F0-973F-39F38E43E347}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CC86537-E4F4-42F0-973F-39F38E43E347}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CC86537-E4F4-42F0-973F-39F38E43E347}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CC86537-E4F4-42F0-973F-39F38E43E347}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
