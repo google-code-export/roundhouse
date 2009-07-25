@@ -14,6 +14,10 @@
 
   <target name="go" depends="merge" description="Packaging" />
 
+  <target name="include_files" >
+    
+  </target>
+
   <target name="merge_the_libs">
     <echo message="Merging everything to one dll - roundhouse.dll."/>
     <loadtasks assembly="${lib.ilmerge.folder}\ILMerge.NAnt.Tasks.dll" />
@@ -30,12 +34,13 @@
     <mkdir dir="${dirs.merge}"/>
     <mkdir dir="${dirs.merge.log}"/>
     
+    
+    
     <exec program="${lib.ilmerge.folder}\ILMerge.exe"
 			  workingdir="${dirs.build}">
 			<arg path="${dirs.build}\roundhouse.dll" />
 			<arg path="${dirs.build}\roundhouse.tasks.dll" />
-			<!--<arg path="${dirs.build}\Microsoft.SqlServer.ConnectionInfo.dll" />
-			<arg path="${dirs.build}\Microsoft.SqlServer.Smo.dll" />-->
+			<arg path="${dirs.build}\Microsoft.SqlServer*.dll" />
 			<!--<arg path="${basedir.build}/Castle*.dll" />-->
 			<arg value='/out:"${dirs.merge}\roundhouse.dll"' />
 			<arg line='/attr:"${dirs.build}\roundhouse.dll"' />
