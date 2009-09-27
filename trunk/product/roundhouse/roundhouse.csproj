@@ -82,6 +82,7 @@
     <Compile Include="..\..\SolutionVersion.cs">
       <Link>SolutionVersion.cs</Link>
     </Compile>
+    <Compile Include="infrastructure\ApplicationParameters.cs" />
     <Compile Include="infrastructure\containers\Container.cs" />
     <Compile Include="infrastructure\containers\custom\WindsorContainer.cs" />
     <Compile Include="infrastructure\containers\InversionContainer.cs" />
