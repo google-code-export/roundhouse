@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse.tests", "product
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse.tasks", "product\roundhouse.tasks\roundhouse.tasks.csproj", "{7CC86537-E4F4-42F0-973F-39F38E43E347}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{807C6B2C-496F-4A41-ABFE-EA5478EB9CFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,5 +30,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0726928C-FDAC-4C79-B423-841C7E0DF5B8} = {807C6B2C-496F-4A41-ABFE-EA5478EB9CFF}
 	EndGlobalSection
 EndGlobal
