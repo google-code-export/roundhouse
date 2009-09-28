@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<deploymentTool>
+  <nant>
+
+    <roundhouse
+      serverName="(local)"
+      databaseName="TestRoundhouse"
+      sqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      />
+
+    <roundhouse
+      serverName="(local)"
+      databaseName="TestRoundhouse"
+      sqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      repositoryUrl="" 
+      />
+
+    <roundhouse
+      serverName="(local)"
+      databaseName="TestRoundhouse"
+      sqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      repositoryUrl=""
+      upFolderName="up"
+      downFolderName="down"
+      runFirstFolderName="runFirst"
+      functionsFolderName="functions"
+      viewsFolderName="views"
+      sprocsFolderName="sprocs"
+      permissionsFolderName="permissions"
+      action="update"
+      />
+
+  </nant>
+
+  <msbuild>
+
+    <Roundhouse
+     ServerName="(local)"
+     DatabaseName="TestRoundhouse"
+     SqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      />
+
+    <Roundhouse
+      ServerName="(local)"
+      DatabaseName="TestRoundhouse"
+      SqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      RepositoryUrl=""
+      />
+
+    <Roundhouse
+      ServerName="(local)"
+      DatabaseName="TestRoundhouse"
+      SqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      RepositoryUrl=""
+      UpFolderName="up"
+      DownFolderName="down"
+      RunFirstFolderName="runFirst"
+      FunctionsFolderName="functions"
+      ViewsFolderName="views"
+      SprocsFolderName="sprocs"
+      PermissionsFolderName="permissions"
+      Action="update"
+      />
+
+  </msbuild>
+
+
+</deploymentTool>

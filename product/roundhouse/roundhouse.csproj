@@ -51,6 +51,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\log4net\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Microsoft.SqlServer\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
@@ -64,6 +65,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Microsoft.SqlServer\Microsoft.SqlServer.Smo.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="NAnt.Core, Version=0.86.3412.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\NAnt\NAnt.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -94,8 +99,12 @@
     <Compile Include="infrastructure\extensions\TypeExtensions.cs" />
     <Compile Include="infrastructure\filesystem\FileSystemAccess.cs" />
     <Compile Include="infrastructure\filesystem\WindowsFileSystemAccess.cs" />
+    <Compile Include="infrastructure\logging\custom\MSBuildLogger.cs" />
+    <Compile Include="infrastructure\logging\custom\MultipleLoggerLogFactory.cs" />
+    <Compile Include="infrastructure\logging\custom\MultipleLogger.cs" />
     <Compile Include="infrastructure\logging\custom\Log4NetLogFactory.cs" />
     <Compile Include="infrastructure\logging\custom\Log4NetLogger.cs" />
+    <Compile Include="infrastructure\logging\custom\NAntLogger.cs" />
     <Compile Include="infrastructure\logging\Logger.cs" />
     <Compile Include="infrastructure\logging\LogFactory.cs" />
     <Compile Include="infrastructure\logging\Log.cs" />
