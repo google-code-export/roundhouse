@@ -15,7 +15,7 @@
   </target>
 
   <target name="roundhouse_test">
-    <echo message="Running roundhouse test." />
+    <echo message="Running RoundhousE test." />
     <roundhouse
       serverName="(local)"
       databaseName="TestRoundhouse"
