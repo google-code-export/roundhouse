@@ -1,7 +1,6 @@
 namespace roundhouse.infrastructure.logging.custom
 {
     using NAnt.Core;
-    //using Level=log4net.Core.Level;
 
     public class NAntLogger : Logger
     {

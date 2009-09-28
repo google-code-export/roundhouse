@@ -12,6 +12,8 @@
     using Microsoft.Build.Framework;
     using NAnt.Core;
     using NAnt.Core.Attributes;
+    using runners;
+    using sql;
 
     [TaskName("roundhouse")]
     public class Roundhouse : Task, ITask
@@ -23,7 +25,7 @@
         private const string VIEWS_FOLDER_NAME = "views";
         private const string SPROCS_FOLDER_NAME = "sprocs";
         private const string PERMISSIONS_FOLDER_NAME = "permissions";
-        private const string DEFAULT_ACTION = "update";
+        private const string VERSION_TABLE_NAME = "dbo._version";
         private readonly ILog the_logger = LogManager.GetLogger(typeof(Roundhouse));
 
         #region MSBuild
@@ -68,9 +70,9 @@
         public string DatabaseName { get; set; }
 
         [Required]
-        [TaskAttribute("sqlFilesTopLevelDirectory", Required = true)]
+        [TaskAttribute("sqlFilesDirectory", Required = true)]
         [StringValidator(AllowEmpty = false)]
-        public string SqlFilesTopLevelDirectory { get; set; }
+        public string SqlFilesDirectory { get; set; }
 
         [TaskAttribute("repositoryUrl", Required = false)]
         [StringValidator(AllowEmpty = false)]
@@ -104,24 +106,42 @@
         [StringValidator(AllowEmpty = false)]
         public string PermissionsFolderName { get; set; }
 
-        [TaskAttribute("action", Required = false)]
+        [TaskAttribute("versionTableName", Required = false)]
         [StringValidator(AllowEmpty = false)]
-        public string Action { get; set; }
+        public string VersionTableName { get; set; }
 
         #endregion
 
         public void run_the_task()
         {
             Container.initialize_with(build_the_container());
-            infrastructure.logging.Log.bound_to(this).log_an_info_event_containing("Executing {0} against contents of {1}.", ApplicationParameters.name,
-                                                                                   SqlFilesTopLevelDirectory);
             set_up_properties();
 
-            //var builder = new TemplateBuilder(new WindowsFileSystemAccess(), this);
+            infrastructure.logging.Log.bound_to(this).log_an_info_event_containing(
+                "Executing {0} against contents of {1}.",
+                ApplicationParameters.name,
+                SqlFilesDirectory);
 
+            
+            IRunner roundhouse_runner = new RoundhouseRunner(
+                                                ServerName, 
+                                                DatabaseName, 
+                                                RepositoryUrl, 
+                                                SqlFilesDirectory, 
+                                                UpFolderName, 
+                                                DownFolderName,
+                                                RunFirstFolderName, 
+                                                FunctionsFolderName, 
+                                                ViewsFolderName, 
+                                                SprocsFolderName, 
+                                                PermissionsFolderName,
+                                                VersionTableName,
+                                                Container.get_an_instance_of<FileSystemAccess>(),
+                                                Container.get_an_instance_of<Database>()
+                                                );
             try
             {
-                //return builder.build_template_files(settings_files_directory, templates_directory, destination_directory, template_extension, keep_extension);
+                roundhouse_runner.run();
             }
             catch (Exception exception)
             {
@@ -143,6 +163,7 @@
             windsor_container.Kernel.AddComponentInstance<Logger>(multi_logger);
 
             windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
+            windsor_container.AddComponent<Database, SqlServerDatabase>();
             windsor_container.AddComponent<LogFactory, MultipleLoggerLogFactory>();
 
             return new infrastructure.containers.custom.WindsorContainer(windsor_container);
@@ -178,9 +199,9 @@
             {
                 PermissionsFolderName = PERMISSIONS_FOLDER_NAME;
             }
-            if (string.IsNullOrEmpty(Action))
+            if (string.IsNullOrEmpty(VersionTableName))
             {
-                Action = DEFAULT_ACTION;
+                VersionTableName = VERSION_TABLE_NAME;
             }
         }
     }

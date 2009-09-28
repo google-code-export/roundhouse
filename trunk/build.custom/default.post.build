@@ -8,7 +8,7 @@
   <property name="dirs.build" value="${dirs.current}\..\build_output" />
   <property name="file.roundhouse.tasks" value="${dirs.build}\roundhouse.tasks.dll" />
   
-  <target name="go" depends="load_roundhouse_task, roundhouse_test" />
+  <target name="go" depends="load_roundhouse_task" />
 
   <target name="load_roundhouse_task">
    <loadtasks assembly="${file.roundhouse.tasks}" if="${file::exists(file.roundhouse.tasks)}" />
@@ -19,7 +19,7 @@
     <roundhouse
       serverName="(local)"
       databaseName="TestRoundhouse"
-      sqlFilesTopLevelDirectory="..\TestRoundhouse"
+      sqlFilesDirectory="..\TestRoundhouse"
       repositoryUrl="${repository.path}" />
   </target>
 

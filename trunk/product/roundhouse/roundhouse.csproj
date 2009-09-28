@@ -109,6 +109,8 @@
     <Compile Include="infrastructure\logging\LogFactory.cs" />
     <Compile Include="infrastructure\logging\Log.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="runners\IRunner.cs" />
+    <Compile Include="runners\RoundhouseRunner.cs" />
     <Compile Include="sql\Database.cs" />
     <Compile Include="sql\SqlServerDatabase.cs" />
   </ItemGroup>

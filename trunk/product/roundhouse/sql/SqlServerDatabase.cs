@@ -1,10 +1,10 @@
-namespace roundhouse.infrastructure.sql
+namespace roundhouse.sql
 {
     using System.Data.SqlClient;
     using Microsoft.SqlServer.Management.Common;
     using Microsoft.SqlServer.Management.Smo;
 
-    class SqlServerDatabase : Database
+    public class SqlServerDatabase : Database
     {
         private const string MASTER_DATABASE_NAME = "Master";
 
@@ -15,12 +15,16 @@ namespace roundhouse.infrastructure.sql
 
         public void create_database(string server_name, string database_name)
         {
-            string sql_to_run = string.Format(@"USE Master 
+            string sql_to_run =
+                string.Format(
+                    @"USE Master 
                         IF NOT EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
-                        BEGIN 
+                         BEGIN 
                             CREATE DATABASE [{0}] 
-                        END",
-                                              database_name);
+                         END
+                        ALTER DATABASE [{0}] SET RECOVERY SIMPLE
+                        ",
+                    database_name);
 
             run_sql(server_name, MASTER_DATABASE_NAME, sql_to_run);
 
@@ -45,16 +49,17 @@ namespace roundhouse.infrastructure.sql
 
         public void delete_database(string server_name, string database_name)
         {
-            string sql_to_run = string.Format(@"USE Master 
+            string sql_to_run =
+                string.Format(
+                    @"USE Master 
                         IF NOT EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
                         BEGIN 
                             ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE 
                             DROP DATABASE [{0}] 
                         END",
-                                              database_name);
+                    database_name);
 
             run_sql(server_name, MASTER_DATABASE_NAME, sql_to_run);
-
         }
 
         public void run_sql(string server_name, string database_name, string sql_to_run)
