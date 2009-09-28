@@ -27,24 +27,6 @@ namespace roundhouse.sql
                     database_name);
 
             run_sql(server_name, MASTER_DATABASE_NAME, sql_to_run);
-
-//            using (SqlConnection connection = new SqlConnection(build_connection_string(server_name, database_name)))
-//            {
-//                using (SqlCommand command = new SqlCommand())
-//                {
-//                    command.Connection = connection;
-//                    command.CommandText = string.Format(@"USE Master 
-//                        IF NOT EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
-//                        BEGIN 
-//                            CREATE DATABASE [{0}] 
-//                        END",
-//                        database_name);
-
-//                    connection.Open();
-//                    command.ExecuteNonQuery();
-//                    connection.Close();
-//                }
-//            }
         }
 
         public void delete_database(string server_name, string database_name)
@@ -65,7 +47,6 @@ namespace roundhouse.sql
         public void run_sql(string server_name, string database_name, string sql_to_run)
         {
             Server sql_server = new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
-
             sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
             sql_server.ConnectionContext.ExecuteNonQuery(sql_to_run);
         }

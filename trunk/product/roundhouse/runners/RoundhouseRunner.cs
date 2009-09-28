@@ -59,6 +59,9 @@ namespace roundhouse.runners
 
             //todo: run up folder and all subdirectories (subdirectories first? NO)
 
+            //todo: remember when looking through all files below here, change CREATE to ALTER
+            //todo: we are going to create the create if not exists script
+
             //todo: run special run first folder and all subdirectories
 
             //todo: run functions folder and all subdirectories
