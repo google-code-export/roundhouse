@@ -1,4 +1,4 @@
-namespace roundhouse.infrastructure.sql
+namespace roundhouse.sql
 {
     public interface Database
     {

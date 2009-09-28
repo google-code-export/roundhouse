@@ -5,20 +5,20 @@
     <roundhouse
       serverName="(local)"
       databaseName="TestRoundhouse"
-      sqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      sqlFilesDirectory="..\..\TestRoundhouse"
       />
 
     <roundhouse
       serverName="(local)"
       databaseName="TestRoundhouse"
-      sqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      sqlFilesDirectory="..\..\TestRoundhouse"
       repositoryUrl="" 
       />
 
     <roundhouse
       serverName="(local)"
       databaseName="TestRoundhouse"
-      sqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      sqlFilesDirectory="..\..\TestRoundhouse"
       repositoryUrl=""
       upFolderName="up"
       downFolderName="down"
@@ -27,7 +27,7 @@
       viewsFolderName="views"
       sprocsFolderName="sprocs"
       permissionsFolderName="permissions"
-      action="update"
+      versionTableName="dbo._version"
       />
 
   </nant>
@@ -37,20 +37,20 @@
     <Roundhouse
      ServerName="(local)"
      DatabaseName="TestRoundhouse"
-     SqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+     SqlFilesDirectory="..\..\TestRoundhouse"
       />
 
     <Roundhouse
       ServerName="(local)"
       DatabaseName="TestRoundhouse"
-      SqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      SqlFilesDirectory="..\..\TestRoundhouse"
       RepositoryUrl=""
       />
 
     <Roundhouse
       ServerName="(local)"
       DatabaseName="TestRoundhouse"
-      SqlFilesTopLevelDirectory="..\..\TestRoundhouse"
+      SqlFilesDirectory="..\..\TestRoundhouse"
       RepositoryUrl=""
       UpFolderName="up"
       DownFolderName="down"
@@ -59,7 +59,7 @@
       ViewsFolderName="views"
       SprocsFolderName="sprocs"
       PermissionsFolderName="permissions"
-      Action="update"
+      VersionTableName="dbo._version"
       />
 
   </msbuild>
