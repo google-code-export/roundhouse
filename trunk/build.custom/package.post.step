@@ -8,12 +8,33 @@
   <property name="dirs.build" value="${dirs.current}\..\build_output" />
   <property name="dirs.drop" value="${dirs.current}\..\code_drop" overwrite="false" />
   <property name="lib.ilmerge.folder" value="${dirs.current}\..\lib\ILMerge" />
+  <property name="dirs.lib" value="${dirs.current}\..\lib" overwrite="false" />
+  <property name="dirs.deployment" value="${dirs.drop}\deployment" />
   <property name="dirs.merge" value="${dirs.drop}\merge" />
   <property name="dirs.merge.log" value="${dirs.drop}\build_artifacts\ilmerge" />
   <property name="log.merge" value="ilmerge.log" />
 
-  <target name="go" depends="" description="Packaging" />
+  <target name="go" depends="copy_nant_to_deploy,copy_roundhouse_files_to_deploy" description="Packaging" />
 
+  <target name="copy_nant_to_deploy">
+    <echo message="Copying NAnt folder items to ${dirs.deployment}\NAnt."/>
+    <copy todir="${dirs.deployment}">
+      <fileset basedir="${dirs.lib}">
+        <include name="NAnt/**" />
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="copy_roundhouse_files_to_deploy">
+    <echo message="Copying roundhouse assemblies to ${dirs.deployment}\NAnt."/>
+    <copy todir="${dirs.deployment}\NAnt">
+      <fileset basedir="${dirs.drop}\RoundhousE">
+        <include name="*.dll" />
+        <include name="samples.xml" />
+      </fileset>
+    </copy>
+  </target>
+  
   <target name="include_files" >
     
   </target>

@@ -168,7 +168,22 @@ namespace roundhouse.infrastructure.filesystem
         /// <returns>A list of subdirectories inside of the existing directory</returns>
         string[] get_all_directory_name_strings_in(string directory);
 
+        /// <summary>
+        /// Gets a list of files inside of an existing directory
+        /// </summary>
+        /// <param name="directory">Path to the directory</param>
+        /// <param name="pattern">Pattern or extension</param>
+        /// <returns>A list of files inside of an existing directory</returns>
+        string[] get_all_file_name_strings_in(string directory, string pattern);
+
         #endregion
+
+        /// <summary>
+        /// Combines a set of paths into one path
+        /// </summary>
+        /// <param name="paths">Each item in order from left to right of the path</param>
+        /// <returns></returns>
+        string combine_paths(params string[] paths);
 
     }
 }
