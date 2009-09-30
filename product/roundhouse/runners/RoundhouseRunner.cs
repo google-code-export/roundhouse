@@ -83,12 +83,7 @@ namespace roundhouse.runners
             foreach (string sql_file in file_system.get_all_file_name_strings_in(directory, SQL_EXTENSION))
             {
                 //todo: add in logic for running only once
-                string sql_file_text = string.Empty;
-                using (TextReader file_reader = new StreamReader(sql_file))
-                {
-                    sql_file_text = file_reader.ReadToEnd();
-                    file_reader.Close();
-                }
+                string sql_file_text = File.ReadAllText(sql_file);
                 Log.bound_to(this).log_an_info_event_containing("Found and running {0}.", sql_file);
                 database.run_sql(server_name, database_name, sql_file_text);
             }
