@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="RoundhousEDeploy" default="go">
+  <property name="deploy.settings" value="__NONE__" overwrite="false" />
+  <include buildfile="${deploy.settings}" if="${file::exists(deploy.settings)}" />
+  <property name="dirs.current" value="${directory::get-parent-directory(project::get-buildfile-path())}" />
+  <property name="repository.path" value="__REPOSITORY_PATH__" overwrite="false" />
+  <property name="server.name" value="(local)" overwrite="false" />
+  <property name="database.name" value="TestRoundhouse" overwrite="false" />
+  <property name="dirs.db.project" value="__DATABASE_FOLDER_NAME__" overwrite="false" />
+  <property name="dirs.db" value="${dirs.current}\..\..\${dirs.db.project}\${database.name}" overwrite="false" />
+  
+  <target name="go" depends="run_roundhouse" />
+
+  <target name="run_roundhouse">
+    <echo message="Running RoundhousE test." />
+    <roundhouse
+      serverName="${server.name}"
+      databaseName="${database.name}"
+      sqlFilesDirectory="${dirs.db}"
+      repositoryUrl="${repository.path}" />
+  </target>
+
+</project>

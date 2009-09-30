@@ -18,14 +18,6 @@
     [TaskName("roundhouse")]
     public class Roundhouse : Task, ITask
     {
-        private const string UP_FOLDER_NAME = "up";
-        private const string DOWN_FOLDER_NAME = "down";
-        private const string RUN_FIRST_FOLDER_NAME = "runFirst";
-        private const string FUNCTIONS_FOLDER_NAME = "functions";
-        private const string VIEWS_FOLDER_NAME = "views";
-        private const string SPROCS_FOLDER_NAME = "sprocs";
-        private const string PERMISSIONS_FOLDER_NAME = "permissions";
-        private const string VERSION_TABLE_NAME = "dbo._version";
         private readonly ILog the_logger = LogManager.GetLogger(typeof(Roundhouse));
 
         #region MSBuild
@@ -173,35 +165,35 @@
         {
             if (string.IsNullOrEmpty(UpFolderName))
             {
-                UpFolderName = UP_FOLDER_NAME;
+                UpFolderName = ApplicationParameters.default_up_folder_name;
             }
             if (string.IsNullOrEmpty(DownFolderName))
             {
-                DownFolderName = DOWN_FOLDER_NAME;
+                DownFolderName = ApplicationParameters.default_down_folder_name;
             }
             if (string.IsNullOrEmpty(RunFirstFolderName))
             {
-                RunFirstFolderName = RUN_FIRST_FOLDER_NAME;
+                RunFirstFolderName = ApplicationParameters.default_run_first_folder_name;
             }
             if (string.IsNullOrEmpty(FunctionsFolderName))
             {
-                FunctionsFolderName = FUNCTIONS_FOLDER_NAME;
+                FunctionsFolderName = ApplicationParameters.default_functions_folder_name;
             }
             if (string.IsNullOrEmpty(ViewsFolderName))
             {
-                ViewsFolderName = VIEWS_FOLDER_NAME;
+                ViewsFolderName = ApplicationParameters.default_views_folder_name;
             }
             if (string.IsNullOrEmpty(SprocsFolderName))
             {
-                SprocsFolderName = SPROCS_FOLDER_NAME;
+                SprocsFolderName = ApplicationParameters.default_sprocs_folder_name;
             }
             if (string.IsNullOrEmpty(PermissionsFolderName))
             {
-                PermissionsFolderName = PERMISSIONS_FOLDER_NAME;
+                PermissionsFolderName = ApplicationParameters.default_permissions_folder_name;
             }
             if (string.IsNullOrEmpty(VersionTableName))
             {
-                VersionTableName = VERSION_TABLE_NAME;
+                VersionTableName = ApplicationParameters.default_version_table_name;
             }
         }
     }
