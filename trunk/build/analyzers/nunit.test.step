@@ -60,10 +60,16 @@
           <include name="${dirs.build}\*.Specs*dll" />
         </assemblies>
         <categories>
-          <exclude name="NotWorking" />
           <exclude name="Database" />
           <exclude name="Integration" />
           <exclude name="Slow" />
+          <exclude name="NotWorking" />
+          <exclude name="Ignore" />
+          <exclude name="database" />
+          <exclude name="integration" />
+          <exclude name="slow" />
+          <exclude name="notworking" />
+          <exclude name="ignore" />
         </categories>
       </test>
     </nunit2>

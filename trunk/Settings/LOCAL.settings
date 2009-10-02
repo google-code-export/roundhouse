@@ -1,7 +1,8 @@
-<project>
-	<!-- database deployment -->
-    <property name="environment" value="LOCAL" />
-    <property name="server.database" value="(local)" />
-    <property name="database.name" value="TestRoundhousE" />
-	<property name="dirs.db.project" value="db" overwrite="false" />
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Settings">
+  <!-- database deployment -->
+  <property name="environment" value="LOCAL" />
+  <property name="server.database" value="(local)" />
+  <property name="database.name" value="TestRoundhousE" />
+  <property name="dirs.db.project" value="db" overwrite="false" />
 </project>
