@@ -58,6 +58,8 @@ namespace roundhouse.runners
         {
             database.create_database(server_name, database_name);
 
+            //todo: version the database first (can be backed out later)
+
             traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, up_folder_name), true);
 
             //todo: remember when looking through all files below here, change CREATE to ALTER
@@ -71,7 +73,6 @@ namespace roundhouse.runners
 
             //todo: permissions folder is based on environment if there are any environment files
 
-            //todo: version the database
         }
 
         //todo:down story
@@ -82,10 +83,9 @@ namespace roundhouse.runners
 
             foreach (string sql_file in file_system.get_all_file_name_strings_in(directory, SQL_EXTENSION))
             {
-                //todo: add in logic for running only once
                 string sql_file_text = File.ReadAllText(sql_file);
                 Log.bound_to(this).log_an_info_event_containing("Found and running {0}.", sql_file);
-                database.run_sql(server_name, database_name, sql_file_text);
+                database.run_sql(server_name, database_name, sql_file_text,file_system.get_file_name_from(sql_file),run_once);
             }
 
             foreach (string child_directory in file_system.get_all_directory_name_strings_in(directory))
