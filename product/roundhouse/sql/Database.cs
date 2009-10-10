@@ -2,10 +2,20 @@ namespace roundhouse.sql
 {
     public interface Database
     {
-        void create_database(string server_name, string database_name);
-        void verify_or_create_roundhouse_tables(string server_name, string database_name, string roundhouse_schema_name, string version_table_name,string scripts_run_table_name);
-        void delete_database(string server_name, string database_name);
-        void run_sql(string server_name, string database_name, string sql_to_run, string script_name,
-                bool run_this_script_once);
+        string server_name { get; set; }
+        string database_name { get; set; }
+        string roundhouse_schema_name { get; set; }
+        string version_table_name { get; set; }
+        string scripts_run_table_name { get; set; }
+        string MASTER_DATABASE_NAME { get; }
+        string create_database_script();
+        string restore_database_script(string restore_from_path);
+        string delete_database_script();
+        string create_roundhouse_schema_script();
+        string create_roundhouse_version_table_script();
+        string create_roundhouse_scripts_run_table_script();
+        string insert_version_script(string repository_path, string repository_version);
+        string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once);
+        void run_sql(string database_name, string sql_to_run);
     }
 }

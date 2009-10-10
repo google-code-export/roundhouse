@@ -10,6 +10,7 @@
     using infrastructure.logging.custom;
     using log4net;
     using Microsoft.Build.Framework;
+    using migrators;
     using NAnt.Core;
     using NAnt.Core.Attributes;
     using runners;
@@ -66,9 +67,15 @@
         [StringValidator(AllowEmpty = false)]
         public string SqlFilesDirectory { get; set; }
 
-        [TaskAttribute("repositoryUrl", Required = false)]
+        [TaskAttribute("repositoryPath", Required = false)]
         [StringValidator(AllowEmpty = false)]
-        public string RepositoryUrl { get; set; }
+        public string RepositoryPath { get; set; }
+
+        [TaskAttribute("revisionXmlFile", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string RevisionXmlFile { get; set; }
+
+        public string RepositoryVersion { get; set; }
 
         [TaskAttribute("upFolderName", Required = false)]
         [StringValidator(AllowEmpty = false)]
@@ -102,6 +109,10 @@
         [StringValidator(AllowEmpty = false)]
         public string VersionTableName { get; set; }
 
+        [TaskAttribute("scriptsRunTableName", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string ScriptsRunTableName { get; set; }
+
         #endregion
 
         public void run_the_task()
@@ -113,23 +124,20 @@
                 "Executing {0} against contents of {1}.",
                 ApplicationParameters.name,
                 SqlFilesDirectory);
-
             
             IRunner roundhouse_runner = new RoundhouseRunner(
-                                                ServerName, 
-                                                DatabaseName, 
-                                                RepositoryUrl, 
-                                                SqlFilesDirectory, 
-                                                UpFolderName, 
+                                                RepositoryPath,
+                                                RepositoryVersion,
+                                                SqlFilesDirectory,
+                                                UpFolderName,
                                                 DownFolderName,
-                                                RunFirstFolderName, 
-                                                FunctionsFolderName, 
-                                                ViewsFolderName, 
-                                                SprocsFolderName, 
+                                                RunFirstFolderName,
+                                                FunctionsFolderName,
+                                                ViewsFolderName,
+                                                SprocsFolderName,
                                                 PermissionsFolderName,
-                                                VersionTableName,
                                                 Container.get_an_instance_of<FileSystemAccess>(),
-                                                Container.get_an_instance_of<Database>()
+                                                Container.get_an_instance_of<DatabaseMigrator>()
                                                 );
             try
             {
@@ -154,8 +162,11 @@
 
             windsor_container.Kernel.AddComponentInstance<Logger>(multi_logger);
 
+            Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, ApplicationParameters.default_roundhouse_schema_name, VersionTableName, ScriptsRunTableName);
+            windsor_container.Kernel.AddComponentInstance<Database>(database_to_migrate);
+
             windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
-            windsor_container.AddComponent<Database, SqlServerDatabase>();
+            windsor_container.AddComponent<DatabaseMigrator, DefaultDatabaseMigrator>();
             windsor_container.AddComponent<LogFactory, MultipleLoggerLogFactory>();
 
             return new infrastructure.containers.custom.WindsorContainer(windsor_container);
@@ -191,10 +202,26 @@
             {
                 PermissionsFolderName = ApplicationParameters.default_permissions_folder_name;
             }
+            if (string.IsNullOrEmpty(ScriptsRunTableName))
+            {
+                ScriptsRunTableName = ApplicationParameters.default_scripts_run_table_name;
+            }
             if (string.IsNullOrEmpty(VersionTableName))
             {
                 VersionTableName = ApplicationParameters.default_version_table_name;
             }
+            if (string.IsNullOrEmpty(RevisionXmlFile))
+            {
+                RevisionXmlFile = ApplicationParameters.default_revision_xml_file;
+            }
+
+            RepositoryVersion = get_version_from_revision_file(RevisionXmlFile);
+        }
+
+        private string get_version_from_revision_file(string revision_xml_file)
+        {
+            //todo: xpath in the file
+            return "0";
         }
     }
 }

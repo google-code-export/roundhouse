@@ -125,7 +125,10 @@
     <Compile Include="runners\IRunner.cs" />
     <Compile Include="runners\RoundhouseRunner.cs" />
     <Compile Include="sql\Database.cs" />
+    <Compile Include="migrators\DatabaseMigrator.cs" />
+    <Compile Include="migrators\DefaultDatabaseMigrator.cs" />
     <Compile Include="sql\SqlServerDatabase.cs" />
+    <Compile Include="sql\SqlServerLiteSpeedDatabase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -12,14 +12,14 @@
       serverName="(local)"
       databaseName="TestRoundhouse"
       sqlFilesDirectory="..\..\TestRoundhouse"
-      repositoryUrl="" 
+      repositoryPath="" 
       />
 
     <roundhouse
       serverName="(local)"
       databaseName="TestRoundhouse"
       sqlFilesDirectory="..\..\TestRoundhouse"
-      repositoryUrl=""
+      repositoryPath=""
       upFolderName="up"
       downFolderName="down"
       runFirstFolderName="runFirst"
@@ -44,14 +44,14 @@
       ServerName="(local)"
       DatabaseName="TestRoundhouse"
       SqlFilesDirectory="..\..\TestRoundhouse"
-      RepositoryUrl=""
+      repositoryPath=""
       />
 
     <Roundhouse
       ServerName="(local)"
       DatabaseName="TestRoundhouse"
       SqlFilesDirectory="..\..\TestRoundhouse"
-      RepositoryUrl=""
+      repositoryPath=""
       UpFolderName="up"
       DownFolderName="down"
       RunFirstFolderName="runFirst"
