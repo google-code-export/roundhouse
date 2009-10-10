@@ -3,7 +3,7 @@
   <property name="deploy.settings" value="__NONE__" overwrite="false" />
   <include buildfile="${deploy.settings}" if="${file::exists(deploy.settings)}" />
   <property name="dirs.current" value="${directory::get-parent-directory(project::get-buildfile-path())}" />
-  <property name="repository.path" value="__REPOSITORY_PATH__" overwrite="false" />
+  <property name="repository.path" value="http://roundhouse.googlecode.com/svn/" overwrite="false" />
   <property name="server.database" value="(local)" overwrite="false" />
   <property name="database.name" value="Test" overwrite="false" />
   <property name="dirs.db.project" value="__DATABASE_FOLDER_NAME__" overwrite="false" />
