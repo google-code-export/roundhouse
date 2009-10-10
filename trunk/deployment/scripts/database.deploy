@@ -17,7 +17,7 @@
       serverName="${server.database}"
       databaseName="${database.name}"
       sqlFilesDirectory="${dirs.db}"
-      repositoryUrl="${repository.path}" />
+      repositoryPath="${repository.path}" />
   </target>
 
 </project>
