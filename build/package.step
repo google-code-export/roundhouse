@@ -131,7 +131,14 @@
     <copy todir="${dirs.drop}\deployment">
       <fileset basedir="${dirs.build}\..\deployment">
         <exclude name="**\*.template" />
+        <exclude name="**\template" />
         <include name="**/*.*" />
+      </fileset>
+    </copy>
+    
+    <copy todir="${dirs.drop}\deployment">
+      <fileset basedir="${dirs.build}\build_artifacts">
+        <include name="**/_buildInfo.xml" />
       </fileset>
     </copy>
   </target>

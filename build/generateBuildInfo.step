@@ -7,8 +7,18 @@
   <property name="dirs.current" value="${directory::get-parent-directory(project::get-buildfile-path())}" />
   <property name="dirs.build" value="${dirs.current}\..\build_output" />
   <property name="dirs.build_artifacts" value="${path::get-full-path(dirs.build)}\build_artifacts" />
-  <property name="version.revision" value="0" overwrite="false" />
   <property name="files.build_info" value="${dirs.build_artifacts}\_buildinfo.xml" />
+  <property name="project.name" value="__SOLUTION_NAME_WITHOUT_SLN_EXTENSION__" overwrite="false" />
+  <property name="company.name" value="__COMPANY_NAME__" overwrite="false" />
+  <property name="version.major" value="1" overwrite="false" />
+  <property name="version.minor" value="0" overwrite="false" />
+  <property name="version.build" value="0" overwrite="false" />
+  <property name="version.revision" value="0" overwrite="false" />
+  <property name="repository.path" value="__REPOSITORY_PATH__" overwrite="false" />
+  <property name="microsoft.framework" value="net-3.5" overwrite="false" />
+  <property name="msbuild.configuration" value="Release" overwrite="false" />
+  <property name="msbuild.platform" value="Any CPU" overwrite="false" />
+  <property name="version.uppercut" value="0" overwrite="false" />
   <property name="file.custom.step.before" value="${dirs.current}\..\build.custom\generateBuildInfo.pre.step" />
   <property name="file.custom.step.after" value="${dirs.current}\..\build.custom\generateBuildInfo.post.step" />
   <property name="file.custom.step.replace" value="${dirs.current}\..\build.custom\generateBuildInfo.replace.step" />
@@ -37,9 +47,20 @@
   <target name="generate_build_info_file">
     <echo message="Generating XML file with some information to possibly get merged in at ${files.build_info}."/>
     <echo file="${files.build_info}" append="false" failonerror="false">
-      <![CDATA[
-      <revision>${version.revision}</revision>
-      ]]>
+      <![CDATA[<?xml version="1.0" ?>
+<buildInfo>
+  <projectName>${project.name}</projectName>
+  <companyName>${company.name}</companyName>
+  <versionMajor>${version.major}</versionMajor>
+  <versionMinor>${version.minor}</versionMinor>
+  <buildNumber>${version.build}</buildNumber>
+  <revision>${version.revision}</revision>
+  <repositoryPath>${repository.path}</repositoryPath>
+  <microsoftNetFramework>${microsoft.framework}</microsoftNetFramework>
+  <msbuildConfiguration>${msbuild.configuration}</msbuildConfiguration>
+  <msbuildPlatform>${msbuild.platform}</msbuildPlatform>
+  <builtWith>UppercuT v. ${version.uppercut}</builtWith>
+</buildInfo>]]>
     </echo>
   </target>
 

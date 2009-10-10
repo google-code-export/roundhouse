@@ -2,6 +2,7 @@ namespace roundhouse.sql
 {
     using System.Data;
     using System.Data.SqlClient;
+    using infrastructure.logging;
     using Microsoft.SqlServer.Management.Common;
     using Microsoft.SqlServer.Management.Smo;
 
@@ -84,7 +85,7 @@ namespace roundhouse.sql
                       END
 
                 "
-              , database_name,roundhouse_schema_name);
+              , database_name, roundhouse_schema_name);
         }
 
         public string create_roundhouse_version_table_script()
@@ -131,7 +132,7 @@ namespace roundhouse.sql
 
                       END
                 ",
-                roundhouse_schema_name, scripts_run_table_name,version_table_name);
+                roundhouse_schema_name, scripts_run_table_name, version_table_name);
         }
 
         public string insert_version_script(string repository_path, string repository_version)
@@ -173,7 +174,7 @@ namespace roundhouse.sql
                         ,{4}
                     )
                 ",
-                roundhouse_schema_name, version_table_name, script_name, sql_to_run,run_this_script_once);
+                 roundhouse_schema_name, scripts_run_table_name, script_name, sql_to_run, run_this_script_once ? 1 : 0);
         }
 
         public void run_sql(string database_name, string sql_to_run)

@@ -117,14 +117,14 @@
 
         public void run_the_task()
         {
-            Container.initialize_with(build_the_container());
             set_up_properties();
+            Container.initialize_with(build_the_container());
 
             infrastructure.logging.Log.bound_to(this).log_an_info_event_containing(
                 "Executing {0} against contents of {1}.",
                 ApplicationParameters.name,
                 SqlFilesDirectory);
-            
+
             IRunner roundhouse_runner = new RoundhouseRunner(
                                                 RepositoryPath,
                                                 RepositoryVersion,

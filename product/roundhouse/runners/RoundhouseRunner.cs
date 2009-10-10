@@ -52,7 +52,7 @@ namespace roundhouse.runners
         public void run()
         {
             database_migrator.create_database();
-
+            database_migrator.verify_or_create_roundhouse_tables();
             // version the database first (can be backed out later)
             database_migrator.version_the_database(repository_path, repository_version);
 
@@ -80,7 +80,7 @@ namespace roundhouse.runners
             foreach (string sql_file in file_system.get_all_file_name_strings_in(directory, SQL_EXTENSION))
             {
                 string sql_file_text = File.ReadAllText(sql_file);
-                Log.bound_to(this).log_an_info_event_containing("Found and running {0}.", sql_file);
+                Log.bound_to(this).log_a_debug_event_containing("Found and running {0}.", sql_file);
                 database_migrator.run_sql(sql_file_text, file_system.get_file_name_from(sql_file), run_once);
             }
 
