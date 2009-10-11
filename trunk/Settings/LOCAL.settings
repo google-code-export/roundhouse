@@ -4,5 +4,5 @@
   <property name="environment" value="LOCAL" />
   <property name="server.database" value="(local)" />
   <property name="database.name" value="TestRoundhousE" />
-  <property name="dirs.db.project" value="db" overwrite="false" />
+  <property name="folder.database" value="db" overwrite="false" />
 </project>
