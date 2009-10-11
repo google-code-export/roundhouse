@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="RoundhousEDeploy" default="go">
+  <!-- Visit http://roundhouse.googlecode.com/ for details -->
   <property name="deploy.settings" value="__NONE__" overwrite="false" />
   <include buildfile="${deploy.settings}" if="${file::exists(deploy.settings)}" />
   <property name="dirs.current" value="${directory::get-parent-directory(project::get-buildfile-path())}" />
   <property name="repository.path" value="http://roundhouse.googlecode.com/svn/" overwrite="false" />
   <property name="server.database" value="(local)" overwrite="false" />
   <property name="database.name" value="Test" overwrite="false" />
-  <property name="dirs.db.project" value="__DATABASE_FOLDER_NAME__" overwrite="false" />
+  <property name="folder.database" value="__DATABASE_FOLDER_NAME__" overwrite="false" />
   <property name="dirs.db" value="${dirs.current}\..\..\${dirs.db.project}\${database.name}" overwrite="false" />
   
   <target name="go" depends="run_roundhouse" />
