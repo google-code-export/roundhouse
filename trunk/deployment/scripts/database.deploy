@@ -8,7 +8,7 @@
   <property name="server.database" value="(local)" overwrite="false" />
   <property name="database.name" value="Test" overwrite="false" />
   <property name="folder.database" value="__DATABASE_FOLDER_NAME__" overwrite="false" />
-  <property name="dirs.db" value="${dirs.current}\..\..\${dirs.db.project}\${database.name}" overwrite="false" />
+  <property name="dirs.db" value="${dirs.current}\..\..\${folder.database}\${database.name}" overwrite="false" />
   
   <target name="go" depends="run_roundhouse" />
 

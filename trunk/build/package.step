@@ -22,6 +22,7 @@
   <property name="folder.deployment" value="deployment" overwrite="false" />
   <property name="folder.settings" value="settings" overwrite="false" />
   <property name="folder.documentation" value="docs" overwrite="false" />
+  <property name="files.build_info" value="${dirs.build}\_BuildInfo.xml" />
   <property name="file.custom.step.before" value="${dirs.build_scripts_custom}\${file.current.no_extension}.pre.step" />
   <property name="file.custom.step.after" value="${dirs.build_scripts_custom}\${file.current.no_extension}.post.step" />
   <property name="file.custom.step.replace" value="${dirs.build_scripts_custom}\${file.current.no_extension}.replace.step" />
@@ -60,6 +61,11 @@
         <include name="**/*.*" />
       </fileset>
     </copy>
+    
+    <copy 
+      file="${files.build_info}"
+      todir="${dirs.drop}\${folder.build_artifacts}"
+      />
   </target>
 
   <target name="app">
@@ -147,6 +153,11 @@
         <include name="**/*.*" />
       </fileset>
     </copy>
+    
+    <copy 
+      file="${files.build_info}"
+      todir="${dirs.drop}\${folder.deployment}"
+      />
   </target>
 
   <target name="settings_files">
