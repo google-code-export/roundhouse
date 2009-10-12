@@ -61,8 +61,8 @@
         <include name="**/*.*" />
       </fileset>
     </copy>
-    
-    <copy 
+
+    <copy
       file="${files.build_info}"
       todir="${dirs.drop}\${folder.build_artifacts}"
       />
@@ -153,8 +153,8 @@
         <include name="**/*.*" />
       </fileset>
     </copy>
-    
-    <copy 
+
+    <copy
       file="${files.build_info}"
       todir="${dirs.drop}\${folder.deployment}"
       />
