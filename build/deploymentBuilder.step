@@ -15,7 +15,8 @@
   <property name="dirs.drop" value="${dirs.current}\..\${folder.code_drop}" overwrite="false" />
   <property name="folder.deployment" value="deployment" overwrite="false" />
   <property name="dirs.deployment" value="${dirs.drop}\${folder.deployment}" overwrite="false" />
-  <property name="dirs.deployment.settings" value="${dirs.drop}\settings" overwrite="false" />
+  <property name="folder.settings" value="settings" overwrite="false" />
+  <property name="dirs.deployment.settings" value="${dirs.drop}\${folder.settings}" overwrite="false" />
   <property name="dirs.deployment.templates" value="${dirs.current}\..\${folder.deployment}\templates" overwrite="false" />
   <property name="file.custom.step.before" value="${dirs.build_scripts_custom}\${file.current.no_extension}.pre.step" />
   <property name="file.custom.step.after" value="${dirs.build_scripts_custom}\${file.current.no_extension}.post.step" />

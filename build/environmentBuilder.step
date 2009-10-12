@@ -15,7 +15,8 @@
   <property name="dirs.drop" value="${dirs.current}\..\${folder.code_drop}" overwrite="false" />
   <property name="folder.environment_files" value="environment.files" overwrite="false" />
   <property name="dirs.build.environmentfiles" value="${dirs.build}\${folder.environment_files}" overwrite="false" />
-  <property name="dirs.environments.settings" value="${dirs.current}\..\settings" overwrite="false" />
+  <property name="folder.settings" value="settings" overwrite="false" />
+  <property name="dirs.environments.settings" value="${dirs.current}\..\${folder.settings}" overwrite="false" />
   <property name="dirs.environments.templates" value="${dirs.build}" overwrite="false" />
   <property name="file.custom.step.before" value="${dirs.build_scripts_custom}\${file.current.no_extension}.pre.step" />
   <property name="file.custom.step.after" value="${dirs.build_scripts_custom}\${file.current.no_extension}.post.step" />
