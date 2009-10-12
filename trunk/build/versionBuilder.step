@@ -61,17 +61,17 @@
 
   <target name="generate_key_file" description="Generates a .snk using the sn.exe tool if none exists and strong naming is specified" if="${sign.project_with_key}">
     <echo message="Generating a strong name key (${file.key.name.private}) using ${app.strongname} if the key file doesn't already exist." />
-    <exec 
-		program="${app.strongname}" 
-		commandline="-k ${file.key.name.private}" 
-		if="${file::exists(app.strongname) and not file::exists(file.key.name.private)}" 
-		/> 
+    <exec
+		program="${app.strongname}"
+		commandline="-k ${file.key.name.private}"
+		if="${file::exists(app.strongname) and not file::exists(file.key.name.private)}"
+		/>
 
-    <exec 
-		program="${app.strongname}" 
-		commandline="-p ${file.key.name.private} ${file.key.name.public}" 
-		if="${file::exists(app.strongname)}" 
-		/> 
+    <exec
+		program="${app.strongname}"
+		commandline="-p ${file.key.name.private} ${file.key.name.public}"
+		if="${file::exists(app.strongname)}"
+		/>
   </target>
 
   <target name="determine_language">

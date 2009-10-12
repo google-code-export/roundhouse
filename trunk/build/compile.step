@@ -55,10 +55,10 @@
 
   <target name="build_code" depends="" description="Building Library">
     <echo message="Compiling ${solution.path}."/>
-     <call target="build_dotNET_code" if="${microsoft.framework !='vb6'}" />
+    <call target="build_dotNET_code" if="${microsoft.framework !='vb6'}" />
     <call target="build_vb6_code" if="${microsoft.framework =='vb6'}" />
   </target>
-  
+
   <target name="build_dotNET_code" >
     <msbuild project="${solution.path}" verbosity="quiet">
       <property name="Configuration" value="${msbuild.configuration}" />
@@ -69,7 +69,7 @@
 
   <target name="build_vb6_code">
     <vb6 project="${solution.path}" outdir="${dirs.build}" />
-  </target>  
+  </target>
 
   <target name="copy_documentation">
     <echo message="Building documentation files to ${dirs.build}\${folder.documentation}."/>
