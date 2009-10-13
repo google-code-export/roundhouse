@@ -62,10 +62,10 @@ namespace roundhouse.runners
             // we are going to create the create if not exists script
 
             traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, run_first_folder_name), true);
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, functions_folder_name), true);
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, views_folder_name), true);
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, sprocs_folder_name), true);
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, permissions_folder_name), true);
+            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, functions_folder_name), false);
+            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, views_folder_name), false);
+            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, sprocs_folder_name), false);
+            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, permissions_folder_name), false);
 
             //todo: permissions folder is based on environment if there are any environment files
 

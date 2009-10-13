@@ -174,7 +174,28 @@ namespace roundhouse.sql
                         ,{4}
                     )
                 ",
-                 roundhouse_schema_name, scripts_run_table_name, script_name, sql_to_run, run_this_script_once ? 1 : 0);
+                 roundhouse_schema_name, scripts_run_table_name, script_name, sql_to_run.Replace(@"'",@"''"), run_this_script_once ? 1 : 0);
+        }
+
+        public bool has_run_script_already(string script_name)
+        {
+            bool script_has_run = false;
+
+            string sql_to_run = string.Format(
+                @"
+                    SELECT 
+                        script_name
+                    FROM [{0}].[{1}]
+                    WHERE script_name = '{2}'
+                ", roundhouse_schema_name, scripts_run_table_name, script_name
+                 );
+            DataTable data_table = execute_datatable(sql_to_run);
+            if (data_table.Rows.Count >0)
+            {
+                script_has_run =  true;
+            }
+
+            return script_has_run;
         }
 
         public void run_sql(string database_name, string sql_to_run)
@@ -200,8 +221,8 @@ namespace roundhouse.sql
                     SqlDataAdapter da = new SqlDataAdapter(command.CommandText, command.Connection);
                     da.Fill(result);
                     command.Dispose();
-                    //todo close the connection?
                 }
+                //todo close the connection?
             }
 
             return result.Tables.Count == 0 ? null : result.Tables[0];
