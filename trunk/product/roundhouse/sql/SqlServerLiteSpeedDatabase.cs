@@ -85,6 +85,11 @@ namespace roundhouse.sql
             return database.insert_script_run_script(script_name, sql_to_run, run_this_script_once);
         }
 
+        public bool has_run_script_already(string script_name)
+        {
+           return database.has_run_script_already(script_name);
+        }
+
         public void run_sql(string database_name, string sql_to_run)
         {
             database.run_sql(database_name, sql_to_run);
