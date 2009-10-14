@@ -1,3 +1,5 @@
+using roundhouse.folders;
+
 namespace roundhouse.runners
 {
     using System.IO;
@@ -10,14 +12,7 @@ namespace roundhouse.runners
     {
         private readonly string repository_path;
         private readonly string version_file;
-        private readonly string sql_files_directory;
-        private readonly string up_folder_name;
-        private readonly string down_folder_name;
-        private readonly string run_first_folder_name;
-        private readonly string functions_folder_name;
-        private readonly string views_folder_name;
-        private readonly string sprocs_folder_name;
-        private readonly string permissions_folder_name;
+        private readonly KnownFolders known_folders;
         private readonly FileSystemAccess file_system;
         private readonly DatabaseMigrator database_migrator;
         private readonly VersionResolver version_resolver;
@@ -26,28 +21,14 @@ namespace roundhouse.runners
         public RoundhouseRunner(
                 string repository_path,
                 string version_file,
-                string sql_files_directory,
-                string up_folder_name,
-                string down_folder_name,
-                string run_first_folder_name,
-                string functions_folder_name,
-                string views_folder_name,
-                string sprocs_folder_name,
-                string permissions_folder_name,
+                KnownFolders known_folders,
                 FileSystemAccess file_system,
                 DatabaseMigrator database_migrator,
                 VersionResolver version_resolver)
         {
+            this.known_folders = known_folders;
             this.repository_path = repository_path;
             this.version_file = version_file;
-            this.sql_files_directory = sql_files_directory;
-            this.up_folder_name = up_folder_name;
-            this.down_folder_name = down_folder_name;
-            this.run_first_folder_name = run_first_folder_name;
-            this.functions_folder_name = functions_folder_name;
-            this.views_folder_name = views_folder_name;
-            this.sprocs_folder_name = sprocs_folder_name;
-            this.permissions_folder_name = permissions_folder_name;
             this.file_system = file_system;
             this.database_migrator = database_migrator;
             this.version_resolver = version_resolver;
@@ -63,21 +44,28 @@ namespace roundhouse.runners
             // version the database first (can be backed out later)
             database_migrator.version_the_database(repository_path, version);
 
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, up_folder_name), true);
-
+            traverse_files_and_run_sql(known_folders.up.folder_full_path,
+                                       known_folders.up.should_run_items_in_folder_once);
+            
             //todo: remember when looking through all files below here, change CREATE to ALTER
             // we are going to create the create if not exists script
 
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, run_first_folder_name), true);
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, functions_folder_name), false);
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, views_folder_name), false);
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, sprocs_folder_name), false);
-            traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, permissions_folder_name), false);
-
+            traverse_files_and_run_sql(known_folders.run_first.folder_full_path,
+                                       known_folders.run_first.should_run_items_in_folder_once);
+            traverse_files_and_run_sql(known_folders.functions.folder_full_path,
+                                       known_folders.functions.should_run_items_in_folder_once);
+            traverse_files_and_run_sql(known_folders.views.folder_full_path,
+                                       known_folders.views.should_run_items_in_folder_once);
+            traverse_files_and_run_sql(known_folders.sprocs.folder_full_path,
+                                       known_folders.sprocs.should_run_items_in_folder_once);
+            traverse_files_and_run_sql(known_folders.permissions.folder_full_path,
+                                       known_folders.permissions.should_run_items_in_folder_once);
+            
             //todo: permissions folder is based on environment if there are any environment files
 
         }
 
+        //todo: understand what environment you are deploying to so you can decide what to run
         //todo:down story
 
         public void traverse_files_and_run_sql(string directory, bool run_once)

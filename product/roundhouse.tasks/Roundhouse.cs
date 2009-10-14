@@ -1,4 +1,6 @@
-﻿namespace roundhouse.tasks
+﻿using roundhouse.folders;
+
+namespace roundhouse.tasks
 {
     using System;
     using System.Collections.Generic;
@@ -131,14 +133,7 @@
             IRunner roundhouse_runner = new RoundhouseRunner(
                                                 RepositoryPath,
                                                 VersionFile,
-                                                SqlFilesDirectory,
-                                                UpFolderName,
-                                                DownFolderName,
-                                                RunFirstFolderName,
-                                                FunctionsFolderName,
-                                                ViewsFolderName,
-                                                SprocsFolderName,
-                                                PermissionsFolderName,
+                                                Container.get_an_instance_of<KnownFolders>(),
                                                 Container.get_an_instance_of<FileSystemAccess>(),
                                                 Container.get_an_instance_of<DatabaseMigrator>(),
                                                 Container.get_an_instance_of<VersionResolver>()
@@ -176,6 +171,18 @@
 
             VersionResolver version_finder = new DefaultVersionResolver(windsor_container.Resolve<FileSystemAccess>(),VersionXPath);
             windsor_container.Kernel.AddComponentInstance<VersionResolver>(version_finder);
+
+            Folder up_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,UpFolderName,true);
+            Folder down_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,DownFolderName,true);
+            Folder run_first_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,RunFirstFolderName,false);
+            Folder functions_folder= new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,FunctionsFolderName,false);
+            Folder views_folder= new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,ViewsFolderName,false);
+            Folder sprocs_folder= new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,SprocsFolderName,false);
+            Folder permissions_folder= new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,PermissionsFolderName,false);
+
+            KnownFolders known_folders = new DefaultKnownFolders(up_folder,down_folder,run_first_folder,functions_folder,views_folder,sprocs_folder,permissions_folder);
+
+            windsor_container.Kernel.AddComponentInstance<KnownFolders>(known_folders);
 
             return new infrastructure.containers.custom.WindsorContainer(windsor_container);
         }
