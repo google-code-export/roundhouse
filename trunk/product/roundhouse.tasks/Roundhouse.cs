@@ -13,6 +13,7 @@
     using migrators;
     using NAnt.Core;
     using NAnt.Core.Attributes;
+    using resolvers;
     using runners;
     using sql;
 
@@ -71,11 +72,13 @@
         [StringValidator(AllowEmpty = false)]
         public string RepositoryPath { get; set; }
 
-        [TaskAttribute("revisionXmlFile", Required = false)]
+        [TaskAttribute("versionFile", Required = false)]
         [StringValidator(AllowEmpty = false)]
-        public string RevisionXmlFile { get; set; }
+        public string VersionFile { get; set; }
 
-        public string RepositoryVersion { get; set; }
+        [TaskAttribute("versionXPath", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string VersionXPath { get; set; }
 
         [TaskAttribute("upFolderName", Required = false)]
         [StringValidator(AllowEmpty = false)]
@@ -127,7 +130,7 @@
 
             IRunner roundhouse_runner = new RoundhouseRunner(
                                                 RepositoryPath,
-                                                RepositoryVersion,
+                                                VersionFile,
                                                 SqlFilesDirectory,
                                                 UpFolderName,
                                                 DownFolderName,
@@ -137,7 +140,8 @@
                                                 SprocsFolderName,
                                                 PermissionsFolderName,
                                                 Container.get_an_instance_of<FileSystemAccess>(),
-                                                Container.get_an_instance_of<DatabaseMigrator>()
+                                                Container.get_an_instance_of<DatabaseMigrator>(),
+                                                Container.get_an_instance_of<VersionResolver>()
                                                 );
             try
             {
@@ -145,8 +149,10 @@
             }
             catch (Exception exception)
             {
-                infrastructure.logging.Log.bound_to(this).log_an_error_event_containing("{0} encountered an error:{1}{2}", ApplicationParameters.name,
-                                                                                        Environment.NewLine, exception);
+                infrastructure.logging.Log.
+                    bound_to(this).
+                    log_an_error_event_containing("{0} encountered an error:{1}{2}", 
+                    ApplicationParameters.name,Environment.NewLine, exception);
                 throw;
             }
         }
@@ -155,19 +161,21 @@
         {
             IWindsorContainer windsor_container = new WindsorContainer();
 
+            windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
+            windsor_container.AddComponent<DatabaseMigrator, DefaultDatabaseMigrator>();
+            windsor_container.AddComponent<LogFactory, MultipleLoggerLogFactory>();
+
             Logger nant_logger = new NAntLogger(this);
             Logger msbuild_logger = new MSBuildLogger(this, BuildEngine);
             Logger log4net_logger = new Log4NetLogger(the_logger);
             Logger multi_logger = new MultipleLogger(new List<Logger> { nant_logger, msbuild_logger, log4net_logger });
-
             windsor_container.Kernel.AddComponentInstance<Logger>(multi_logger);
 
             Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, ApplicationParameters.default_roundhouse_schema_name, VersionTableName, ScriptsRunTableName);
             windsor_container.Kernel.AddComponentInstance<Database>(database_to_migrate);
 
-            windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
-            windsor_container.AddComponent<DatabaseMigrator, DefaultDatabaseMigrator>();
-            windsor_container.AddComponent<LogFactory, MultipleLoggerLogFactory>();
+            VersionResolver version_finder = new DefaultVersionResolver(windsor_container.Resolve<FileSystemAccess>(),VersionXPath);
+            windsor_container.Kernel.AddComponentInstance<VersionResolver>(version_finder);
 
             return new infrastructure.containers.custom.WindsorContainer(windsor_container);
         }
@@ -210,18 +218,15 @@
             {
                 VersionTableName = ApplicationParameters.default_version_table_name;
             }
-            if (string.IsNullOrEmpty(RevisionXmlFile))
+            if (string.IsNullOrEmpty(VersionFile))
             {
-                RevisionXmlFile = ApplicationParameters.default_revision_xml_file;
+                VersionFile = ApplicationParameters.default_version_file;
             }
-
-            RepositoryVersion = get_version_from_revision_file(RevisionXmlFile);
+            if (string.IsNullOrEmpty(VersionXPath))
+            {
+                VersionXPath = ApplicationParameters.default_version_x_path;
+            }
         }
 
-        private string get_version_from_revision_file(string revision_xml_file)
-        {
-            //todo: xpath in the file
-            return "0";
-        }
     }
 }

@@ -4,11 +4,12 @@ namespace roundhouse.runners
     using infrastructure.filesystem;
     using infrastructure.logging;
     using migrators;
+    using resolvers;
 
     public class RoundhouseRunner : IRunner
     {
         private readonly string repository_path;
-        private readonly string repository_version;
+        private readonly string version_file;
         private readonly string sql_files_directory;
         private readonly string up_folder_name;
         private readonly string down_folder_name;
@@ -19,11 +20,12 @@ namespace roundhouse.runners
         private readonly string permissions_folder_name;
         private readonly FileSystemAccess file_system;
         private readonly DatabaseMigrator database_migrator;
+        private readonly VersionResolver version_resolver;
         private const string SQL_EXTENSION = "*.sql";
 
         public RoundhouseRunner(
                 string repository_path,
-                string repository_version,
+                string version_file,
                 string sql_files_directory,
                 string up_folder_name,
                 string down_folder_name,
@@ -33,10 +35,11 @@ namespace roundhouse.runners
                 string sprocs_folder_name,
                 string permissions_folder_name,
                 FileSystemAccess file_system,
-                DatabaseMigrator database_migrator)
+                DatabaseMigrator database_migrator,
+                VersionResolver version_resolver)
         {
             this.repository_path = repository_path;
-            this.repository_version = repository_version;
+            this.version_file = version_file;
             this.sql_files_directory = sql_files_directory;
             this.up_folder_name = up_folder_name;
             this.down_folder_name = down_folder_name;
@@ -47,14 +50,18 @@ namespace roundhouse.runners
             this.permissions_folder_name = permissions_folder_name;
             this.file_system = file_system;
             this.database_migrator = database_migrator;
+            this.version_resolver = version_resolver;
         }
 
         public void run()
         {
+            //todo: verify by command line first
+
+            string version = version_resolver.resolve_version(version_file);
             database_migrator.create_database();
             database_migrator.verify_or_create_roundhouse_tables();
             // version the database first (can be backed out later)
-            database_migrator.version_the_database(repository_path, repository_version);
+            database_migrator.version_the_database(repository_path, version);
 
             traverse_files_and_run_sql(file_system.combine_paths(sql_files_directory, up_folder_name), true);
 
