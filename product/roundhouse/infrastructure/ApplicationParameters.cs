@@ -14,6 +14,7 @@ namespace roundhouse.infrastructure
         public static string default_roundhouse_schema_name = "RoundhousE";
         public static string default_version_table_name = "_Version";
         public static string default_scripts_run_table_name = "_ScriptsRun";
-        public static string default_revision_xml_file = @".\BuildInfo.xml";
+        public static string default_version_file = @"..\_BuildInfo.xml";
+        public static string default_version_x_path = @"/buildInfo/version";
     }
 }

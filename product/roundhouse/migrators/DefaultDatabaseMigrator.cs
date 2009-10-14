@@ -66,9 +66,9 @@ namespace roundhouse.migrators
 
         public void version_the_database(string repository_path, string repository_version)
         {
-            Log.bound_to(this).log_an_info_event_containing("Versioning {0} database with {1}-v{2}.",
-                                                            database.database_name, repository_path,
-                                                            repository_version);
+            Log.bound_to(this).log_an_info_event_containing("Versioning {0} database with version {1} based on {2}.",
+                                                            database.database_name,
+                                                            repository_version, repository_path);
             database.run_sql(database.database_name,
                              database.insert_version_script(repository_path, repository_version));
         }
@@ -89,7 +89,7 @@ namespace roundhouse.migrators
 
         public void record_script_in_scripts_run_table(string script_name, string sql_to_run, bool run_this_script_once)
         {
-            Log.bound_to(this).log_an_info_event_containing("Recording {0} script ran on {1}-{2}.", script_name,
+            Log.bound_to(this).log_an_info_event_containing("Recording {0} script ran on {1} - {2}.", script_name,
                                                             database.server_name, database.database_name);
             database.run_sql(database.database_name, database.insert_script_run_script(script_name, sql_to_run, run_this_script_once));
         }
