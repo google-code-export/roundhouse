@@ -51,8 +51,24 @@ namespace roundhouse.sql
 
         public string restore_database_script(string restore_from_path)
         {
-            //todo: This is the crazy one
-            return string.Empty;
+            return string.Format(
+                @"USE Master 
+                        ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                        ALTER DATABASE [{0}] SET MULTI_USER;
+
+                        exec master.dbo.xp_restore_database @database = N'{0}',
+                            @filename = N'{1}',
+                            @filenumber = 1, 
+                            @with = N'RECOVERY', 
+                            @with = N'NOUNLOAD',
+                            @with = N'REPLACE',
+                            @with = N'STATS = 10';
+
+                        ALTER DATABASE [{0}] SET MULTI_USER;
+                        ALTER DATABASE [{0}] SET RECOVERY SIMPLE;
+                        --DBCC SHRINKDATABASE ([{0}]);
+                        ",
+                    database_name, restore_from_path);
         }
 
         public string delete_database_script()
@@ -80,19 +96,24 @@ namespace roundhouse.sql
             return database.insert_version_script(repository_path, repository_version);
         }
 
-        public string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once)
+        public string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once, long version_id)
         {
-            return database.insert_script_run_script(script_name, sql_to_run, run_this_script_once);
+            return database.insert_script_run_script(script_name, sql_to_run, run_this_script_once, version_id);
         }
 
         public bool has_run_script_already(string script_name)
         {
-           return database.has_run_script_already(script_name);
+            return database.has_run_script_already(script_name);
         }
 
         public void run_sql(string database_name, string sql_to_run)
         {
             database.run_sql(database_name, sql_to_run);
+        }
+
+        public object run_sql_scalar(string database_name, string sql_to_run)
+        {
+            return database.run_sql_scalar(database_name, sql_to_run);
         }
     }
 }

@@ -15,8 +15,9 @@ namespace roundhouse.sql
         string create_roundhouse_version_table_script();
         string create_roundhouse_scripts_run_table_script();
         string insert_version_script(string repository_path, string repository_version);
-        string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once);
+        string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once, long version_id);
         bool has_run_script_already(string script_name);
         void run_sql(string database_name, string sql_to_run);
+        object run_sql_scalar(string database_name, string sql_to_run);
     }
 }

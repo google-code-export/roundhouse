@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace roundhouse.infrastructure.filesystem
 {
     using System;
@@ -62,6 +64,16 @@ namespace roundhouse.infrastructure.filesystem
         public FileInfo get_file_info_from(string file_path)
         {
             return new FileInfo(file_path);
+        }
+
+        /// <summary>
+        /// Determines the FileVersion of the file passed in
+        /// </summary>
+        /// <param name="file_path">Relative or full path to a file</param>
+        /// <returns>A string representing the FileVersion of the passed in file</returns>
+        public string get_file_version_from(string file_path)
+        {
+            return FileVersionInfo.GetVersionInfo(get_full_path(file_path)).FileVersion;
         }
 
         /// <summary>
@@ -194,16 +206,6 @@ namespace roundhouse.infrastructure.filesystem
         }
 
         /// <summary>
-        /// Determines the full path to a given directory. Useful when working with relative directories
-        /// </summary>
-        /// <param name="directory">Directory to get the full path to</param>
-        /// <returns>Returns the full path to the directory</returns>
-        public string get_full_path(string directory)
-        {
-            return Path.GetFullPath(directory);
-        }
-
-        /// <summary>
         /// Determines the directory name for a given file path. Useful when working with relative files
         /// </summary>
         /// <param name="file_path">File to get the directory name from</param>
@@ -297,6 +299,16 @@ namespace roundhouse.infrastructure.filesystem
         }
 
         #endregion
+
+        /// <summary>
+        /// Determines the full path to a given directory. Useful when working with relative directories
+        /// </summary>
+        /// <param name="path">Where to get the full path from</param>
+        /// <returns>Returns the full path to the file or directory</returns>
+        public string get_full_path(string path)
+        {
+            return Path.GetFullPath(path);
+        }
 
         /// <summary>
         /// Combines a set of paths into one path

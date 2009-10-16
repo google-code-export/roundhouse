@@ -1,4 +1,5 @@
-﻿using roundhouse.folders;
+﻿using System.IO;
+using roundhouse.folders;
 
 namespace roundhouse.tasks
 {
@@ -118,11 +119,27 @@ namespace roundhouse.tasks
         [StringValidator(AllowEmpty = false)]
         public string ScriptsRunTableName { get; set; }
 
+        [TaskAttribute("environmentName", Required = false)]
+        [StringValidator(AllowEmpty = true)]
+        public string EnvironmentName { get; set; }
+
+        [TaskAttribute("restore", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool Restore { get; set; }
+
+        [TaskAttribute("restoreFromPath", Required = false)]
+        [StringValidator(AllowEmpty = true)]
+        public string RestoreFromPath { get; set; }
+
         #endregion
 
         public void run_the_task()
         {
             set_up_properties();
+            if (Restore && string.IsNullOrEmpty(RestoreFromPath))
+            {
+                throw new Exception("If you set Restore to true, you must specify a location for the database to be restored from. That property is RestoreFromPath in MSBuild and restoreFromPath in NAnt.");
+            }
             Container.initialize_with(build_the_container());
 
             infrastructure.logging.Log.bound_to(this).log_an_info_event_containing(
@@ -132,7 +149,7 @@ namespace roundhouse.tasks
 
             IRunner roundhouse_runner = new RoundhouseRunner(
                                                 RepositoryPath,
-                                                VersionFile,
+                                                Container.get_an_instance_of<environments.Environment>(),
                                                 Container.get_an_instance_of<KnownFolders>(),
                                                 Container.get_an_instance_of<FileSystemAccess>(),
                                                 Container.get_an_instance_of<DatabaseMigrator>(),
@@ -146,8 +163,8 @@ namespace roundhouse.tasks
             {
                 infrastructure.logging.Log.
                     bound_to(this).
-                    log_an_error_event_containing("{0} encountered an error:{1}{2}", 
-                    ApplicationParameters.name,Environment.NewLine, exception);
+                    log_an_error_event_containing("{0} encountered an error:{1}{2}",
+                    ApplicationParameters.name, Environment.NewLine, exception);
                 throw;
             }
         }
@@ -156,35 +173,53 @@ namespace roundhouse.tasks
         {
             IWindsorContainer windsor_container = new WindsorContainer();
 
-            windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
-            windsor_container.AddComponent<DatabaseMigrator, DefaultDatabaseMigrator>();
             windsor_container.AddComponent<LogFactory, MultipleLoggerLogFactory>();
-
             Logger nant_logger = new NAntLogger(this);
             Logger msbuild_logger = new MSBuildLogger(this, BuildEngine);
             Logger log4net_logger = new Log4NetLogger(the_logger);
             Logger multi_logger = new MultipleLogger(new List<Logger> { nant_logger, msbuild_logger, log4net_logger });
             windsor_container.Kernel.AddComponentInstance<Logger>(multi_logger);
 
+            windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
+
             Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, ApplicationParameters.default_roundhouse_schema_name, VersionTableName, ScriptsRunTableName);
+            
+            if (restore_from_file_ends_with_LiteSpeed_extension(RestoreFromPath))
+            {
+                database_to_migrate = new SqlServerLiteSpeedDatabase(database_to_migrate);
+            }
             windsor_container.Kernel.AddComponentInstance<Database>(database_to_migrate);
 
-            VersionResolver version_finder = new DefaultVersionResolver(windsor_container.Resolve<FileSystemAccess>(),VersionXPath);
+            DatabaseMigrator database_migrator = new DefaultDatabaseMigrator(windsor_container.Resolve<Database>(),
+                                                                             Restore, RestoreFromPath);
+            windsor_container.Kernel.AddComponentInstance<DatabaseMigrator>(database_migrator);
+
+            VersionResolver xml_version_finder = new XmlFileVersionResolver(windsor_container.Resolve<FileSystemAccess>(), VersionXPath, VersionFile);
+            VersionResolver dll_version_finder = new DllFileVersionResolver(windsor_container.Resolve<FileSystemAccess>(), VersionFile);
+            IEnumerable<VersionResolver> resolvers = new List<VersionResolver> { xml_version_finder, dll_version_finder };
+            VersionResolver version_finder = new ComplexVersionResolver(resolvers);
             windsor_container.Kernel.AddComponentInstance<VersionResolver>(version_finder);
 
-            Folder up_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,UpFolderName,true);
-            Folder down_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,DownFolderName,true);
-            Folder run_first_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,RunFirstFolderName,false);
-            Folder functions_folder= new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,FunctionsFolderName,false);
-            Folder views_folder= new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,ViewsFolderName,false);
-            Folder sprocs_folder= new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,SprocsFolderName,false);
-            Folder permissions_folder= new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),SqlFilesDirectory,PermissionsFolderName,false);
+            Folder up_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, UpFolderName, true);
+            Folder down_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, DownFolderName, true);
+            Folder run_first_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, RunFirstFolderName, false);
+            Folder functions_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, FunctionsFolderName, false);
+            Folder views_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, ViewsFolderName, false);
+            Folder sprocs_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, SprocsFolderName, false);
+            Folder permissions_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, PermissionsFolderName, false);
 
-            KnownFolders known_folders = new DefaultKnownFolders(up_folder,down_folder,run_first_folder,functions_folder,views_folder,sprocs_folder,permissions_folder);
-
+            KnownFolders known_folders = new DefaultKnownFolders(up_folder, down_folder, run_first_folder, functions_folder, views_folder, sprocs_folder, permissions_folder);
             windsor_container.Kernel.AddComponentInstance<KnownFolders>(known_folders);
 
+            environments.Environment environment = new environments.DefaultEnvironment(EnvironmentName);
+            windsor_container.Kernel.AddComponentInstance<environments.Environment>(environment);
+
             return new infrastructure.containers.custom.WindsorContainer(windsor_container);
+        }
+
+        private static bool restore_from_file_ends_with_LiteSpeed_extension(string restore_path)
+        {
+            return Path.GetFileNameWithoutExtension(restore_path).ToLower().EndsWith("ls");
         }
 
         public void set_up_properties()
@@ -232,6 +267,10 @@ namespace roundhouse.tasks
             if (string.IsNullOrEmpty(VersionXPath))
             {
                 VersionXPath = ApplicationParameters.default_version_x_path;
+            }
+            if (string.IsNullOrEmpty(EnvironmentName))
+            {
+                EnvironmentName = ApplicationParameters.default_environment_name;
             }
         }
 

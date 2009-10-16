@@ -1,11 +1,11 @@
+using System.Data;
+using System.Data.SqlClient;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
+using roundhouse.infrastructure.logging;
+
 namespace roundhouse.sql
 {
-    using System.Data;
-    using System.Data.SqlClient;
-    using infrastructure.logging;
-    using Microsoft.SqlServer.Management.Common;
-    using Microsoft.SqlServer.Management.Smo;
-
     public class SqlServerDatabase : Database
     {
         public string server_name { get; set; }
@@ -14,7 +14,8 @@ namespace roundhouse.sql
         public string version_table_name { get; set; }
         public string scripts_run_table_name { get; set; }
 
-        public SqlServerDatabase(string server_name, string database_name, string roundhouse_schema_name, string version_table_name,
+        public SqlServerDatabase(string server_name, string database_name, string roundhouse_schema_name,
+                                 string version_table_name,
                                  string scripts_run_table_name)
         {
             this.server_name = server_name;
@@ -47,17 +48,22 @@ namespace roundhouse.sql
 
         public string restore_database_script(string restore_from_path)
         {
-            //todo: Restore database script
-            return string.Empty;
-            //            string.Format(
-            //                    @"USE Master 
-            //                        IF NOT EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
-            //                         BEGIN 
-            //                            CREATE DATABASE [{0}] 
-            //                         END
-            //                        ALTER DATABASE [{0}] SET RECOVERY SIMPLE
-            //                        ",
-            //                    database_name);
+            return string.Format(
+                @"USE Master 
+                        ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                        
+                        RESTORE DATABASE [{0}]
+                        FROM DISK = N'{1}'
+                        WITH NOUNLOAD
+                        , STATS = 10
+                        , RECOVERY
+                        , REPLACE;
+
+                        ALTER DATABASE [{0}] SET MULTI_USER;
+                        ALTER DATABASE [{0}] SET RECOVERY SIMPLE;
+                        --DBCC SHRINKDATABASE ([{0}]);
+                        ",
+                database_name, restore_from_path);
         }
 
         public string delete_database_script()
@@ -85,7 +91,7 @@ namespace roundhouse.sql
                       END
 
                 "
-              , database_name, roundhouse_schema_name);
+                , database_name, roundhouse_schema_name);
         }
 
         public string create_roundhouse_version_table_script()
@@ -149,11 +155,18 @@ namespace roundhouse.sql
                         '{2}'
                         ,'{3}'
                     )
+
+                    SELECT TOP 1 id 
+                    FROM [{0}].[{1}]
+                    WHERE 
+                        repository_path = '{2}' 
+                        AND version = '{3}'
+                    ORDER BY modified_date Desc
                 ",
                 roundhouse_schema_name, version_table_name, repository_path, repository_version);
         }
 
-        public string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once)
+        public string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once, long version_id)
         {
             //todo: get the version going in
 
@@ -168,13 +181,14 @@ namespace roundhouse.sql
                     )
                     VALUES
                     (
-                        null
+                        {5}
                         ,'{2}'
                         ,'{3}'
                         ,{4}
                     )
                 ",
-                 roundhouse_schema_name, scripts_run_table_name, script_name, sql_to_run.Replace(@"'",@"''"), run_this_script_once ? 1 : 0);
+                roundhouse_schema_name, scripts_run_table_name, script_name, sql_to_run.Replace(@"'", @"''"),
+                run_this_script_once ? 1 : 0, version_id);
         }
 
         public bool has_run_script_already(string script_name)
@@ -187,12 +201,13 @@ namespace roundhouse.sql
                         script_name
                     FROM [{0}].[{1}]
                     WHERE script_name = '{2}'
-                ", roundhouse_schema_name, scripts_run_table_name, script_name
-                 );
+                ",
+                roundhouse_schema_name, scripts_run_table_name, script_name
+                );
             DataTable data_table = execute_datatable(sql_to_run);
-            if (data_table.Rows.Count >0)
+            if (data_table.Rows.Count > 0)
             {
-                script_has_run =  true;
+                script_has_run = true;
             }
 
             return script_has_run;
@@ -200,9 +215,20 @@ namespace roundhouse.sql
 
         public void run_sql(string database_name, string sql_to_run)
         {
-            Server sql_server = new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
+            Server sql_server =
+                new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
             sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
             sql_server.ConnectionContext.ExecuteNonQuery(sql_to_run);
+        }
+
+        public object run_sql_scalar(string database_name,string sql_to_run)
+        {
+            Server sql_server = new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
+            sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
+            object return_value = sql_server.ConnectionContext.ExecuteScalar(sql_to_run);
+            Log.bound_to(this).log_a_debug_event_containing("Version Id return value was {0}", return_value);
+
+            return return_value;
         }
 
         private DataTable execute_datatable(string sql_to_run)
@@ -226,7 +252,6 @@ namespace roundhouse.sql
             }
 
             return result.Tables.Count == 0 ? null : result.Tables[0];
-
         }
     }
 }

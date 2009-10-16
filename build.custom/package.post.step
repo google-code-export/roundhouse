@@ -16,8 +16,9 @@
   <property name="dirs.merge" value="${dirs.drop}\merge" />
   <property name="dirs.merge.log" value="${dirs.drop}\build_artifacts\ilmerge" />
   <property name="log.merge" value="ilmerge.log" />
+  <property name="path.file.test_databases" value="${dirs.current}\..\product\testdatabase" />
 
-  <target name="go" depends="copy_nant_to_deploy,copy_roundhouse_files_to_deploy" description="Packaging" />
+  <target name="go" depends="copy_nant_to_deploy,copy_roundhouse_files_to_deploy,copy_test_database_to_deploy" description="Packaging" />
 
   <target name="copy_nant_to_deploy">
     <echo message="Copying NAnt folder items to ${dirs.deployment}\NAnt."/>
@@ -34,6 +35,15 @@
       <fileset basedir="${dirs.drop}\RoundhousE">
         <include name="*.dll" />
         <include name="samples.xml" />
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="copy_test_database_to_deploy">
+    <echo message="Copying roundhouse test databases from ${path.file.test_databases} to ${dirs.deployment}."/>
+     <copy todir="${dirs.deployment}">
+      <fileset basedir="${path.file.test_databases}">
+        <include name="**/*.*" />
       </fileset>
     </copy>
   </target>
