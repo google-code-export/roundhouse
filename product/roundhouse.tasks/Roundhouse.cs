@@ -111,6 +111,10 @@ namespace roundhouse.tasks
         [StringValidator(AllowEmpty = false)]
         public string PermissionsFolderName { get; set; }
 
+        [TaskAttribute("schemaName", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string SchemaName { get; set; }
+
         [TaskAttribute("versionTableName", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public string VersionTableName { get; set; }
@@ -182,7 +186,7 @@ namespace roundhouse.tasks
 
             windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
 
-            Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, ApplicationParameters.default_roundhouse_schema_name, VersionTableName, ScriptsRunTableName);
+            Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, SchemaName, VersionTableName, ScriptsRunTableName);
             
             if (restore_from_file_ends_with_LiteSpeed_extension(RestoreFromPath))
             {
@@ -252,6 +256,10 @@ namespace roundhouse.tasks
             {
                 PermissionsFolderName = ApplicationParameters.default_permissions_folder_name;
             }
+            if (string.IsNullOrEmpty(SchemaName))
+            {
+                SchemaName = ApplicationParameters.default_roundhouse_schema_name;
+            } 
             if (string.IsNullOrEmpty(ScriptsRunTableName))
             {
                 ScriptsRunTableName = ApplicationParameters.default_scripts_run_table_name;
@@ -273,6 +281,5 @@ namespace roundhouse.tasks
                 EnvironmentName = ApplicationParameters.default_environment_name;
             }
         }
-
     }
 }
