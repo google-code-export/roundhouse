@@ -38,6 +38,13 @@ namespace roundhouse.infrastructure.filesystem
         FileInfo get_file_info_from(string file_path);
 
         /// <summary>
+        /// Determines the FileVersion of the file passed in
+        /// </summary>
+        /// <param name="file_path">Relative or full path to a file</param>
+        /// <returns>A string representing the FileVersion of the passed in file</returns>
+        string get_file_version_from(string file_path);
+
+        /// <summary>
         /// Copies a file from one directory to another
         /// </summary>
         /// <param name="source_file_name">Where is the file now?</param>
@@ -120,13 +127,6 @@ namespace roundhouse.infrastructure.filesystem
         void verify_or_create_directory(string directory);
 
         /// <summary>
-        /// Determines the full path to a given directory. Useful when working with relative directories
-        /// </summary>
-        /// <param name="directory">Directory to get the full path to</param>
-        /// <returns>Returns the full path to the directory</returns>
-        string get_full_path(string directory);
-
-        /// <summary>
         /// Determines the directory name for a given file path. Useful when working with relative files
         /// </summary>
         /// <param name="file_path">File to get the directory name from</param>
@@ -177,6 +177,13 @@ namespace roundhouse.infrastructure.filesystem
         string[] get_all_file_name_strings_in(string directory, string pattern);
 
         #endregion
+
+        /// <summary>
+        /// Determines the full path to a given directory. Useful when working with relative directories
+        /// </summary>
+        /// <param name="path">Where to get the full path from</param>
+        /// <returns>Returns the full path to the file or directory</returns>
+        string get_full_path(string path);
 
         /// <summary>
         /// Combines a set of paths into one path

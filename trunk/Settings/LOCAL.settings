@@ -2,7 +2,13 @@
 <project name="Settings">
   <!-- database deployment -->
   <property name="environment" value="LOCAL" />
+  <property name="project.name" value="RoundhousE" overwrite="false" />
+  <property name="repository.path" value="http://roundhouse.googlecode.com/svn" />
   <property name="server.database" value="(local)" />
   <property name="database.name" value="TestRoundhousE" />
   <property name="folder.database" value="db" overwrite="false" />
+  <property name="folder.app.drop" value="${project.name}" overwrite="false" />
+  <property name="file.version" value="${project.name}.dll" overwrite="false" />
+  <property name="restore.from.path" value="..\TestRoundhousE.bak" overwrite="false" />
+  
 </project>
