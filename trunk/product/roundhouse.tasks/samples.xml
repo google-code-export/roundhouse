@@ -2,24 +2,49 @@
 <deploymentTool>
   <nant>
 
+    <!-- basic functionality, these are the required items-->
     <roundhouse
       serverName="(local)"
-      databaseName="TestRoundhouse"
-      sqlFilesDirectory="..\..\TestRoundhouse"
+      databaseName="YOURDATABASENAME"
+      sqlFilesDirectory="..\..\db"
       />
 
+    <!-- for restoring a database from a known location before applying changes -->
     <roundhouse
       serverName="(local)"
-      databaseName="TestRoundhouse"
-      sqlFilesDirectory="..\..\TestRoundhouse"
-      repositoryPath="" 
+      databaseName="YOURDATABASENAME"
+      sqlFilesDirectory="..\..\db"
+      restore="true"
+      restoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
       />
 
+    <!-- versioning with a dll -->
     <roundhouse
       serverName="(local)"
-      databaseName="TestRoundhouse"
-      sqlFilesDirectory="..\..\TestRoundhouse"
-      repositoryPath=""
+      databaseName="YOURDATABASENAME"
+      sqlFilesDirectory="..\..\db"
+      repositoryPath="http://tellmewherethisis.com/svn/"
+      versionFile="..\..\app\somefile.dll"
+      />
+
+    <!-- versioning with an xml file -->
+    <roundhouse
+      serverName="(local)"
+      databaseName="YOURDATABASENAME"
+      sqlFilesDirectory="..\..\db"
+      repositoryPath="http://tellmewherethisis.com/svn/"
+      versionFile="..\..\app\versionfile.xml"
+      versionXPath="/build/version"
+      />
+
+    <!-- FULL configuration, for changing conventions -->
+    <roundhouse
+      serverName="(local)"
+      databaseName="YOURDATABASENAME"
+      sqlFilesDirectory="..\..\db"
+      repositoryPath="http://tellmewherethisis.com/svn/"
+      versionFile="..\_BuildInfo.xml"
+      versionXPath="/buildInfo/version"
       upFolderName="up"
       downFolderName="down"
       runFirstFolderName="runFirst"
@@ -27,31 +52,64 @@
       viewsFolderName="views"
       sprocsFolderName="sprocs"
       permissionsFolderName="permissions"
-      versionTableName="dbo._version"
+      schemaName="RoundhousE"
+      versionTableName="Version"
+      scriptsRunTableName="ScriptsRun"
+      environmentName="LOCAL"
+      restore="false"
+      restoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
       />
 
   </nant>
 
   <msbuild>
 
-    <Roundhouse
-     ServerName="(local)"
-     DatabaseName="TestRoundhouse"
-     SqlFilesDirectory="..\..\TestRoundhouse"
-      />
-
+  <!-- Set this next to your proj file for deployments and import this -->
+  <UsingTask AssemblyFile="roundhouse.tasks.dll" TaskName="roundhouse.tasks.Roundhouse" />
+  
+    <!-- basic functionality, these are the required items-->
     <Roundhouse
       ServerName="(local)"
-      DatabaseName="TestRoundhouse"
-      SqlFilesDirectory="..\..\TestRoundhouse"
-      repositoryPath=""
+      DatabaseName="YOURDATABASENAME"
+      SqlFilesDirectory="..\..\db"
       />
 
+    <!-- for restoring a database from a known location before applying changes -->
     <Roundhouse
       ServerName="(local)"
-      DatabaseName="TestRoundhouse"
-      SqlFilesDirectory="..\..\TestRoundhouse"
-      repositoryPath=""
+      DatabaseName="YOURDATABASENAME"
+      SqlFilesDirectory="..\..\db"
+      Restore="true"
+      RestoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
+      />
+
+    <!-- versioning with a dll -->
+    <Roundhouse
+      ServerName="(local)"
+      DatabaseName="YOURDATABASENAME"
+      SqlFilesDirectory="..\..\db"
+      RepositoryPath="http://tellmewherethisis.com/svn/"
+      VersionFile="..\..\app\somefile.dll"
+      />
+
+    <!-- versioning with an xml file -->
+    <Roundhouse
+      ServerName="(local)"
+      DatabaseName="YOURDATABASENAME"
+      SqlFilesDirectory="..\..\db"
+      RepositoryPath="http://tellmewherethisis.com/svn/"
+      VersionFile="..\..\app\versionfile.xml"
+      VersionXPath="/build/version"
+      />
+
+    <!-- FULL configuration, for changing conventions -->
+    <Roundhouse
+      ServerName="(local)"
+      DatabaseName="YOURDATABASENAME"
+      SqlFilesDirectory="..\..\db"
+      RepositoryPath="http://tellmewherethisis.com/svn/"
+      VersionFile="..\_BuildInfo.xml"
+      VersionXPath="/buildInfo/version"
       UpFolderName="up"
       DownFolderName="down"
       RunFirstFolderName="runFirst"
@@ -59,10 +117,13 @@
       ViewsFolderName="views"
       SprocsFolderName="sprocs"
       PermissionsFolderName="permissions"
-      VersionTableName="dbo._version"
+      SchemaName="RoundhousE"
+      VersionTableName="Version"
+      ScriptsRunTableName="ScriptsRun"
+      EnvironmentName="LOCAL"
+      Restore="false"
+      RestoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
       />
 
   </msbuild>
-
-
 </deploymentTool>

@@ -13,8 +13,8 @@ namespace roundhouse.infrastructure
         public static string default_permissions_folder_name = "permissions";
         public static string default_environment_name = "LOCAL";
         public static string default_roundhouse_schema_name = "RoundhousE";
-        public static string default_version_table_name = "_Version";
-        public static string default_scripts_run_table_name = "_ScriptsRun";
+        public static string default_version_table_name = "Version";
+        public static string default_scripts_run_table_name = "ScriptsRun";
         public static string default_version_file = @"..\_BuildInfo.xml";
         public static string default_version_x_path = @"/buildInfo/version";
     }
