@@ -13,7 +13,9 @@ namespace roundhouse.infrastructure.logging.custom
 
         private void log_message(Level log_level, string message)
         {
-            if (nant_task != null) nant_task.Project.Log(log_level, message);
+            if (nant_task.Project == null) return;
+
+            nant_task.Project.Log(log_level, message);
         }
 
         public void log_a_debug_event_containing(string message, params object[] args)
