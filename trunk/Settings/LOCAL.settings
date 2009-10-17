@@ -2,12 +2,13 @@
 <project name="Settings">
   <!-- environment settings -->
   <property name="environment" value="LOCAL" />
-  <property name="machine" value="127.0.0.1" />
   <property name="server.database" value="(local)" />
   <property name="database.name" value="TestRoundhousE" />
   <property name="log.level" value="DEBUG" />
 
   <!-- base settings -->
+  <property name="project.name" value="RoundhousE" overwrite="false" />
+  <property name="repository.path" value="http://roundhouse.googlecode.com/svn" />
   <property name="folder.app.drop" value="${project.name}" overwrite="false" />
 
   <!-- database deployment -->
