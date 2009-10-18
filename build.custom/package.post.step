@@ -5,11 +5,13 @@
   <property name="build.config.settings" value="__NONE__" overwrite="false" />
   <include buildfile="${build.config.settings}" if="${file::exists(build.config.settings)}" />
   <property name="dirs.current" value="${directory::get-parent-directory(project::get-buildfile-path())}" />
+  <property name="project.name" value="__SOLUTION_NAME_WITHOUT_SLN_EXTENSION__" overwrite="false" />
   <property name="folder.deployment" value="deployment" overwrite="false" />
   <property name="folder.code_build" value="build_output" overwrite="false" />
   <property name="folder.code_drop" value="code_drop" overwrite="false" />
   <property name="dirs.build" value="${dirs.current}\..\${folder.code_build}" />
   <property name="dirs.drop" value="${dirs.current}\..\${folder.code_drop}" overwrite="false" />
+  <property name="folder.app.drop" value="${project.name}" overwrite="false" />
   <property name="dirs.lib" value="${dirs.current}\..\lib" overwrite="false" />  
   <property name="lib.ilmerge.folder" value="${dirs.lib}\ILMerge" />
   <property name="dirs.deployment" value="${dirs.drop}\${folder.deployment}" />
@@ -18,7 +20,7 @@
   <property name="log.merge" value="ilmerge.log" />
   <property name="path.file.test_databases" value="${dirs.current}\..\product\testdatabase" />
 
-  <target name="go" depends="copy_nant_to_deploy,copy_roundhouse_files_to_deploy,copy_test_database_to_deploy" description="Packaging" />
+  <target name="go" depends="copy_nant_to_deploy, cleanup_roundhouse_drop, copy_roundhouse_files_to_deploy, restructure_roundhouse_drop_folder, copy_test_databases_to_deploy" description="Packaging" />
 
   <target name="copy_nant_to_deploy">
     <echo message="Copying NAnt folder items to ${dirs.deployment}\NAnt."/>
@@ -29,17 +31,72 @@
     </copy>
   </target>
 
+  <target name="cleanup_roundhouse_drop">
+    <echo message="Cleaning up ${dirs.drop}\${folder.app.drop} to remove unused items." />
+    <delete> 
+      <fileset basedir="${dirs.drop}\${folder.app.drop}">
+        <include name="_BuildInfo.xml" />
+        <include name="developwithpassion.commons.core.infrastructure*" />
+        <include name="NAnt*.xml" />
+        <include name="*.pdb" />
+      </fileset>
+    </delete>
+  </target>
+  
   <target name="copy_roundhouse_files_to_deploy">
     <echo message="Copying roundhouse assemblies to ${dirs.deployment}\NAnt."/>
     <copy todir="${dirs.deployment}\NAnt">
       <fileset basedir="${dirs.drop}\RoundhousE">
+        <exclude name="Microsoft.Build.Framework.dll" />
         <include name="*.dll" />
         <include name="samples.xml" />
       </fileset>
     </copy>
   </target>
   
-  <target name="copy_test_database_to_deploy">
+  <target name="restructure_roundhouse_drop_folder">
+    <echo message="Moving NAnt specific items to ${dirs.drop}\${folder.app.drop}\NAnt." />
+    <copy todir="${dirs.drop}\${folder.app.drop}\NAnt">
+      <fileset basedir="${dirs.drop}\${folder.app.drop}">
+        <exclude name="roundhouse.exe" />
+        <exclude name="roundhouse.exe.config" />
+        <exclude name="DBDeploy_MSBuild.proj" />
+        <exclude name="Microsoft.Build.Framework.dll" />
+        <include name="*.*" />
+      </fileset>
+    </copy>
+    
+    <echo message="Moving MSBuild specific items to ${dirs.drop}\${folder.app.drop}\MSBuild." />
+    <copy todir="${dirs.drop}\${folder.app.drop}\MSBuild">
+      <fileset basedir="${dirs.drop}\${folder.app.drop}">
+        <exclude name="roundhouse.exe" />
+        <exclude name="roundhouse.exe.config" />
+        <exclude name="dbdeploy_nant.deploy" />
+        <include name="*.*" />
+      </fileset>
+    </copy>
+    
+    <echo message="Moving Console specific items to ${dirs.drop}\${folder.app.drop}\ConsoleApp." />
+    <copy todir="${dirs.drop}\${folder.app.drop}\ConsoleApp">
+      <fileset basedir="${dirs.drop}\${folder.app.drop}">
+        <exclude name="DBDeploy_MSBuild.proj" />
+        <exclude name="Microsoft.Build.Framework.dll" />
+        <exclude name="dbdeploy_nant.deploy" />
+        <exclude name="samples.xml" />
+        <exclude name="roundhouse.tasks.dll" />
+        <exclude name="NAnt.Core.dll" />
+        <include name="*.*" />
+      </fileset>
+    </copy>
+    
+    <delete>
+      <fileset basedir="${dirs.drop}\${folder.app.drop}">
+        <include name="*.*" />
+      </fileset>
+    </delete>
+  </target>
+  
+  <target name="copy_test_databases_to_deploy">
     <echo message="Copying roundhouse test databases from ${path.file.test_databases} to ${dirs.deployment}."/>
      <copy todir="${dirs.deployment}">
       <fileset basedir="${path.file.test_databases}">
