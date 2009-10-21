@@ -93,19 +93,19 @@ namespace roundhouse.migrators
         {
             if (this_script_should_run(script_name, run_this_script_once))
             {
-                Log.bound_to(this).log_an_info_event_containing("Running - {0}.", script_name);
+                Log.bound_to(this).log_an_info_event_containing("Running {0} on {1} - {2}.", script_name, database.server_name, database.database_name);
                 database.run_sql(database.database_name, sql_to_run);
                 record_script_in_scripts_run_table(script_name, sql_to_run, run_this_script_once, version_id);
             }
             else
             {
-                Log.bound_to(this).log_an_info_event_containing("Skipped - {0}.", script_name);
+                Log.bound_to(this).log_an_info_event_containing("Skipped {0}.", script_name);
             }
         }
 
         public void record_script_in_scripts_run_table(string script_name, string sql_to_run, bool run_this_script_once, long version_id)
         {
-            Log.bound_to(this).log_an_info_event_containing("Recording {0} script ran on {1} - {2}.", script_name,
+            Log.bound_to(this).log_a_debug_event_containing("Recording {0} script ran on {1} - {2}.", script_name,
                                                             database.server_name, database.database_name);
             database.run_sql(database.database_name, database.insert_script_run_script(script_name, sql_to_run, run_this_script_once, version_id));
         }
