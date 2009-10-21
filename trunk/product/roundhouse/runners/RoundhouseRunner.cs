@@ -42,12 +42,12 @@ namespace roundhouse.runners
             string version = version_resolver.resolve_version();
             database_migrator.create_or_restore_database();
             database_migrator.verify_or_create_roundhouse_tables();
-            // version the database first (can be backed out later)
+
             long version_id = database_migrator.version_the_database(repository_path, version);
-            
+
             traverse_files_and_run_sql(known_folders.up.folder_full_path,
                                        known_folders.up.should_run_items_in_folder_once, version_id);
-            
+
             //todo: remember when looking through all files below here, change CREATE to ALTER
             // we are going to create the create if not exists script
 
@@ -61,7 +61,7 @@ namespace roundhouse.runners
                                        known_folders.sprocs.should_run_items_in_folder_once, version_id);
             traverse_files_and_run_sql(known_folders.permissions.folder_full_path,
                                        known_folders.permissions.should_run_items_in_folder_once, version_id);
-            
+
             //todo: permissions folder is based on environment if there are any environment files
 
         }
