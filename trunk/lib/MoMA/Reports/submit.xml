@@ -1,0 +1,1087 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<report version="1.0">
+  <metadata>
+    <definitions>Mono 2.4 (Revised)</definitions>
+    <momaversion>2.0.0.0</momaversion>
+    <date>2009-10-24 11:56:17Z</date>
+    <name />
+    <email />
+    <homepage />
+    <organization />
+    <comments />
+    <apptype />
+  </metadata>
+  <assemblies>
+    <assembly name="Castle.Core.dll" version="1.1.0.0" runtime="2.0" todo="2" niex="1" miss="0" pinv="0">
+      <issue type="todo">
+        <class>DiagnosticsLogger</class>
+        <caller>void .ctor(string, string, string)</caller>
+        <method>bool SourceExists(string, string)</method>
+        <raw>System.Boolean System.Diagnostics.EventLog::SourceExists(System.String,System.String)</raw>
+        <data>remote machine is not supported</data>
+      </issue>
+      <issue type="todo">
+        <class>DiagnosticsLogger</class>
+        <caller>void .ctor(string, string, string)</caller>
+        <method>void CreateEventSource(EventSourceCreationData)</method>
+        <raw>System.Void System.Diagnostics.EventLog::CreateEventSource(System.Diagnostics.EventSourceCreationData)</raw>
+        <data>remote machine is not supported</data>
+      </issue>
+      <issue type="niex">
+        <class>SlimReaderWriterLock</class>
+        <caller>void .ctor()</caller>
+        <method>void .ctor(LockRecursionPolicy)</method>
+        <raw>System.Void System.Threading.ReaderWriterLockSlim::.ctor(System.Threading.LockRecursionPolicy)</raw>
+      </issue>
+    </assembly>
+    <assembly name="Castle.DynamicProxy2.dll" version="2.1.0.0" runtime="2.0" todo="0" niex="0" miss="0" pinv="0" />
+    <assembly name="Castle.MicroKernel.dll" version="2.0.0.0" runtime="2.0" todo="1" niex="0" miss="0" pinv="0">
+      <issue type="todo">
+        <class>RemotingFacility</class>
+        <caller>void SetUpRemotingConfiguration()</caller>
+        <method>void Configure(string, bool)</method>
+        <raw>System.Void System.Runtime.Remoting.RemotingConfiguration::Configure(System.String,System.Boolean)</raw>
+        <data>Implement ensureSecurity</data>
+      </issue>
+    </assembly>
+    <assembly name="Castle.Windsor.dll" version="2.0.0.0" runtime="2.0" todo="0" niex="0" miss="0" pinv="0" />
+    <assembly name="developwithpassion.commons.core.infrastructure.dll" version="1.0.0.0" runtime="2.0" todo="0" niex="0" miss="0" pinv="0" />
+    <assembly name="log4net.dll" version="1.2.9.0" runtime="1.0" todo="6" niex="0" miss="0" pinv="3">
+      <issue type="todo">
+        <class>EventLogAppender</class>
+        <caller>void ActivateOptions()</caller>
+        <method>string LogNameFromSourceName(string, string)</method>
+        <raw>System.String System.Diagnostics.EventLog::LogNameFromSourceName(System.String,System.String)</raw>
+        <data>remote machine is not supported</data>
+      </issue>
+      <issue type="todo">
+        <class>EventLogAppender</class>
+        <caller>void ActivateOptions()</caller>
+        <method>void DeleteEventSource(string, string)</method>
+        <raw>System.Void System.Diagnostics.EventLog::DeleteEventSource(System.String,System.String)</raw>
+        <data>remote machine is not supported</data>
+      </issue>
+      <issue type="todo">
+        <class>EventLogAppender</class>
+        <caller>void ActivateOptions()</caller>
+        <method>string LogNameFromSourceName(string, string)</method>
+        <raw>System.String System.Diagnostics.EventLog::LogNameFromSourceName(System.String,System.String)</raw>
+        <data>remote machine is not supported</data>
+      </issue>
+      <issue type="todo">
+        <class>EventLogAppender</class>
+        <caller>void ActivateOptions()</caller>
+        <method>string LogNameFromSourceName(string, string)</method>
+        <raw>System.String System.Diagnostics.EventLog::LogNameFromSourceName(System.String,System.String)</raw>
+        <data>remote machine is not supported</data>
+      </issue>
+      <issue type="todo">
+        <class>XmlConfigurator</class>
+        <caller>void Configure(ILoggerRepository, Uri)</caller>
+        <method>ICredentials get_DefaultCredentials()</method>
+        <raw>System.Net.ICredentials System.Net.CredentialCache::get_DefaultCredentials()</raw>
+        <data>Need EnvironmentPermission implementation first</data>
+      </issue>
+      <issue type="todo">
+        <class>XmlConfigurator</class>
+        <caller>void Configure(ILoggerRepository, Stream)</caller>
+        <method>void set_ValidationType(ValidationType)</method>
+        <raw>System.Void System.Xml.XmlValidatingReader::set_ValidationType(System.Xml.ValidationType)</raw>
+        <data />
+      </issue>
+      <issue type="pinv">
+        <class>LocalSyslogAppender</class>
+        <caller>void ActivateOptions()</caller>
+        <method>void openlog(IntPtr, int, LocalSyslogAppender/SyslogFacility)</method>
+        <raw>System.Void log4net.Appender.LocalSyslogAppender::openlog(System.IntPtr,System.Int32,log4net.Appender.LocalSyslogAppender/SyslogFacility)</raw>
+        <data>libc</data>
+      </issue>
+      <issue type="pinv">
+        <class>LocalSyslogAppender</class>
+        <caller>void Append(LoggingEvent)</caller>
+        <method>void syslog(int, string)</method>
+        <raw>System.Void log4net.Appender.LocalSyslogAppender::syslog(System.Int32,System.String)</raw>
+        <data>libc</data>
+      </issue>
+      <issue type="pinv">
+        <class>LocalSyslogAppender</class>
+        <caller>void OnClose()</caller>
+        <method>void closelog()</method>
+        <raw>System.Void log4net.Appender.LocalSyslogAppender::closelog()</raw>
+        <data>libc</data>
+      </issue>
+    </assembly>
+    <assembly name="Microsoft.Build.Framework.dll" version="3.5.0.0" runtime="2.0" todo="0" niex="0" miss="19" pinv="0">
+      <issue type="miss">
+        <class>BuildEventArgs</class>
+        <caller>void WriteToStream(BinaryWriter)</caller>
+        <method>int get_NodeId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_NodeId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventArgs</class>
+        <caller>void WriteToStream(BinaryWriter)</caller>
+        <method>int get_ProjectContextId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_ProjectContextId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventArgs</class>
+        <caller>void WriteToStream(BinaryWriter)</caller>
+        <method>int get_TargetId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_TargetId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventArgs</class>
+        <caller>void WriteToStream(BinaryWriter)</caller>
+        <method>int get_TaskId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_TaskId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventArgs</class>
+        <caller>void CreateFromStream(BinaryReader)</caller>
+        <method>void .ctor(int, int, int, int)</method>
+        <raw>System.Void Microsoft.Build.Framework.BuildEventContext::.ctor(System.Int32,System.Int32,System.Int32,System.Int32)</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventArgs</class>
+        <caller>void SetBuildEventContextDefaultAfterSerialization(StreamingContext)</caller>
+        <method>void .ctor(int, int, int, int)</method>
+        <raw>System.Void Microsoft.Build.Framework.BuildEventContext::.ctor(System.Int32,System.Int32,System.Int32,System.Int32)</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventContext</class>
+        <caller>BuildEventContext get_Invalid()</caller>
+        <method>void .ctor(int, int, int, int)</method>
+        <raw>System.Void Microsoft.Build.Framework.BuildEventContext::.ctor(System.Int32,System.Int32,System.Int32,System.Int32)</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventContext</class>
+        <caller>int GetHashCode()</caller>
+        <method>int get_ProjectContextId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_ProjectContextId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventContext</class>
+        <caller>int GetHashCode()</caller>
+        <method>int get_NodeId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_NodeId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventContext</class>
+        <caller>bool Equals(Object)</caller>
+        <method>int get_NodeId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_NodeId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventContext</class>
+        <caller>bool Equals(Object)</caller>
+        <method>int get_ProjectContextId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_ProjectContextId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventContext</class>
+        <caller>bool Equals(Object)</caller>
+        <method>int get_TargetId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_TargetId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BuildEventContext</class>
+        <caller>bool Equals(Object)</caller>
+        <method>int get_TaskId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_TaskId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ProjectStartedEventArgs</class>
+        <caller>void WriteToStream(BinaryWriter)</caller>
+        <method>int get_NodeId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_NodeId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ProjectStartedEventArgs</class>
+        <caller>void WriteToStream(BinaryWriter)</caller>
+        <method>int get_ProjectContextId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_ProjectContextId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ProjectStartedEventArgs</class>
+        <caller>void WriteToStream(BinaryWriter)</caller>
+        <method>int get_TargetId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_TargetId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ProjectStartedEventArgs</class>
+        <caller>void WriteToStream(BinaryWriter)</caller>
+        <method>int get_TaskId()</method>
+        <raw>System.Int32 Microsoft.Build.Framework.BuildEventContext::get_TaskId()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ProjectStartedEventArgs</class>
+        <caller>void CreateFromStream(BinaryReader)</caller>
+        <method>void .ctor(int, int, int, int)</method>
+        <raw>System.Void Microsoft.Build.Framework.BuildEventContext::.ctor(System.Int32,System.Int32,System.Int32,System.Int32)</raw>
+      </issue>
+      <issue type="miss">
+        <class>ProjectStartedEventArgs</class>
+        <caller>void SetDefaultsAfterSerialization(StreamingContext)</caller>
+        <method>void .ctor(int, int, int, int)</method>
+        <raw>System.Void Microsoft.Build.Framework.BuildEventContext::.ctor(System.Int32,System.Int32,System.Int32,System.Int32)</raw>
+      </issue>
+    </assembly>
+    <assembly name="Microsoft.SqlServer.BatchParserClient.dll" version="10.0.0.0" runtime="2.0" todo="0" niex="0" miss="0" pinv="0" />
+    <assembly name="Microsoft.SqlServer.ConnectionInfo.dll" version="10.0.0.0" runtime="2.0" todo="1" niex="0" miss="10" pinv="0">
+      <issue type="todo">
+        <class>EncryptionUtility</class>
+        <caller>string DecryptSecureString(SecureString)</caller>
+        <method>void Assert()</method>
+        <raw>System.Void System.Security.CodeAccessPermission::Assert()</raw>
+        <data>CAS support is experimental (and unsupported). Imperative mode is not implemented.</data>
+      </issue>
+      <issue type="miss">
+        <class>ConnectionSettings</class>
+        <caller>void InitFromSqlConnection(SqlConnection)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ConnectionSettings</class>
+        <caller>string GetConnectionString()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ConnectionManager</class>
+        <caller>bool CallerHavePermissionToUseSQLCLR()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ConnectionManager</class>
+        <caller>WindowsIdentity GetWindowsIdentityForConnection()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ConnectionManager</class>
+        <caller>void add_StateChange(StateChangeEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ConnectionManager</class>
+        <caller>void add_InfoMessage(SqlInfoMessageEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ConnectionManager</class>
+        <caller>void add_ServerMessage(ServerMessageEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ConnectionManager</class>
+        <caller>void add_StatementExecuted(StatementEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ConnectionManager</class>
+        <caller>void add_RemoteLoginFailed(ServerMessageEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>SqlConnectionInfoWithConnection</class>
+        <caller>void add_ConnectionClosed(EventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+    </assembly>
+    <assembly name="Microsoft.SqlServer.Management.Sdk.Sfc.dll" version="10.0.0.0" runtime="2.0" todo="3" niex="0" miss="0" pinv="0">
+      <issue type="todo">
+        <class>SfcSerializer</class>
+        <caller>void ParseXmlData(XmlReader, SfcInstanceSerializedData&gt;&amp;, bool)</caller>
+        <method>Object ReadElementContentAsObject()</method>
+        <raw>System.Object System.Xml.XmlReader::ReadElementContentAsObject()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>SfcSerializer</class>
+        <caller>void ParseXmlData(XmlReader, SfcInstanceSerializedData&gt;&amp;, bool)</caller>
+        <method>Object ReadElementContentAsObject()</method>
+        <raw>System.Object System.Xml.XmlReader::ReadElementContentAsObject()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>SfcSerializer</class>
+        <caller>void ParseXmlData(XmlReader, SfcInstanceSerializedData&gt;&amp;, bool)</caller>
+        <method>Object ReadElementContentAsObject()</method>
+        <raw>System.Object System.Xml.XmlReader::ReadElementContentAsObject()</raw>
+        <data />
+      </issue>
+    </assembly>
+    <assembly name="Microsoft.SqlServer.Smo.dll" version="10.0.0.0" runtime="2.0" todo="37" niex="30" miss="41" pinv="0">
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void StartEvents()</caller>
+        <method>void Start()</method>
+        <raw>System.Void System.Management.ManagementEventWatcher::Start()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void StopEvents()</caller>
+        <method>void Stop()</method>
+        <raw>System.Void System.Management.ManagementEventWatcher::Stop()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void CreateSubscription(int, string, Object)</caller>
+        <method>void .ctor(ManagementScope, EventQuery)</method>
+        <raw>System.Void System.Management.ManagementEventWatcher::.ctor(System.Management.ManagementScope,System.Management.EventQuery)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void CreateSubscription(int, string, Object)</caller>
+        <method>void Start()</method>
+        <raw>System.Void System.Management.ManagementEventWatcher::Start()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>ManagementPath get_ClassPath()</method>
+        <raw>System.Management.ManagementPath System.Management.ManagementBaseObject::get_ClassPath()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>string get_ClassName()</method>
+        <raw>System.String System.Management.ManagementPath::get_ClassName()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>ManagementPath get_ClassPath()</method>
+        <raw>System.Management.ManagementPath System.Management.ManagementBaseObject::get_ClassPath()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>string get_ClassName()</method>
+        <raw>System.String System.Management.ManagementPath::get_ClassName()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>PropertyDataCollection get_Properties()</method>
+        <raw>System.Management.PropertyDataCollection System.Management.ManagementBaseObject::get_Properties()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>bool get_IsConnected()</method>
+        <raw>System.Boolean System.Management.ManagementScope::get_IsConnected()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>void Connect()</method>
+        <raw>System.Void System.Management.ManagementScope::Connect()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.ManagementPath::.ctor(System.String)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>void .ctor()</method>
+        <raw>System.Void System.Management.ObjectGetOptions::.ctor()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>void .ctor(ManagementScope, ManagementPath, ObjectGetOptions)</method>
+        <raw>System.Void System.Management.ManagementObject::.ctor(System.Management.ManagementScope,System.Management.ManagementPath,System.Management.ObjectGetOptions)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>ManagementStatus get_ErrorCode()</method>
+        <raw>System.Management.ManagementStatus System.Management.ManagementException::get_ErrorCode()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>ManagementStatus get_ErrorCode()</method>
+        <raw>System.Management.ManagementStatus System.Management.ManagementException::get_ErrorCode()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForServer(string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForDatabase(string, string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForDatabaseObject(string, string, string, string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForTargetObject(string, string, string, string, string, string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForSourceObject(string, string, string, string, string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventsWorkerBase/EventSubscription</class>
+        <caller>void Dispose()</caller>
+        <method>void Stop()</method>
+        <raw>System.Void System.Management.ManagementEventWatcher::Stop()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>PropertyDataCollection/PropertyDataEnumerator GetEnumerator()</method>
+        <raw>System.Management.PropertyDataCollection/PropertyDataEnumerator System.Management.PropertyDataCollection::GetEnumerator()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>PropertyData get_Current()</method>
+        <raw>System.Management.PropertyData System.Management.PropertyDataCollection/PropertyDataEnumerator::get_Current()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>string get_Name()</method>
+        <raw>System.String System.Management.PropertyData::get_Name()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>string get_Name()</method>
+        <raw>System.String System.Management.PropertyData::get_Name()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>Object get_Value()</method>
+        <raw>System.Object System.Management.PropertyData::get_Value()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>string get_Name()</method>
+        <raw>System.String System.Management.PropertyData::get_Name()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>Object get_Value()</method>
+        <raw>System.Object System.Management.PropertyData::get_Value()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>bool MoveNext()</method>
+        <raw>System.Boolean System.Management.PropertyDataCollection/PropertyDataEnumerator::MoveNext()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>ServerEvents</class>
+        <caller>ManagementScope get_ManagementScope()</caller>
+        <method>void .ctor()</method>
+        <raw>System.Void System.Management.ManagementScope::.ctor()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>ServerEvents</class>
+        <caller>ManagementScope get_ManagementScope()</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.ManagementPath::.ctor(System.String)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>ServerEvents</class>
+        <caller>ManagementScope get_ManagementScope()</caller>
+        <method>void set_Path(ManagementPath)</method>
+        <raw>System.Void System.Management.ManagementScope::set_Path(System.Management.ManagementPath)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>ServerEvents</class>
+        <caller>ManagementScope get_ManagementScope()</caller>
+        <method>void set_Options(ConnectionOptions)</method>
+        <raw>System.Void System.Management.ManagementScope::set_Options(System.Management.ConnectionOptions)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>ServerEvents</class>
+        <caller>void SetCredentials(string, string)</caller>
+        <method>void .ctor()</method>
+        <raw>System.Void System.Management.ConnectionOptions::.ctor()</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>ServerEvents</class>
+        <caller>void SetCredentials(string, string)</caller>
+        <method>void set_Username(string)</method>
+        <raw>System.Void System.Management.ConnectionOptions::set_Username(System.String)</raw>
+        <data />
+      </issue>
+      <issue type="todo">
+        <class>ServerEvents</class>
+        <caller>void SetCredentials(string, string)</caller>
+        <method>void set_Password(string)</method>
+        <raw>System.Void System.Management.ConnectionOptions::set_Password(System.String)</raw>
+        <data />
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void StartEvents()</caller>
+        <method>void Start()</method>
+        <raw>System.Void System.Management.ManagementEventWatcher::Start()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void StopEvents()</caller>
+        <method>void Stop()</method>
+        <raw>System.Void System.Management.ManagementEventWatcher::Stop()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void CreateSubscription(int, string, Object)</caller>
+        <method>void Start()</method>
+        <raw>System.Void System.Management.ManagementEventWatcher::Start()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>ManagementPath get_ClassPath()</method>
+        <raw>System.Management.ManagementPath System.Management.ManagementBaseObject::get_ClassPath()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>string get_ClassName()</method>
+        <raw>System.String System.Management.ManagementPath::get_ClassName()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>ManagementPath get_ClassPath()</method>
+        <raw>System.Management.ManagementPath System.Management.ManagementBaseObject::get_ClassPath()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>string get_ClassName()</method>
+        <raw>System.String System.Management.ManagementPath::get_ClassName()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void OnEventArrived(Object, EventArrivedEventArgs)</caller>
+        <method>PropertyDataCollection get_Properties()</method>
+        <raw>System.Management.PropertyDataCollection System.Management.ManagementBaseObject::get_Properties()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>bool get_IsConnected()</method>
+        <raw>System.Boolean System.Management.ManagementScope::get_IsConnected()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>void Connect()</method>
+        <raw>System.Void System.Management.ManagementScope::Connect()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>ManagementStatus get_ErrorCode()</method>
+        <raw>System.Management.ManagementStatus System.Management.ManagementException::get_ErrorCode()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>void TryConnect()</caller>
+        <method>ManagementStatus get_ErrorCode()</method>
+        <raw>System.Management.ManagementStatus System.Management.ManagementException::get_ErrorCode()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForServer(string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForDatabase(string, string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForDatabaseObject(string, string, string, string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForTargetObject(string, string, string, string, string, string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase</class>
+        <caller>EventQuery CreateWqlQueryForSourceObject(string, string, string, string, string)</caller>
+        <method>void .ctor(string)</method>
+        <raw>System.Void System.Management.EventQuery::.ctor(System.String)</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventsWorkerBase/EventSubscription</class>
+        <caller>void Dispose()</caller>
+        <method>void Stop()</method>
+        <raw>System.Void System.Management.ManagementEventWatcher::Stop()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>PropertyDataCollection/PropertyDataEnumerator GetEnumerator()</method>
+        <raw>System.Management.PropertyDataCollection/PropertyDataEnumerator System.Management.PropertyDataCollection::GetEnumerator()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>PropertyData get_Current()</method>
+        <raw>System.Management.PropertyData System.Management.PropertyDataCollection/PropertyDataEnumerator::get_Current()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>string get_Name()</method>
+        <raw>System.String System.Management.PropertyData::get_Name()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>string get_Name()</method>
+        <raw>System.String System.Management.PropertyData::get_Name()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>Object get_Value()</method>
+        <raw>System.Object System.Management.PropertyData::get_Value()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>string get_Name()</method>
+        <raw>System.String System.Management.PropertyData::get_Name()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>Object get_Value()</method>
+        <raw>System.Object System.Management.PropertyData::get_Value()</raw>
+      </issue>
+      <issue type="niex">
+        <class>EventPropertyCollection</class>
+        <caller>void .ctor(PropertyDataCollection)</caller>
+        <method>bool MoveNext()</method>
+        <raw>System.Boolean System.Management.PropertyDataCollection/PropertyDataEnumerator::MoveNext()</raw>
+      </issue>
+      <issue type="niex">
+        <class>ServerEvents</class>
+        <caller>ManagementScope get_ManagementScope()</caller>
+        <method>void set_Path(ManagementPath)</method>
+        <raw>System.Void System.Management.ManagementScope::set_Path(System.Management.ManagementPath)</raw>
+      </issue>
+      <issue type="niex">
+        <class>ServerEvents</class>
+        <caller>ManagementScope get_ManagementScope()</caller>
+        <method>void set_Options(ConnectionOptions)</method>
+        <raw>System.Void System.Management.ManagementScope::set_Options(System.Management.ConnectionOptions)</raw>
+      </issue>
+      <issue type="niex">
+        <class>ServerEvents</class>
+        <caller>void SetCredentials(string, string)</caller>
+        <method>void set_Username(string)</method>
+        <raw>System.Void System.Management.ConnectionOptions::set_Username(System.String)</raw>
+      </issue>
+      <issue type="niex">
+        <class>ServerEvents</class>
+        <caller>void SetCredentials(string, string)</caller>
+        <method>void set_Password(string)</method>
+        <raw>System.Void System.Management.ConnectionOptions::set_Password(System.String)</raw>
+      </issue>
+      <issue type="miss">
+        <class>ExecutionManager</class>
+        <caller>void add_BeforeExecuteSql(EventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ExecutionManager</class>
+        <caller>void add_ExecuteNonQueryCompleted(ExecuteNonQueryCompletedEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ExecuteNonQueryThread</class>
+        <caller>void Start()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>SmoApplicationEventsSingleton</class>
+        <caller>void add_ObjectCreated(SmoApplication/ObjectCreatedEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>SmoApplicationEventsSingleton</class>
+        <caller>void add_ObjectDropped(SmoApplication/ObjectDroppedEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>SmoApplicationEventsSingleton</class>
+        <caller>void add_ObjectRenamed(SmoApplication/ObjectRenamedEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>SmoApplicationEventsSingleton</class>
+        <caller>void add_ObjectAltered(SmoApplication/ObjectAlteredEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>SmoApplicationEventsSingleton</class>
+        <caller>void add_AnyObjectEvent(SmoApplication/AnyObjectEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>SmoApplicationEventsSingleton</class>
+        <caller>void add_DatabaseEvent(SmoApplication/DatabaseEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ServiceRequestException</class>
+        <caller>string get_Message()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Login</class>
+        <caller>LoginEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Server</class>
+        <caller>string get_Name()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Server</class>
+        <caller>ServerEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>DependencyWalker</class>
+        <caller>void add_DiscoveryProgress(ProgressReportEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Scripter</class>
+        <caller>void add_ScriptingProgress(ProgressReportEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Scripter</class>
+        <caller>void add_ScriptingError(ScriptingErrorEventHandler)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Scripter</class>
+        <caller>String&gt; ScriptWithListWorker(DependencyCollection, SqlSmoObject[])</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>StoredProcedure</class>
+        <caller>StoredProcedureEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Table</class>
+        <caller>TableEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>User</class>
+        <caller>UserEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>View</class>
+        <caller>ViewEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Database</class>
+        <caller>DatabaseEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Index</class>
+        <caller>IndexEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Statistic</class>
+        <caller>StatisticEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Trigger</class>
+        <caller>TriggerEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>UserDefinedFunction</class>
+        <caller>UserDefinedFunctionEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>MessageType</class>
+        <caller>MessageTypeEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ServiceContract</class>
+        <caller>ServiceContractEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>BrokerService</class>
+        <caller>BrokerServiceEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ServiceQueue</class>
+        <caller>ServiceQueueEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ServiceRoute</class>
+        <caller>ServiceRouteEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>RemoteServiceBinding</class>
+        <caller>RemoteServiceBindingEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>PartitionFunction</class>
+        <caller>PartitionFunctionEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>PartitionScheme</class>
+        <caller>PartitionSchemeEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>SqlAssembly</class>
+        <caller>SqlAssemblyEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>SqlAssembly</class>
+        <caller>void .ctor(AbstractCollectionBase, ObjectKeyBase, SqlSmoState)</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>UserDefinedType</class>
+        <caller>UserDefinedTypeEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>ApplicationRole</class>
+        <caller>ApplicationRoleEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Schema</class>
+        <caller>SchemaEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Synonym</class>
+        <caller>SynonymEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+      <issue type="miss">
+        <class>Certificate</class>
+        <caller>CertificateEvents get_Events()</caller>
+        <method>bool get_IsAvailable()</method>
+        <raw>System.Boolean Microsoft.SqlServer.Server.SqlContext::get_IsAvailable()</raw>
+      </issue>
+    </assembly>
+    <assembly name="Microsoft.SqlServer.SqlClrProvider.dll" version="10.0.0.0" runtime="2.0" todo="0" niex="0" miss="0" pinv="0" />
+    <assembly name="NAnt.Core.dll" version="0.86.3412.0" runtime="1.0" todo="7" niex="0" miss="0" pinv="3">
+      <issue type="todo">
+        <class>AssemblyFunctions</class>
+        <caller>AssemblyName GetName(Assembly)</caller>
+        <method>AssemblyName GetName(bool)</method>
+        <raw>System.Reflection.AssemblyName System.Reflection.Assembly::GetName(System.Boolean)</raw>
+        <data>copiedName == true is not supported</data>
+      </issue>
+      <issue type="todo">
+        <class>NAntSchemaTask</class>
+        <caller>void ExecuteTask()</caller>
+        <method>void Assert()</method>
+        <raw>System.Void System.Security.CodeAccessPermission::Assert()</raw>
+        <data>CAS support is experimental (and unsupported). Imperative mode is not implemented.</data>
+      </issue>
+      <issue type="todo">
+        <class>StyleTask</class>
+        <caller>XmlReader CreateXmlReader(Uri)</caller>
+        <method>ICredentials get_DefaultCredentials()</method>
+        <raw>System.Net.ICredentials System.Net.CredentialCache::get_DefaultCredentials()</raw>
+        <data>Need EnvironmentPermission implementation first</data>
+      </issue>
+      <issue type="todo">
+        <class>AssemblyResolver</class>
+        <caller>Assembly AssemblyResolve(Object, ResolveEventArgs)</caller>
+        <method>AssemblyName GetName(bool)</method>
+        <raw>System.Reflection.AssemblyName System.Reflection.Assembly::GetName(System.Boolean)</raw>
+        <data>copiedName == true is not supported</data>
+      </issue>
+      <issue type="todo">
+        <class>AssemblyResolver</class>
+        <caller>Assembly AssemblyResolve(Object, ResolveEventArgs)</caller>
+        <method>AssemblyName GetName(bool)</method>
+        <raw>System.Reflection.AssemblyName System.Reflection.Assembly::GetName(System.Boolean)</raw>
+        <data>copiedName == true is not supported</data>
+      </issue>
+      <issue type="todo">
+        <class>GacCache</class>
+        <caller>void RecreateDomain()</caller>
+        <method>AppDomain CreateDomain(string, Evidence, AppDomainSetup)</method>
+        <raw>System.AppDomain System.AppDomain::CreateDomain(System.String,System.Security.Policy.Evidence,System.AppDomainSetup)</raw>
+        <data>Currently it does not allow the setup in the other domain</data>
+      </issue>
+      <issue type="todo">
+        <class>TypeFactory</class>
+        <caller>bool ScanAssembly(Assembly, Task)</caller>
+        <method>AssemblyName GetName(bool)</method>
+        <raw>System.Reflection.AssemblyName System.Reflection.Assembly::GetName(System.Boolean)</raw>
+        <data>copiedName == true is not supported</data>
+      </issue>
+      <issue type="pinv">
+        <class>SetEnvTask</class>
+        <caller>void SetSingleEnvironmentVariable(string, string)</caller>
+        <method>int unsetenv(string)</method>
+        <raw>System.Int32 NAnt.Core.Tasks.SetEnvTask::unsetenv(System.String)</raw>
+        <data>libc</data>
+      </issue>
+      <issue type="pinv">
+        <class>SetEnvTask</class>
+        <caller>void SetSingleEnvironmentVariable(string, string)</caller>
+        <method>int setenv(string, string, int)</method>
+        <raw>System.Int32 NAnt.Core.Tasks.SetEnvTask::setenv(System.String,System.String,System.Int32)</raw>
+        <data>libc</data>
+      </issue>
+      <issue type="pinv">
+        <class>SetEnvTask</class>
+        <caller>void SetSingleEnvironmentVariable(string, string)</caller>
+        <method>bool SetEnvironmentVariable(string, string)</method>
+        <raw>System.Boolean NAnt.Core.Tasks.SetEnvTask::SetEnvironmentVariable(System.String,System.String)</raw>
+        <data>kernel32.dll</data>
+      </issue>
+    </assembly>
+    <assembly name="roundhouse.dll" version="0.0.0.37" runtime="2.0" todo="0" niex="0" miss="0" pinv="0" />
+    <assembly name="roundhouse.exe" version="0.0.0.37" runtime="2.0" todo="0" niex="0" miss="0" pinv="0" />
+    <assembly name="roundhouse.tasks.dll" version="0.0.0.37" runtime="2.0" todo="0" niex="0" miss="0" pinv="0" />
+  </assemblies>
+</report>
