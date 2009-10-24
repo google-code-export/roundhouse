@@ -23,5 +23,4 @@
       repositoryUrl="${repository.path}" />
   </target>
 
-
 </project>
