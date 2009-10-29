@@ -55,7 +55,7 @@
   </target>
 
   <target name="error_check">
-    <fail message="You must provide arguments to the command line like this __master.build -D:project.name='SOLUTION_NAME_WITHOUT_EXTENSION' -D:repository.path='FULL_PATH_TO_REPOSITORY' -D:company.name='Company name' or pass the build configuration settings file __master.build -D:build.config.settings='settings\Uppercut.config"
+    <fail message="You must fill out the project.name, repository.path, and company.name settings in the settings\UppercuT.config file. Please do that and retry the build."
       if="${project.name=='__SOLUTION_NAME_WITHOUT_SLN_EXTENSION__' or company.name=='__COMPANY_NAME__'}" />
   </target>
 
