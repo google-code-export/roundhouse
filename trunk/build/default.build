@@ -13,7 +13,9 @@
   <property name="dirs.build" value="${dirs.current}\..\${folder.code_build}" />
   <property name="folder.code_drop" value="code_drop" overwrite="false" />
   <property name="dirs.drop" value="${dirs.current}\..\${folder.code_drop}" overwrite="false" />
+  <property name="project.name" value="__SOLUTION_NAME_WITHOUT_SLN_EXTENSION__" overwrite="false" />
   <property name="repository.path" value="__REPOSITORY_PATH__" overwrite="false" />
+  <property name="company.name" value="__COMPANY_NAME__" overwrite="false" />
   <property name="source_control_type" value="svn" overwrite="false" />
   <property name="version.uppercut" value="0" />
   <property name="version.revision" value="0" />
@@ -50,8 +52,8 @@
   </target>
 
   <target name="error_check">
-    <fail message="You must provide arguments in your command line call like this: default.build -D:project.name='SOLUTION_NAME_WITHOUT_EXTENSION' -D:repository.path='FULL_PATH_TO_REPOSITORY' or pass the build configuration settings file default.build -D:build.config.settings='settings\Uppercut.config"
-      if="${repository.path=='__REPOSITORY_PATH__'}" />
+    <fail message="You must fill out the project.name, repository.path, and company.name settings in the settings\UppercuT.config file. Please do that and retry the build."
+      if="${project.name=='__SOLUTION_NAME_WITHOUT_SLN_EXTENSION__' or repository.path=='__REPOSITORY_PATH__' or company.name=='__COMPANY_NAME__'}" />
   </target>
 
   <target name="build">
