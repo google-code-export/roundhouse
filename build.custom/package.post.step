@@ -8,16 +8,12 @@
   <property name="project.name" value="__SOLUTION_NAME_WITHOUT_SLN_EXTENSION__" overwrite="false" />
   <property name="folder.deployment" value="deployment" overwrite="false" />
   <property name="folder.code_build" value="build_output" overwrite="false" />
-  <property name="folder.code_drop" value="code_drop" overwrite="false" />
   <property name="dirs.build" value="${dirs.current}\..\${folder.code_build}" />
+  <property name="folder.code_drop" value="code_drop" overwrite="false" />
   <property name="dirs.drop" value="${dirs.current}\..\${folder.code_drop}" overwrite="false" />
   <property name="folder.app.drop" value="${project.name}" overwrite="false" />
   <property name="dirs.lib" value="${dirs.current}\..\lib" overwrite="false" />  
-  <property name="lib.ilmerge.folder" value="${dirs.lib}\ILMerge" />
   <property name="dirs.deployment" value="${dirs.drop}\${folder.deployment}" />
-  <property name="dirs.merge" value="${dirs.drop}\merge" />
-  <property name="dirs.merge.log" value="${dirs.drop}\build_artifacts\ilmerge" />
-  <property name="log.merge" value="ilmerge.log" />
   <property name="path.file.test_databases" value="${dirs.current}\..\product\testdatabase" />
 
   <target name="go" depends="copy_nant_to_deploy, cleanup_roundhouse_drop, copy_roundhouse_files_to_deploy, restructure_roundhouse_drop_folder, copy_test_databases_to_deploy" description="Packaging" />
@@ -84,7 +80,7 @@
         <exclude name="dbdeploy_nant.deploy" />
         <exclude name="samples.xml" />
         <exclude name="roundhouse.tasks.dll" />
-        <exclude name="NAnt.Core.dll" />
+        <!--<exclude name="NAnt.Core.dll" />-->
         <include name="*.*" />
       </fileset>
     </copy>
@@ -103,45 +99,6 @@
         <include name="**/*.*" />
       </fileset>
     </copy>
-  </target>
-  
-  <target name="include_files" >
-    
-  </target>
-
-  <target name="merge_the_libs">
-    <echo message="Merging everything to one dll - roundhouse.dll."/>
-    <loadtasks assembly="${lib.ilmerge.folder}\ILMerge.NAnt.Tasks.dll" />
-    <ilmerge outputfile="${dirs.merge}\roundhouse.merged.dll">
-      <assemblies>
-        <include name="${dirs.build}\roundhouse.dll" />
-        <include name="${dirs.build}\roundhouse.tasks.dll" />
-      </assemblies>
-    </ilmerge>
-  </target>
-  
-  <target name="merge">
-    <echo message="Merging everything to one dll - roundhouse.dll."/>
-    <mkdir dir="${dirs.merge}"/>
-    <mkdir dir="${dirs.merge.log}"/>
-    
-    
-    
-    <exec program="${lib.ilmerge.folder}\ILMerge.exe"
-			  workingdir="${dirs.build}">
-			<arg path="${dirs.build}\roundhouse.dll" />
-			<arg path="${dirs.build}\roundhouse.tasks.dll" />
-			<arg path="${dirs.build}\Microsoft.SqlServer*.dll" />
-			<!--<arg path="${basedir.build}/Castle*.dll" />-->
-			<arg value='/out:"${dirs.merge}\roundhouse.dll"' />
-			<arg line='/attr:"${dirs.build}\roundhouse.dll"' />
-			<arg value="/t:library" />
-			<arg value="/wildcards" />
-			<arg value="/log:${dirs.merge.log}\${log.merge}" />
-			<!--<arg value="/internalize:../ilmerge.internalize" />-->
-			<arg value="/ndebug" />
-				 <!--unless="${build.msbuild.configuration == 'Debug'}" />-->
-		</exec>
   </target>
 
 </project>
