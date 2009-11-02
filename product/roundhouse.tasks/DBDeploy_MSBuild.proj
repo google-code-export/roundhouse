@@ -11,7 +11,7 @@
     <DBSqlFilesPath>..\..\db</DBSqlFilesPath>
     <RepositoryPath>http://tellmewherethisis.com/svn/</RepositoryPath>
     <VersionFile>..\_BuildInfo.xml</VersionFile>
-    <VersionFileXPath>/buildInfo/version</VersionFileXPath>
+    <VersionFileXPath>//buildInfo/version</VersionFileXPath>
     <DBRestore>false</DBRestore>
     <DBRestorePath>\\tell\me\where\YOURDATABASENAME.bak</DBRestorePath>
 

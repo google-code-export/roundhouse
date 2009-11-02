@@ -34,7 +34,7 @@
       sqlFilesDirectory="..\..\db"
       repositoryPath="http://tellmewherethisis.com/svn/"
       versionFile="..\..\app\versionfile.xml"
-      versionXPath="/build/version"
+      versionXPath="//buildInfo/version"
       />
 
     <!-- FULL configuration, for changing conventions -->
@@ -44,7 +44,7 @@
       sqlFilesDirectory="..\..\db"
       repositoryPath="http://tellmewherethisis.com/svn/"
       versionFile="..\_BuildInfo.xml"
-      versionXPath="/buildInfo/version"
+      versionXPath="//buildInfo/version"
       upFolderName="up"
       downFolderName="down"
       runFirstFolderName="runFirst"
@@ -99,7 +99,7 @@
       SqlFilesDirectory="..\..\db"
       RepositoryPath="http://tellmewherethisis.com/svn/"
       VersionFile="..\..\app\versionfile.xml"
-      VersionXPath="/build/version"
+      VersionXPath="//buildInfo/version"
       />
 
     <!-- FULL configuration, for changing conventions -->
@@ -109,7 +109,7 @@
       SqlFilesDirectory="..\..\db"
       RepositoryPath="http://tellmewherethisis.com/svn/"
       VersionFile="..\_BuildInfo.xml"
-      VersionXPath="/buildInfo/version"
+      VersionXPath="//buildInfo/version"
       UpFolderName="up"
       DownFolderName="down"
       RunFirstFolderName="runFirst"

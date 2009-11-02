@@ -1,3 +1,5 @@
+using System;
+using System.Xml;
 using roundhouse.infrastructure.extensions;
 using roundhouse.infrastructure.filesystem;
 using roundhouse.infrastructure.logging;
@@ -32,8 +34,23 @@ namespace roundhouse.resolvers
         {
             Log.bound_to(this).log_an_info_event_containing("Attempting to resolve version from {0} using {1}.",
                                                                 version_file, x_path);
+            string version = "0";
+            XmlDocument xml = new XmlDocument();
+            try
+            {
+                xml.Load(version_file);
+                XmlNode node = xml.SelectSingleNode(x_path);
+                version = node.InnerText;
+                Log.bound_to(this).log_an_info_event_containing("Found version {0} from {1}.", version, version_file);
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_an_error_event_containing(
+                    "Unable to get version from xml file {0} using xpath {1}",version_file,x_path);
+            }
 
-            return "0";
+
+            return version;
         }
 
         private bool version_file_is_xml(string version_file)
