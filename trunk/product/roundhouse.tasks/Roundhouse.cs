@@ -223,6 +223,8 @@ namespace roundhouse.tasks
 
         private static bool restore_from_file_ends_with_LiteSpeed_extension(string restore_path)
         {
+            if (string.IsNullOrEmpty(restore_path)) return false;
+
             return Path.GetFileNameWithoutExtension(restore_path).ToLower().EndsWith("ls");
         }
 

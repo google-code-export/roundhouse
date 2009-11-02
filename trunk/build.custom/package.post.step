@@ -54,8 +54,8 @@
     <echo message="Moving NAnt specific items to ${dirs.drop}\${folder.app.drop}\NAnt." />
     <copy todir="${dirs.drop}\${folder.app.drop}\NAnt">
       <fileset basedir="${dirs.drop}\${folder.app.drop}">
-        <exclude name="roundhouse.exe" />
-        <exclude name="roundhouse.exe.config" />
+        <exclude name="rh.exe" />
+        <exclude name="rh.exe.config" />
         <exclude name="DBDeploy_MSBuild.proj" />
         <exclude name="Microsoft.Build.Framework.dll" />
         <include name="*.*" />
@@ -65,8 +65,8 @@
     <echo message="Moving MSBuild specific items to ${dirs.drop}\${folder.app.drop}\MSBuild." />
     <copy todir="${dirs.drop}\${folder.app.drop}\MSBuild">
       <fileset basedir="${dirs.drop}\${folder.app.drop}">
-        <exclude name="roundhouse.exe" />
-        <exclude name="roundhouse.exe.config" />
+        <exclude name="rh.exe" />
+        <exclude name="rh.exe.config" />
         <exclude name="dbdeploy_nant.deploy" />
         <include name="*.*" />
       </fileset>
