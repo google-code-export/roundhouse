@@ -49,7 +49,6 @@ namespace roundhouse.resolvers
                     "Unable to get version from xml file {0} using xpath {1}",version_file,x_path);
             }
 
-
             return version;
         }
 
