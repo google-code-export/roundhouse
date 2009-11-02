@@ -12,6 +12,8 @@ namespace roundhouse.console
 
         static void Main(string[] args)
         {
+            _logger.Info("HI!");
+            System.Console.Read();
         }
     }
 }
