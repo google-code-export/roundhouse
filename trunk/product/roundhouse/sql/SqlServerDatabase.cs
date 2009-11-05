@@ -1,5 +1,6 @@
 using System.Data;
 using System.Data.SqlClient;
+using System.Security.Principal;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using roundhouse.infrastructure.logging;
@@ -8,6 +9,7 @@ namespace roundhouse.sql
 {
     public class SqlServerDatabase : Database
     {
+        private string identity_of_runner;
         public string server_name { get; set; }
         public string database_name { get; set; }
         public string roundhouse_schema_name { get; set; }
@@ -24,6 +26,12 @@ namespace roundhouse.sql
             this.version_table_name = version_table_name;
             this.scripts_run_table_name = scripts_run_table_name;
             MASTER_DATABASE_NAME = "Master";
+            identity_of_runner = string.Empty;
+            var windows_identity = WindowsIdentity.GetCurrent();
+            if (windows_identity !=null)
+            {
+                identity_of_runner = windows_identity.Name;
+            }
         }
 
         public string MASTER_DATABASE_NAME { get; private set; }
@@ -149,11 +157,13 @@ namespace roundhouse.sql
                     (
                         repository_path
                         ,version
+                        ,entered_by
                     )
                     VALUES
                     (
                         '{2}'
                         ,'{3}'
+                        ,'{4}'
                     )
 
                     SELECT TOP 1 id 
@@ -163,13 +173,11 @@ namespace roundhouse.sql
                         AND version = '{3}'
                     ORDER BY modified_date Desc
                 ",
-                roundhouse_schema_name, version_table_name, repository_path, repository_version);
+                roundhouse_schema_name, version_table_name, repository_path, repository_version, identity_of_runner);
         }
 
         public string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once, long version_id)
         {
-            //todo: get the version going in
-
             return string.Format(
                 @"
                     INSERT INTO [{0}].[{1}] 
@@ -178,6 +186,7 @@ namespace roundhouse.sql
                         ,script_name
                         ,text_of_script
                         ,one_time_script
+                        ,entered_by
                     )
                     VALUES
                     (
@@ -185,10 +194,11 @@ namespace roundhouse.sql
                         ,'{2}'
                         ,'{3}'
                         ,{4}
+                        ,'{6}'
                     )
                 ",
                 roundhouse_schema_name, scripts_run_table_name, script_name, sql_to_run.Replace(@"'", @"''"),
-                run_this_script_once ? 1 : 0, version_id);
+                run_this_script_once ? 1 : 0, version_id, identity_of_runner);
         }
 
         public bool has_run_script_already(string script_name)
