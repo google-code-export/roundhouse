@@ -3,7 +3,6 @@
   <!-- Project UppercuT - http://projectuppercut.org -->
   <property name="build.config.settings" value="__NONE__" overwrite="false" />
   <include buildfile="${build.config.settings}" if="${file::exists(build.config.settings)}" />
-  <property name="file.current.no_extension" value="${customizer.item.step.name.noextension}" />
   <property name="dirs.current" value="${directory::get-parent-directory(project::get-buildfile-path())}" />
   <property name="path.to.toplevel" value=".." />
   <property name="folder.build_scripts" value="build" overwrite="false" />
@@ -26,6 +25,16 @@
 
   <target name="run_tasks">
     <!-- INSERT YOUR TASKS HERE OR CALL OUT TO OTHER TASKS -->
+    <!-- Sample provided below that you can customize -->
   </target>
-
+  
+  <!--<target name="documentation">
+    <echo message="Packaging documentation files to ${dirs.drop}\${folder.documentation}."/>
+    <copy todir="${dirs.drop}\${folder.documentation}">
+      <fileset basedir="${dirs.build}\${folder.documentation}">
+        <include name="**/*.*" />
+      </fileset>
+    </copy>
+  </target>-->
+  
 </project>
