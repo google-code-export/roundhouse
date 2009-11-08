@@ -7,9 +7,12 @@ using roundhouse.infrastructure.logging;
 
 namespace roundhouse.sql
 {
+    using cryptography;
+
     public class SqlServerDatabase : Database
     {
-        private string identity_of_runner;
+        private readonly string identity_of_runner;
+        private readonly CryptographicService crypto_provider;
         public string server_name { get; set; }
         public string database_name { get; set; }
         public string roundhouse_schema_name { get; set; }
@@ -18,8 +21,9 @@ namespace roundhouse.sql
 
         public SqlServerDatabase(string server_name, string database_name, string roundhouse_schema_name,
                                  string version_table_name,
-                                 string scripts_run_table_name)
+                                 string scripts_run_table_name, CryptographicService crypto_provider)
         {
+            this.crypto_provider = crypto_provider;
             this.server_name = server_name;
             this.database_name = database_name;
             this.roundhouse_schema_name = roundhouse_schema_name;
@@ -28,7 +32,7 @@ namespace roundhouse.sql
             MASTER_DATABASE_NAME = "Master";
             identity_of_runner = string.Empty;
             var windows_identity = WindowsIdentity.GetCurrent();
-            if (windows_identity !=null)
+            if (windows_identity != null)
             {
                 identity_of_runner = windows_identity.Name;
             }
@@ -135,6 +139,7 @@ namespace roundhouse.sql
                             ,version_id                 BigInt			NULL
                             ,script_name                VarChar(255)	NULL
                             ,text_of_script             Text        	NULL
+                            ,text_hash                  VarChar(512)    NULL
                             ,one_time_script            Bit         	NULL        DEFAULT(0)
                             ,entry_date					DateTime        NOT NULL	DEFAULT (GetDate())
                             ,modified_date				DateTime        NOT NULL	DEFAULT (GetDate())
@@ -185,20 +190,24 @@ namespace roundhouse.sql
                         version_id
                         ,script_name
                         ,text_of_script
+                        ,text_hash
                         ,one_time_script
                         ,entered_by
                     )
                     VALUES
                     (
-                        {5}
-                        ,'{2}'
+                        {2}
                         ,'{3}'
-                        ,{4}
-                        ,'{6}'
+                        ,'{4}'
+                        ,'{5}'
+                        ,{6}
+                        ,'{7}'
                     )
                 ",
-                roundhouse_schema_name, scripts_run_table_name, script_name, sql_to_run.Replace(@"'", @"''"),
-                run_this_script_once ? 1 : 0, version_id, identity_of_runner);
+                roundhouse_schema_name, scripts_run_table_name, version_id,
+                script_name, sql_to_run.Replace(@"'", @"''"),
+                crypto_provider.hash(sql_to_run.Replace(@"'", @"''")),
+                run_this_script_once ? 1 : 0, identity_of_runner);
         }
 
         public bool has_run_script_already(string script_name)
@@ -231,7 +240,7 @@ namespace roundhouse.sql
             sql_server.ConnectionContext.ExecuteNonQuery(sql_to_run);
         }
 
-        public object run_sql_scalar(string database_name,string sql_to_run)
+        public object run_sql_scalar(string database_name, string sql_to_run)
         {
             Server sql_server = new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
             sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));

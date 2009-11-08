@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0726928C-FDAC-4C79-B423-841C7E0DF5B8}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -85,6 +85,7 @@
       <Link>SolutionVersion.cs</Link>
     </Compile>
     <Compile Include="EmptyTestContainer.cs" />
+    <Compile Include="cryptography\CryptographicServiceSpecs.cs" />
     <Compile Include="infrastructure\containers\ContainerSpecs.cs" />
     <Compile Include="infrastructure\containers\custom\WindsorContainerSpecs.cs" />
     <Compile Include="infrastructure\extensions\IterationSpecs.cs" />
