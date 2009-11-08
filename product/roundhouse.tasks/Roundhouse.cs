@@ -6,6 +6,7 @@ namespace roundhouse.tasks
     using System;
     using System.Collections.Generic;
     using Castle.Windsor;
+    using cryptography;
     using infrastructure;
     using infrastructure.containers;
     using infrastructure.filesystem;
@@ -186,7 +187,9 @@ namespace roundhouse.tasks
 
             windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
 
-            Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, SchemaName, VersionTableName, ScriptsRunTableName);
+            CryptographicService crypto_provider = new MD5CryptographicService();
+
+            Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, SchemaName, VersionTableName, ScriptsRunTableName, crypto_provider);
             
             if (restore_from_file_ends_with_LiteSpeed_extension(RestoreFromPath))
             {
