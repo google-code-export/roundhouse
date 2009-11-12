@@ -58,7 +58,7 @@ namespace roundhouse.tasks
         #region Properties
 
         [Required]
-        [TaskAttribute("serverName", Required = true)]
+        [TaskAttribute("serverName", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public string ServerName { get; set; }
 
@@ -233,6 +233,11 @@ namespace roundhouse.tasks
 
         public void set_up_properties()
         {
+            if (string.IsNullOrEmpty(ServerName))
+            {
+                ServerName = ApplicationParameters.default_server_name;
+            }
+
             if (string.IsNullOrEmpty(UpFolderName))
             {
                 UpFolderName = ApplicationParameters.default_up_folder_name;

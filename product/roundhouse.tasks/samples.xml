@@ -4,7 +4,6 @@
 
     <!-- basic functionality, these are the required items-->
     <roundhouse
-      serverName="(local)"
       databaseName="YOURDATABASENAME"
       sqlFilesDirectory="..\..\db"
       />
@@ -69,7 +68,6 @@
   
     <!-- basic functionality, these are the required items-->
     <Roundhouse
-      ServerName="(local)"
       DatabaseName="YOURDATABASENAME"
       SqlFilesDirectory="..\..\db"
       />
