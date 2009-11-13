@@ -136,6 +136,14 @@ namespace roundhouse.tasks
         [StringValidator(AllowEmpty = true)]
         public string RestoreFromPath { get; set; }
 
+        [TaskAttribute("outputPath", Required = false)]
+        [StringValidator(AllowEmpty = true)]
+        public string OutputPath { get; set; }
+
+        [TaskAttribute("warnOnOneTimeScriptChanges", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool WarnOnOneTimeScriptChanges { get; set; }
+
         #endregion
 
         public void run_the_task()
@@ -198,7 +206,7 @@ namespace roundhouse.tasks
             windsor_container.Kernel.AddComponentInstance<Database>(database_to_migrate);
 
             DatabaseMigrator database_migrator = new DefaultDatabaseMigrator(windsor_container.Resolve<Database>(),
-                                                                             Restore, RestoreFromPath);
+                                                                             Restore, RestoreFromPath,OutputPath,!WarnOnOneTimeScriptChanges);
             windsor_container.Kernel.AddComponentInstance<DatabaseMigrator>(database_migrator);
 
             VersionResolver xml_version_finder = new XmlFileVersionResolver(windsor_container.Resolve<FileSystemAccess>(), VersionXPath, VersionFile);
@@ -289,6 +297,10 @@ namespace roundhouse.tasks
             if (string.IsNullOrEmpty(EnvironmentName))
             {
                 EnvironmentName = ApplicationParameters.default_environment_name;
+            }
+            if (string.IsNullOrEmpty(OutputPath))
+            {
+                OutputPath = ApplicationParameters.default_output_path;
             }
         }
     }

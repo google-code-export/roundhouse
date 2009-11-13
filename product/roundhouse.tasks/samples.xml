@@ -57,6 +57,8 @@
       environmentName="LOCAL"
       restore="false"
       restoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
+      outputPath="C:\RoundhousE_runs"
+      warnOnOneTimeScriptChanges="false"
       />
 
   </nant>
@@ -121,6 +123,8 @@
       EnvironmentName="LOCAL"
       Restore="false"
       RestoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
+      OutputPath="C:\RoundhousE_runs"
+      WarnOnOneTimeScriptChanges="false"
       />
 
   </msbuild>

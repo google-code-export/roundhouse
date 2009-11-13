@@ -49,6 +49,11 @@ namespace roundhouse.sql
             return database.create_database_script();
         }
 
+        public void backup_database(string output_path_minus_database)
+        {
+            database.backup_database(output_path_minus_database);
+        }
+
         public string restore_database_script(string restore_from_path)
         {
             return string.Format(
@@ -91,6 +96,11 @@ namespace roundhouse.sql
             return database.create_roundhouse_scripts_run_table_script();
         }
 
+        public string get_version_script(string repository_path)
+        {
+            return database.get_version_script(repository_path);
+        }
+
         public string insert_version_script(string repository_path, string repository_version)
         {
             return database.insert_version_script(repository_path, repository_version);
@@ -99,6 +109,11 @@ namespace roundhouse.sql
         public string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once, long version_id)
         {
             return database.insert_script_run_script(script_name, sql_to_run, run_this_script_once, version_id);
+        }
+
+        public bool has_script_changed(string script_name,string text_of_script)
+        {
+            return database.has_script_changed(script_name, text_of_script);
         }
 
         public bool has_run_script_already(string script_name)

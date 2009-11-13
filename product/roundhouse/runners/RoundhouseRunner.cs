@@ -37,13 +37,18 @@ namespace roundhouse.runners
 
         public void run()
         {
-            //todo: verify by command line first
-
-            string version = version_resolver.resolve_version();
+            //todo: verify by command line first - pause unless not interactive
+            
+            database_migrator.backup_database_if_it_exists();
             database_migrator.create_or_restore_database();
             database_migrator.verify_or_create_roundhouse_tables();
+            
+            string current_version = database_migrator.get_current_version(repository_path);
+            string new_version = version_resolver.resolve_version();
+            Log.bound_to(this).log_an_info_event_containing("Migrating {0} from version {1} to {2}.", database_migrator.database.database_name, current_version, new_version);
 
-            long version_id = database_migrator.version_the_database(repository_path, version);
+
+            long version_id = database_migrator.version_the_database(repository_path, new_version);
 
             traverse_files_and_run_sql(known_folders.up.folder_full_path,
                                        known_folders.up.should_run_items_in_folder_once, version_id);
