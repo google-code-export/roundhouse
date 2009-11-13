@@ -42,7 +42,7 @@
       databaseName="YOURDATABASENAME"
       sqlFilesDirectory="..\..\db"
       repositoryPath="http://tellmewherethisis.com/svn/"
-      versionFile="..\_BuildInfo.xml"
+      versionFile="_BuildInfo.xml"
       versionXPath="//buildInfo/version"
       upFolderName="up"
       downFolderName="down"
