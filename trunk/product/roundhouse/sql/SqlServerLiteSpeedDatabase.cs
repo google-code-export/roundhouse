@@ -106,14 +106,14 @@ namespace roundhouse.sql
             return database.insert_version_script(repository_path, repository_version);
         }
 
-        public string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once, long version_id)
+        public string insert_script_run_script(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
-            return database.insert_script_run_script(script_name, sql_to_run, run_this_script_once, version_id);
+            return database.insert_script_run_script(script_name, sql_to_run,sql_to_run_hash, run_this_script_once, version_id);
         }
 
-        public bool has_script_changed(string script_name,string text_of_script)
+        public string get_current_script_hash_script(string script_name)
         {
-            return database.has_script_changed(script_name, text_of_script);
+            return database.get_current_script_hash_script(script_name);
         }
 
         public bool has_run_script_already(string script_name)

@@ -45,6 +45,7 @@
       restoreFromPath="${restore.from.path.full}"
       outputPath="C:\RoundhousE_runs"
       warnOnOneTimeScriptChanges="false"
+      nonInteractive="false"
       />
   </target>
 

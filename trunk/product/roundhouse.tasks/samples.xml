@@ -59,6 +59,7 @@
       restoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
       outputPath="C:\RoundhousE_runs"
       warnOnOneTimeScriptChanges="false"
+      nonInteractive="false"
       />
 
   </nant>
@@ -125,6 +126,7 @@
       RestoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
       OutputPath="C:\RoundhousE_runs"
       WarnOnOneTimeScriptChanges="false"
+      NonInteractive="false"
       />
 
   </msbuild>

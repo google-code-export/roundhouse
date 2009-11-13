@@ -143,6 +143,10 @@ namespace roundhouse.tasks
         [TaskAttribute("warnOnOneTimeScriptChanges", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public bool WarnOnOneTimeScriptChanges { get; set; }
+        
+        [TaskAttribute("nonInteractive", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool NonInteractive { get; set; }
 
         #endregion
 
@@ -194,10 +198,8 @@ namespace roundhouse.tasks
             windsor_container.Kernel.AddComponentInstance<Logger>(multi_logger);
 
             windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
-
-            CryptographicService crypto_provider = new MD5CryptographicService();
-
-            Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, SchemaName, VersionTableName, ScriptsRunTableName, crypto_provider);
+            
+            Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, SchemaName, VersionTableName, ScriptsRunTableName);
             
             if (restore_from_file_ends_with_LiteSpeed_extension(RestoreFromPath))
             {
@@ -205,7 +207,9 @@ namespace roundhouse.tasks
             }
             windsor_container.Kernel.AddComponentInstance<Database>(database_to_migrate);
 
-            DatabaseMigrator database_migrator = new DefaultDatabaseMigrator(windsor_container.Resolve<Database>(),
+            CryptographicService crypto_provider = new MD5CryptographicService();
+
+            DatabaseMigrator database_migrator = new DefaultDatabaseMigrator(windsor_container.Resolve<Database>(), crypto_provider,
                                                                              Restore, RestoreFromPath,OutputPath,!WarnOnOneTimeScriptChanges);
             windsor_container.Kernel.AddComponentInstance<DatabaseMigrator>(database_migrator);
 

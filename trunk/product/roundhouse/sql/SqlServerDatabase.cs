@@ -12,7 +12,6 @@ namespace roundhouse.sql
     public class SqlServerDatabase : Database
     {
         private readonly string identity_of_runner;
-        private readonly CryptographicService crypto_provider;
         public string server_name { get; set; }
         public string database_name { get; set; }
         public string roundhouse_schema_name { get; set; }
@@ -21,9 +20,8 @@ namespace roundhouse.sql
 
         public SqlServerDatabase(string server_name, string database_name, string roundhouse_schema_name,
                                  string version_table_name,
-                                 string scripts_run_table_name, CryptographicService crypto_provider)
+                                 string scripts_run_table_name)
         {
-            this.crypto_provider = crypto_provider;
             this.server_name = server_name;
             this.database_name = database_name;
             this.roundhouse_schema_name = roundhouse_schema_name;
@@ -205,7 +203,7 @@ namespace roundhouse.sql
                 roundhouse_schema_name, version_table_name, repository_path, repository_version, identity_of_runner);
         }
 
-        public string insert_script_run_script(string script_name, string sql_to_run, bool run_this_script_once, long version_id)
+        public string insert_script_run_script(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
             return string.Format(
                 @"
@@ -230,16 +228,13 @@ namespace roundhouse.sql
                 ",
                 roundhouse_schema_name, scripts_run_table_name, version_id,
                 script_name, sql_to_run.Replace(@"'", @"''"),
-                crypto_provider.hash(sql_to_run.Replace(@"'", @"''")),
+                sql_to_run_hash,
                 run_this_script_once ? 1 : 0, identity_of_runner);
         }
 
-        public bool has_script_changed(string script_name,string text_of_script)
+        public string get_current_script_hash_script(string script_name)
         {
-            bool hash_is_same = false;
-            string new_text_hash = crypto_provider.hash(text_of_script.Replace(@"'", @"''"));
-            
-            string sql_to_run = string.Format(
+            return string.Format(
                 @"
                     SELECT TOP 1
                         text_hash
@@ -249,19 +244,6 @@ namespace roundhouse.sql
                 ",
                 roundhouse_schema_name, scripts_run_table_name, script_name
                 );
-            DataTable data_table = execute_datatable(sql_to_run);
-            if (data_table.Rows.Count > 0)
-            {
-                DataRow row = data_table.Rows[0];
-                string old_text_hash = (string) row["text_hash"];
-               
-                if (string.Compare(old_text_hash,new_text_hash,true) ==0)
-                {
-                    hash_is_same = true;
-                }
-            }
-            
-            return !hash_is_same;
         }
 
         public bool has_run_script_already(string script_name)
