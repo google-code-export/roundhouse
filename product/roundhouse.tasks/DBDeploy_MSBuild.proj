@@ -43,6 +43,7 @@
         RestoreFromPath="$(DBRestorePath)"        
         OutputPath="C:\RoundhousE_runs"
         WarnOnOneTimeScriptChanges="false"
+        NonInteractive="false"
         />
   </Target>
 

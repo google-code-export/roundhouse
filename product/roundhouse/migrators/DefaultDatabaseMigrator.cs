@@ -4,21 +4,25 @@ using roundhouse.sql;
 
 namespace roundhouse.migrators
 {
+    using cryptography;
+
     public class DefaultDatabaseMigrator : DatabaseMigrator
     {
         public Database database { get; set; }
+        private readonly CryptographicService crypto_provider;
         private readonly bool restoring_database;
         private readonly string restore_path;
         private readonly string output_path;
         private readonly bool error_on_one_time_script_changes;
 
-        public DefaultDatabaseMigrator(Database database, bool restoring_database, string restore_path, string output_path,bool error_on_one_time_script_changes)
+        public DefaultDatabaseMigrator(Database database, CryptographicService crypto_provider, bool restoring_database, string restore_path, string output_path, bool error_on_one_time_script_changes)
         {
             Log.bound_to(this).log_a_debug_event_containing(
                 "Using an instance of SqlServerDatabase with {0},{1},{2},{3},{4}.",
                  database.server_name, database.database_name, database.roundhouse_schema_name,
                 database.version_table_name, database.scripts_run_table_name);
             this.database = database;
+            this.crypto_provider = crypto_provider;
             this.restoring_database = restoring_database;
             this.restore_path = restore_path;
             this.output_path = output_path;
@@ -112,16 +116,16 @@ namespace roundhouse.migrators
 
         public void run_sql(string sql_to_run, string script_name, bool run_this_script_once, long version_id)
         {
-            if (this_script_has_changed_since_last_run(script_name,sql_to_run) && run_this_script_once)
+            if (this_is_a_one_time_script_that_has_changes_but_has_already_been_run(script_name, sql_to_run, run_this_script_once))
             {
                 if (error_on_one_time_script_changes)
                 {
                     throw new Exception(string.Format("{0} has changed since the last time it was run. By default this is not allowed - scripts that run once should never change. To change this behavior to a warning, please set warnOnOneTimeScriptChanges to true and run again. Stopping execution.", script_name));
-                } 
-                    Log.bound_to(this).log_a_warning_event_containing("{0} has changed since the last time it was run.", script_name);
+                }
+                Log.bound_to(this).log_a_warning_event_containing("{0} is a one time script that has changed since it was run.", script_name);
             }
 
-            if (this_script_should_run(script_name, run_this_script_once))
+            if (this_script_should_run(script_name, sql_to_run, run_this_script_once))
             {
                 Log.bound_to(this).log_an_info_event_containing("Running {0} on {1} - {2}.", script_name, database.server_name, database.database_name);
                 database.run_sql(database.database_name, sql_to_run);
@@ -129,7 +133,7 @@ namespace roundhouse.migrators
             }
             else
             {
-                Log.bound_to(this).log_an_info_event_containing("Skipped {0}.", script_name);
+                Log.bound_to(this).log_an_info_event_containing("Skipped {0} either due to being a one time script or finding no changes.", script_name);
             }
         }
 
@@ -137,21 +141,59 @@ namespace roundhouse.migrators
         {
             Log.bound_to(this).log_a_debug_event_containing("Recording {0} script ran on {1} - {2}.", script_name,
                                                             database.server_name, database.database_name);
-            database.run_sql(database.database_name, database.insert_script_run_script(script_name, sql_to_run, run_this_script_once, version_id));
+            database.run_sql(database.database_name, database.insert_script_run_script(script_name, sql_to_run, create_hash(sql_to_run), run_this_script_once, version_id));
+        }
+
+        private string create_hash(string sql_to_run)
+        {
+            return crypto_provider.hash(sql_to_run.Replace(@"'", @"''"));
+        }
+
+        private bool this_script_has_run_already(string script_name)
+        {
+            return database.has_run_script_already(script_name);
+        }
+
+        private bool this_is_a_one_time_script_that_has_changes_but_has_already_been_run(string script_name, string sql_to_run, bool run_this_script_once)
+        {
+            return this_script_has_changed_since_last_run(script_name, sql_to_run) && this_script_has_run_already(script_name) && run_this_script_once;
         }
 
         private bool this_script_has_changed_since_last_run(string script_name, string sql_to_run)
         {
-            if (!database.has_run_script_already(script_name)) return false;
+            bool hash_is_same = false;
+
+            string old_text_hash = string.Empty;
+            try
+            {
+                old_text_hash = (string)database.run_sql_scalar(database.database_name,
+                                     database.get_current_script_hash_script(script_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_an_info_event_containing("{0} - I didn't find this script executed before.", script_name);
+            }
+
+            if (string.IsNullOrEmpty(old_text_hash)) return true;
+
+            string new_text_hash = create_hash(sql_to_run);
             
-            return database.has_script_changed(script_name,sql_to_run);
+            if (string.Compare(old_text_hash, new_text_hash, true) == 0)
+            {
+                hash_is_same = true;
+            }
+
+            return !hash_is_same;
         }
 
-        private bool this_script_should_run(string script_name, bool run_this_script_once)
+        private bool this_script_should_run(string script_name, string sql_to_run, bool run_this_script_once)
         {
-            if (!run_this_script_once) return true;
+            if (this_script_has_run_already(script_name) && run_this_script_once)
+            {
+                return false;
+            }
 
-            return !database.has_run_script_already(script_name);
+            return this_script_has_changed_since_last_run(script_name, sql_to_run);
         }
     }
 }
