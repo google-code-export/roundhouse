@@ -43,6 +43,8 @@
       environmentName="${environment}"
       restore="${restore}"
       restoreFromPath="${restore.from.path.full}"
+      outputPath="C:\RoundhousE_runs"
+      warnOnOneTimeScriptChanges="false"
       />
   </target>
 

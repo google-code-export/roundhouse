@@ -40,7 +40,9 @@
         ScriptsRunTableName="ScriptsRun"
         EnvironmentName="$(Environment)"
         Restore="$(DBRestore)"
-        RestoreFromPath="$(DBRestorePath)"
+        RestoreFromPath="$(DBRestorePath)"        
+        OutputPath="C:\RoundhousE_runs"
+        WarnOnOneTimeScriptChanges="false"
         />
   </Target>
 

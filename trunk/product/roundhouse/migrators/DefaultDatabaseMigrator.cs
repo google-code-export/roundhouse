@@ -9,8 +9,10 @@ namespace roundhouse.migrators
         public Database database { get; set; }
         private readonly bool restoring_database;
         private readonly string restore_path;
+        private readonly string output_path;
+        private readonly bool error_on_one_time_script_changes;
 
-        public DefaultDatabaseMigrator(Database database, bool restoring_database, string restore_path)
+        public DefaultDatabaseMigrator(Database database, bool restoring_database, string restore_path, string output_path,bool error_on_one_time_script_changes)
         {
             Log.bound_to(this).log_a_debug_event_containing(
                 "Using an instance of SqlServerDatabase with {0},{1},{2},{3},{4}.",
@@ -19,12 +21,14 @@ namespace roundhouse.migrators
             this.database = database;
             this.restoring_database = restoring_database;
             this.restore_path = restore_path;
+            this.output_path = output_path;
+            this.error_on_one_time_script_changes = error_on_one_time_script_changes;
         }
 
         public void create_or_restore_database()
         {
             Log.bound_to(this).log_an_info_event_containing("Creating {0} database on {1} server if it doesn't exist.",
-                                                            database.database_name, database.server_name);
+                                                             database.database_name, database.server_name);
             database.run_sql(database.MASTER_DATABASE_NAME,
                              database.create_database_script()
                 );
@@ -32,7 +36,12 @@ namespace roundhouse.migrators
             if (restoring_database)
             {
                 restore_database(restore_path);
-            } 
+            }
+        }
+
+        public void backup_database_if_it_exists()
+        {
+            database.backup_database(output_path);
         }
 
         public void restore_database(string restore_from_path)
@@ -71,6 +80,18 @@ namespace roundhouse.migrators
                 );
         }
 
+        public string get_current_version(string repository_path)
+        {
+            string current_version = (string)database.run_sql_scalar(database.database_name,
+                             database.get_version_script(repository_path));
+            if (string.IsNullOrEmpty(current_version))
+            {
+                current_version = "0";
+            }
+
+            return current_version;
+        }
+
         public void delete_database()
         {
             Log.bound_to(this).log_an_info_event_containing("Deleting {0} database on {1} server.",
@@ -91,6 +112,15 @@ namespace roundhouse.migrators
 
         public void run_sql(string sql_to_run, string script_name, bool run_this_script_once, long version_id)
         {
+            if (this_script_has_changed_since_last_run(script_name,sql_to_run) && run_this_script_once)
+            {
+                if (error_on_one_time_script_changes)
+                {
+                    throw new Exception(string.Format("{0} has changed since the last time it was run. By default this is not allowed - scripts that run once should never change. To change this behavior to a warning, please set warnOnOneTimeScriptChanges to true and run again. Stopping execution.", script_name));
+                } 
+                    Log.bound_to(this).log_a_warning_event_containing("{0} has changed since the last time it was run.", script_name);
+            }
+
             if (this_script_should_run(script_name, run_this_script_once))
             {
                 Log.bound_to(this).log_an_info_event_containing("Running {0} on {1} - {2}.", script_name, database.server_name, database.database_name);
@@ -108,6 +138,13 @@ namespace roundhouse.migrators
             Log.bound_to(this).log_a_debug_event_containing("Recording {0} script ran on {1} - {2}.", script_name,
                                                             database.server_name, database.database_name);
             database.run_sql(database.database_name, database.insert_script_run_script(script_name, sql_to_run, run_this_script_once, version_id));
+        }
+
+        private bool this_script_has_changed_since_last_run(string script_name, string sql_to_run)
+        {
+            if (!database.has_run_script_already(script_name)) return false;
+            
+            return database.has_script_changed(script_name,sql_to_run);
         }
 
         private bool this_script_should_run(string script_name, bool run_this_script_once)

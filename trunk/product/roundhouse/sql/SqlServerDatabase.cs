@@ -58,6 +58,16 @@ namespace roundhouse.sql
                 database_name);
         }
 
+        public void backup_database(string output_path_minus_database)
+        {
+
+            //todo: backup database is not a script - it is a command
+            //Server sql_server =
+            //    new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
+            //sql_server.BackupDevices.Add(new BackupDevice(sql_server,database_name));
+
+        }
+
         public string restore_database_script(string restore_from_path)
         {
             return string.Format(
@@ -154,6 +164,20 @@ namespace roundhouse.sql
                 roundhouse_schema_name, scripts_run_table_name, version_table_name);
         }
 
+        public string get_version_script(string repository_path)
+        {
+            return string.Format(
+                @"
+                    SELECT TOP 1 version 
+                    FROM [{0}].[{1}]
+                    WHERE 
+                        repository_path = '{2}' 
+                    ORDER BY entry_date Desc
+                ",
+                roundhouse_schema_name, version_table_name, repository_path);
+
+        }
+
         public string insert_version_script(string repository_path, string repository_version)
         {
             return string.Format(
@@ -176,7 +200,7 @@ namespace roundhouse.sql
                     WHERE 
                         repository_path = '{2}' 
                         AND version = '{3}'
-                    ORDER BY modified_date Desc
+                    ORDER BY entry_date Desc
                 ",
                 roundhouse_schema_name, version_table_name, repository_path, repository_version, identity_of_runner);
         }
@@ -208,6 +232,36 @@ namespace roundhouse.sql
                 script_name, sql_to_run.Replace(@"'", @"''"),
                 crypto_provider.hash(sql_to_run.Replace(@"'", @"''")),
                 run_this_script_once ? 1 : 0, identity_of_runner);
+        }
+
+        public bool has_script_changed(string script_name,string text_of_script)
+        {
+            bool hash_is_same = false;
+            string new_text_hash = crypto_provider.hash(text_of_script.Replace(@"'", @"''"));
+            
+            string sql_to_run = string.Format(
+                @"
+                    SELECT TOP 1
+                        text_hash
+                    FROM [{0}].[{1}]
+                    WHERE script_name = '{2}'
+                    ORDER BY entry_date Desc
+                ",
+                roundhouse_schema_name, scripts_run_table_name, script_name
+                );
+            DataTable data_table = execute_datatable(sql_to_run);
+            if (data_table.Rows.Count > 0)
+            {
+                DataRow row = data_table.Rows[0];
+                string old_text_hash = (string) row["text_hash"];
+               
+                if (string.Compare(old_text_hash,new_text_hash,true) ==0)
+                {
+                    hash_is_same = true;
+                }
+            }
+            
+            return !hash_is_same;
         }
 
         public bool has_run_script_already(string script_name)

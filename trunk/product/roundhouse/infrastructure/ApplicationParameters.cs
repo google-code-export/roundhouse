@@ -18,5 +18,6 @@ namespace roundhouse.infrastructure
         public static string default_version_file = @"_BuildInfo.xml";
         public static string default_version_x_path = @"//buildInfo/version";
         public static string default_server_name = "(local)";
+        public static string default_output_path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\" + name;
     }
 }

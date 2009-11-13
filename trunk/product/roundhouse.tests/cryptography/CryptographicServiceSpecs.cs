@@ -1,25 +1,23 @@
-namespace roundhouse.tests
-{
-    using System;
-    using System.Diagnostics;
-    using System.Security.Cryptography;
-    using cryptography;
-    using MbUnit.Framework;
+using System;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
+using MbUnit.Framework;
+using roundhouse.cryptography;
 
-   
+namespace roundhouse.tests.cryptography
+{
     public class CryptographicServiceSpecs
     {
-
         [TestFixture]
         public class LearnHashing
         {
-
             [Test]
             public void this_is_me_learning_hashing()
             {
                 MD5 dude = MD5.Create();
                 string text_to_hash = "I want to see what the freak is going on here";
-                byte[] clear_text_bytes = System.Text.Encoding.UTF8.GetBytes(text_to_hash);
+                byte[] clear_text_bytes = Encoding.UTF8.GetBytes(text_to_hash);
                 byte[] cypher_bytes = dude.ComputeHash(clear_text_bytes);
                 Assert.AreEqual(16, cypher_bytes.Length);
                 Debug.WriteLine(cypher_bytes);
@@ -37,8 +35,6 @@ namespace roundhouse.tests
             [SetUp]
             public void we_set_the_context()
             {
-               
-
                 md5_crypto = new MD5CryptographicService();
             }
 
@@ -49,9 +45,6 @@ namespace roundhouse.tests
                 string expected_hash = "TMGPZJmBhSO5uYbf/TBqNA==";
                 Assert.AreEqual(expected_hash, md5_crypto.hash(text_to_hash));
             }
-
-
         }
-        
     }
 }
