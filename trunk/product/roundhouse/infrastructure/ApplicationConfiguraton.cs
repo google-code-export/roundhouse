@@ -24,7 +24,6 @@ namespace roundhouse.infrastructure
             {
                 configuration_property_holder.ServerName = ApplicationParameters.default_server_name;
             }
-
             if (string.IsNullOrEmpty(configuration_property_holder.UpFolderName))
             {
                 configuration_property_holder.UpFolderName = ApplicationParameters.default_up_folder_name;
@@ -81,6 +80,10 @@ namespace roundhouse.infrastructure
             {
                 configuration_property_holder.OutputPath = ApplicationParameters.default_output_path;
             }
+            if (string.IsNullOrEmpty(configuration_property_holder.DatabaseType))
+            {
+                configuration_property_holder.DatabaseType = ApplicationParameters.default_database_type;
+            }
         }
 
         public static void build_the_container(ConfigurationPropertyHolder configuration_property_holder)
@@ -103,10 +106,8 @@ namespace roundhouse.infrastructure
                 identity_of_runner = windows_identity.Name;
             }
 
-            Assembly database_type_assembly = DefaultAssemblyLoader.load_assembly("roundhouse.databases.sqlserver2008");
-            //Database resolved_database = (Database)database_type_assembly.CreateInstance("roundhouse.databases.sqlserver2008.SqlServerDatabase,roundhouse.databases.sqlserver2008");
-            Database database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type("roundhouse.databases.sqlserver2008.SqlServerDatabase,roundhouse.databases.sqlserver2008");
-            
+            Database database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type(configuration_property_holder.DatabaseType);
+
             if (restore_from_file_ends_with_LiteSpeed_extension(configuration_property_holder.RestoreFromPath))
             {
                 database_to_migrate = new SqlServerLiteSpeedDatabase(database_to_migrate);

@@ -19,5 +19,6 @@ namespace roundhouse.infrastructure
         public static string default_version_x_path = @"//buildInfo/version";
         public static string default_server_name = "(local)";
         public static string default_output_path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + @"\" + name;
+        public static string default_database_type = "roundhouse.databases.sqlserver2008.SqlServerDatabase, roundhouse.databases.sqlserver2008";
     }
 }

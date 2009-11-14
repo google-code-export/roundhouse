@@ -60,6 +60,7 @@
       outputPath="C:\RoundhousE_runs"
       warnOnOneTimeScriptChanges="false"
       nonInteractive="false"
+      databaseType="roundhouse.databases.sqlserver2008.SqlServerDatabase, roundhouse.databases.sqlserver2008"
       />
 
   </nant>
@@ -127,6 +128,7 @@
       OutputPath="C:\RoundhousE_runs"
       WarnOnOneTimeScriptChanges="false"
       NonInteractive="false"
+      DatabaseType="roundhouse.databases.sqlserver2008.SqlServerDatabase, roundhouse.databases.sqlserver2008"
       />
 
   </msbuild>
