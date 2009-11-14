@@ -39,6 +39,12 @@ namespace roundhouse.sql
             set { database.scripts_run_table_name = value; }
         }
 
+        public string user_name
+        {
+            get { return database.user_name; }
+            set { database.user_name = value; }
+        }
+
         public string MASTER_DATABASE_NAME
         {
             get { return database.MASTER_DATABASE_NAME; }

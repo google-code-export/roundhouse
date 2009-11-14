@@ -7,7 +7,9 @@ namespace roundhouse.sql
         string roundhouse_schema_name { get; set; }
         string version_table_name { get; set; }
         string scripts_run_table_name { get; set; }
+        string user_name { get; set; }
         string MASTER_DATABASE_NAME { get; }
+
         string create_database_script();
         void backup_database(string output_path_minus_database);
         string restore_database_script(string restore_from_path);
