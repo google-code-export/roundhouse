@@ -2,7 +2,7 @@ namespace roundhouse.infrastructure.containers.custom
 {
     using Castle.Windsor;
 
-    public class WindsorContainer : InversionContainer
+    public sealed class WindsorContainer : InversionContainer
     {
         private readonly IWindsorContainer the_container;
 

@@ -5,7 +5,7 @@ namespace roundhouse.console
     using Microsoft.Build.Framework;
     using NAnt.Core;
 
-    public class ConsoleConfiguration : ConfigurationPropertyHolder
+    public sealed class ConsoleConfiguration : ConfigurationPropertyHolder
     {
         public ConsoleConfiguration(ILog log4net_logger)
         {
@@ -45,5 +45,6 @@ namespace roundhouse.console
         public string OutputPath { get; set; }
         public bool WarnOnOneTimeScriptChanges { get; set; }
         public bool NonInteractive { get; set; }
+        public string DatabaseType {get; set;}
     }
 }

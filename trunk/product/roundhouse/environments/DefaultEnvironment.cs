@@ -1,6 +1,6 @@
 namespace roundhouse.environments
 {
-    public class DefaultEnvironment : Environment
+    public sealed class DefaultEnvironment : Environment
     {
         public DefaultEnvironment(string name)
         {

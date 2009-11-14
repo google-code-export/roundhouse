@@ -2,12 +2,14 @@ namespace roundhouse.infrastructure
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Reflection;
     using System.Security.Principal;
     using Castle.Windsor;
     using containers;
     using cryptography;
     using filesystem;
     using folders;
+    using loaders;
     using logging;
     using logging.custom;
     using migrators;
@@ -101,8 +103,10 @@ namespace roundhouse.infrastructure
                 identity_of_runner = windows_identity.Name;
             }
 
-            Database database_to_migrate = new SqlServerDatabase();
-
+            Assembly database_type_assembly = DefaultAssemblyLoader.load_assembly("roundhouse.databases.sqlserver2008");
+            //Database resolved_database = (Database)database_type_assembly.CreateInstance("roundhouse.databases.sqlserver2008.SqlServerDatabase,roundhouse.databases.sqlserver2008");
+            Database database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type("roundhouse.databases.sqlserver2008.SqlServerDatabase,roundhouse.databases.sqlserver2008");
+            
             if (restore_from_file_ends_with_LiteSpeed_extension(configuration_property_holder.RestoreFromPath))
             {
                 database_to_migrate = new SqlServerLiteSpeedDatabase(database_to_migrate);

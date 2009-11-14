@@ -112,6 +112,8 @@
     <Compile Include="infrastructure\extensions\TypeExtensions.cs" />
     <Compile Include="infrastructure\filesystem\FileSystemAccess.cs" />
     <Compile Include="infrastructure\filesystem\WindowsFileSystemAccess.cs" />
+    <Compile Include="infrastructure\loaders\DefaultAssemblyLoader.cs" />
+    <Compile Include="infrastructure\loaders\DefaultInstanceCreator.cs" />
     <Compile Include="infrastructure\logging\custom\MSBuildLogger.cs" />
     <Compile Include="infrastructure\logging\custom\MultipleLoggerLogFactory.cs" />
     <Compile Include="infrastructure\logging\custom\MultipleLogger.cs" />
@@ -131,7 +133,6 @@
     <Compile Include="sql\Database.cs" />
     <Compile Include="migrators\DatabaseMigrator.cs" />
     <Compile Include="migrators\DefaultDatabaseMigrator.cs" />
-    <Compile Include="sql\SqlServerDatabase.cs" />
     <Compile Include="sql\SqlServerLiteSpeedDatabase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

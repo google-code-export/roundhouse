@@ -4,7 +4,7 @@ using roundhouse.infrastructure.logging;
 
 namespace roundhouse.resolvers
 {
-    public class DllFileVersionResolver : VersionResolver
+    public sealed class DllFileVersionResolver : VersionResolver
     {
         private readonly FileSystemAccess file_system;
         private readonly string version_file;

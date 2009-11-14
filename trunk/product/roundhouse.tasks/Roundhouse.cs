@@ -15,7 +15,7 @@
     using Environment=roundhouse.environments.Environment;
 
     [TaskName("roundhouse")]
-    public class Roundhouse : Task, ITask, ConfigurationPropertyHolder
+    public sealed class Roundhouse : Task, ITask, ConfigurationPropertyHolder
     {
         private readonly ILog the_logger = LogManager.GetLogger(typeof (Roundhouse));
 
@@ -156,6 +156,10 @@
         [StringValidator(AllowEmpty = false)]
         public bool NonInteractive { get; set; }
 
+        [TaskAttribute("databaseType", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string DatabaseType { get; set; }
+       
         #endregion
 
         public void run_the_task()

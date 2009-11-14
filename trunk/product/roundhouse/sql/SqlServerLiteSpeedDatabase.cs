@@ -1,6 +1,6 @@
 namespace roundhouse.sql
 {
-    public class SqlServerLiteSpeedDatabase : Database
+    public sealed class SqlServerLiteSpeedDatabase : Database
     {
         private readonly Database database;
 

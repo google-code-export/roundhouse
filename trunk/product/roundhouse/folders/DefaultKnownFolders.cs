@@ -1,6 +1,6 @@
 namespace roundhouse.folders
 {
-    public class DefaultKnownFolders : KnownFolders
+    public sealed class DefaultKnownFolders : KnownFolders
     {
         public DefaultKnownFolders(Folder up,
                                    Folder down,

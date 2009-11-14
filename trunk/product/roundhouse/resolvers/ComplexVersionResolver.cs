@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace roundhouse.resolvers
 {
-    public class ComplexVersionResolver : VersionResolver
+    public sealed class ComplexVersionResolver : VersionResolver
     {
         private readonly IEnumerable<VersionResolver> resolvers;
 

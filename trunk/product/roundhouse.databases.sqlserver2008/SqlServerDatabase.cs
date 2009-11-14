@@ -1,12 +1,13 @@
-namespace roundhouse.sql
+namespace roundhouse.databases.sqlserver2008
 {
     using System.Data;
     using System.Data.SqlClient;
     using infrastructure.logging;
     using Microsoft.SqlServer.Management.Common;
     using Microsoft.SqlServer.Management.Smo;
+    using Database=roundhouse.sql.Database;
 
-    public class SqlServerDatabase : Database
+    public sealed class SqlServerDatabase : Database
     {
         public string server_name { get; set; }
         public string database_name { get; set; }

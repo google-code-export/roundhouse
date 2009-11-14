@@ -6,7 +6,7 @@ namespace roundhouse.migrators
 {
     using cryptography;
 
-    public class DefaultDatabaseMigrator : DatabaseMigrator
+    public sealed class DefaultDatabaseMigrator : DatabaseMigrator
     {
         public Database database { get; set; }
         private readonly CryptographicService crypto_provider;
