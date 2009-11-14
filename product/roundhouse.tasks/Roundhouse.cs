@@ -1,12 +1,13 @@
-﻿using System.IO;
-using roundhouse.folders;
-
-namespace roundhouse.tasks
+﻿namespace roundhouse.tasks
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Security.Principal;
     using Castle.Windsor;
     using cryptography;
+    using environments;
+    using folders;
     using infrastructure;
     using infrastructure.containers;
     using infrastructure.filesystem;
@@ -20,11 +21,12 @@ namespace roundhouse.tasks
     using resolvers;
     using runners;
     using sql;
+    using Environment=roundhouse.environments.Environment;
 
     [TaskName("roundhouse")]
-    public class Roundhouse : Task, ITask
+    public class Roundhouse : Task, ITask, ConfigurationPropertyHolder
     {
-        private readonly ILog the_logger = LogManager.GetLogger(typeof(Roundhouse));
+        private readonly ILog the_logger = LogManager.GetLogger(typeof (Roundhouse));
 
         #region MSBuild
 
@@ -56,6 +58,21 @@ namespace roundhouse.tasks
         #endregion
 
         #region Properties
+
+        public ILog Log4NetLogger
+        {
+            get { return the_logger; }
+        }
+
+        public Task NAntTask
+        {
+            get { return this; }
+        }
+
+        public ITask MSBuildTask
+        {
+            get { return this; }
+        }
 
         [Required]
         [TaskAttribute("serverName", Required = false)]
@@ -143,7 +160,7 @@ namespace roundhouse.tasks
         [TaskAttribute("warnOnOneTimeScriptChanges", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public bool WarnOnOneTimeScriptChanges { get; set; }
-        
+
         [TaskAttribute("nonInteractive", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public bool NonInteractive { get; set; }
@@ -155,9 +172,10 @@ namespace roundhouse.tasks
             set_up_properties();
             if (Restore && string.IsNullOrEmpty(RestoreFromPath))
             {
-                throw new Exception("If you set Restore to true, you must specify a location for the database to be restored from. That property is RestoreFromPath in MSBuild and restoreFromPath in NAnt.");
+                throw new Exception(
+                    "If you set Restore to true, you must specify a location for the database to be restored from. That property is RestoreFromPath in MSBuild and restoreFromPath in NAnt.");
             }
-            Container.initialize_with(build_the_container());
+            ApplicationConfiguraton.build_the_container(this);
 
             infrastructure.logging.Log.bound_to(this).log_an_info_event_containing(
                 "Executing {0} against contents of {1}.",
@@ -165,13 +183,13 @@ namespace roundhouse.tasks
                 SqlFilesDirectory);
 
             IRunner roundhouse_runner = new RoundhouseRunner(
-                                                RepositoryPath,
-                                                Container.get_an_instance_of<environments.Environment>(),
-                                                Container.get_an_instance_of<KnownFolders>(),
-                                                Container.get_an_instance_of<FileSystemAccess>(),
-                                                Container.get_an_instance_of<DatabaseMigrator>(),
-                                                Container.get_an_instance_of<VersionResolver>()
-                                                );
+                RepositoryPath,
+                Container.get_an_instance_of<Environment>(),
+                Container.get_an_instance_of<KnownFolders>(),
+                Container.get_an_instance_of<FileSystemAccess>(),
+                Container.get_an_instance_of<DatabaseMigrator>(),
+                Container.get_an_instance_of<VersionResolver>()
+                );
             try
             {
                 roundhouse_runner.run();
@@ -181,68 +199,11 @@ namespace roundhouse.tasks
                 infrastructure.logging.Log.
                     bound_to(this).
                     log_an_error_event_containing("{0} encountered an error:{1}{2}",
-                    ApplicationParameters.name, Environment.NewLine, exception);
+                                                  ApplicationParameters.name, System.Environment.NewLine, exception);
                 throw;
             }
         }
-
-        private InversionContainer build_the_container()
-        {
-            IWindsorContainer windsor_container = new WindsorContainer();
-
-            windsor_container.AddComponent<LogFactory, MultipleLoggerLogFactory>();
-            Logger nant_logger = new NAntLogger(this);
-            Logger msbuild_logger = new MSBuildLogger(this, BuildEngine);
-            Logger log4net_logger = new Log4NetLogger(the_logger);
-            Logger multi_logger = new MultipleLogger(new List<Logger> { nant_logger, msbuild_logger, log4net_logger });
-            windsor_container.Kernel.AddComponentInstance<Logger>(multi_logger);
-
-            windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
-            
-            Database database_to_migrate = new SqlServerDatabase(ServerName, DatabaseName, SchemaName, VersionTableName, ScriptsRunTableName);
-            
-            if (restore_from_file_ends_with_LiteSpeed_extension(RestoreFromPath))
-            {
-                database_to_migrate = new SqlServerLiteSpeedDatabase(database_to_migrate);
-            }
-            windsor_container.Kernel.AddComponentInstance<Database>(database_to_migrate);
-
-            CryptographicService crypto_provider = new MD5CryptographicService();
-
-            DatabaseMigrator database_migrator = new DefaultDatabaseMigrator(windsor_container.Resolve<Database>(), crypto_provider,
-                                                                             Restore, RestoreFromPath,OutputPath,!WarnOnOneTimeScriptChanges);
-            windsor_container.Kernel.AddComponentInstance<DatabaseMigrator>(database_migrator);
-
-            VersionResolver xml_version_finder = new XmlFileVersionResolver(windsor_container.Resolve<FileSystemAccess>(), VersionXPath, VersionFile);
-            VersionResolver dll_version_finder = new DllFileVersionResolver(windsor_container.Resolve<FileSystemAccess>(), VersionFile);
-            IEnumerable<VersionResolver> resolvers = new List<VersionResolver> { xml_version_finder, dll_version_finder };
-            VersionResolver version_finder = new ComplexVersionResolver(resolvers);
-            windsor_container.Kernel.AddComponentInstance<VersionResolver>(version_finder);
-
-            Folder up_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, UpFolderName, true);
-            Folder down_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, DownFolderName, true);
-            Folder run_first_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, RunFirstFolderName, false);
-            Folder functions_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, FunctionsFolderName, false);
-            Folder views_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, ViewsFolderName, false);
-            Folder sprocs_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, SprocsFolderName, false);
-            Folder permissions_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(), SqlFilesDirectory, PermissionsFolderName, false);
-
-            KnownFolders known_folders = new DefaultKnownFolders(up_folder, down_folder, run_first_folder, functions_folder, views_folder, sprocs_folder, permissions_folder);
-            windsor_container.Kernel.AddComponentInstance<KnownFolders>(known_folders);
-
-            environments.Environment environment = new environments.DefaultEnvironment(EnvironmentName);
-            windsor_container.Kernel.AddComponentInstance<environments.Environment>(environment);
-
-            return new infrastructure.containers.custom.WindsorContainer(windsor_container);
-        }
-
-        private static bool restore_from_file_ends_with_LiteSpeed_extension(string restore_path)
-        {
-            if (string.IsNullOrEmpty(restore_path)) return false;
-
-            return Path.GetFileNameWithoutExtension(restore_path).ToLower().EndsWith("ls");
-        }
-
+        
         public void set_up_properties()
         {
             if (string.IsNullOrEmpty(ServerName))
@@ -281,7 +242,7 @@ namespace roundhouse.tasks
             if (string.IsNullOrEmpty(SchemaName))
             {
                 SchemaName = ApplicationParameters.default_roundhouse_schema_name;
-            } 
+            }
             if (string.IsNullOrEmpty(ScriptsRunTableName))
             {
                 ScriptsRunTableName = ApplicationParameters.default_scripts_run_table_name;

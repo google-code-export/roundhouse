@@ -1,39 +1,23 @@
-using System.Data;
-using System.Data.SqlClient;
-using System.Security.Principal;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Smo;
-using roundhouse.infrastructure.logging;
-
 namespace roundhouse.sql
 {
-    using cryptography;
+    using System.Data;
+    using System.Data.SqlClient;
+    using infrastructure.logging;
+    using Microsoft.SqlServer.Management.Common;
+    using Microsoft.SqlServer.Management.Smo;
 
     public class SqlServerDatabase : Database
     {
-        private readonly string identity_of_runner;
         public string server_name { get; set; }
         public string database_name { get; set; }
         public string roundhouse_schema_name { get; set; }
         public string version_table_name { get; set; }
         public string scripts_run_table_name { get; set; }
+        public string user_name { get; set; }
 
-        public SqlServerDatabase(string server_name, string database_name, string roundhouse_schema_name,
-                                 string version_table_name,
-                                 string scripts_run_table_name)
+        public SqlServerDatabase()
         {
-            this.server_name = server_name;
-            this.database_name = database_name;
-            this.roundhouse_schema_name = roundhouse_schema_name;
-            this.version_table_name = version_table_name;
-            this.scripts_run_table_name = scripts_run_table_name;
             MASTER_DATABASE_NAME = "Master";
-            identity_of_runner = string.Empty;
-            var windows_identity = WindowsIdentity.GetCurrent();
-            if (windows_identity != null)
-            {
-                identity_of_runner = windows_identity.Name;
-            }
         }
 
         public string MASTER_DATABASE_NAME { get; private set; }
@@ -58,12 +42,10 @@ namespace roundhouse.sql
 
         public void backup_database(string output_path_minus_database)
         {
-
             //todo: backup database is not a script - it is a command
             //Server sql_server =
             //    new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
             //sql_server.BackupDevices.Add(new BackupDevice(sql_server,database_name));
-
         }
 
         public string restore_database_script(string restore_from_path)
@@ -173,7 +155,6 @@ namespace roundhouse.sql
                     ORDER BY entry_date Desc
                 ",
                 roundhouse_schema_name, version_table_name, repository_path);
-
         }
 
         public string insert_version_script(string repository_path, string repository_version)
@@ -200,7 +181,7 @@ namespace roundhouse.sql
                         AND version = '{3}'
                     ORDER BY entry_date Desc
                 ",
-                roundhouse_schema_name, version_table_name, repository_path, repository_version, identity_of_runner);
+                roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name);
         }
 
         public string insert_script_run_script(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
@@ -229,7 +210,7 @@ namespace roundhouse.sql
                 roundhouse_schema_name, scripts_run_table_name, version_id,
                 script_name, sql_to_run.Replace(@"'", @"''"),
                 sql_to_run_hash,
-                run_this_script_once ? 1 : 0, identity_of_runner);
+                run_this_script_once ? 1 : 0, user_name);
         }
 
         public string get_current_script_hash_script(string script_name)

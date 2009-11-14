@@ -98,7 +98,9 @@
     <Compile Include="folders\DefaultKnownFolders.cs" />
     <Compile Include="folders\Folder.cs" />
     <Compile Include="folders\KnownFolders.cs" />
+    <Compile Include="infrastructure\ApplicationConfiguraton.cs" />
     <Compile Include="infrastructure\ApplicationParameters.cs" />
+    <Compile Include="infrastructure\ConfigurationPropertyHolder.cs" />
     <Compile Include="infrastructure\containers\Container.cs" />
     <Compile Include="infrastructure\containers\custom\WindsorContainer.cs" />
     <Compile Include="infrastructure\containers\InversionContainer.cs" />
