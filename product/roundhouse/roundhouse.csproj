@@ -126,7 +126,7 @@
     <Compile Include="resolvers\DllFileVersionResolver.cs" />
     <Compile Include="resolvers\XmlFileVersionResolver.cs" />
     <Compile Include="runners\IRunner.cs" />
-    <Compile Include="runners\RoundhouseRunner.cs" />
+    <Compile Include="runners\RoundhouseMigrationRunner.cs" />
     <Compile Include="resolvers\VersionResolver.cs" />
     <Compile Include="sql\Database.cs" />
     <Compile Include="migrators\DatabaseMigrator.cs" />

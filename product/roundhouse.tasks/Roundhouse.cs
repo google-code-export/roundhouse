@@ -1,18 +1,10 @@
 ﻿namespace roundhouse.tasks
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Security.Principal;
-    using Castle.Windsor;
-    using cryptography;
-    using environments;
     using folders;
     using infrastructure;
     using infrastructure.containers;
     using infrastructure.filesystem;
-    using infrastructure.logging;
-    using infrastructure.logging.custom;
     using log4net;
     using Microsoft.Build.Framework;
     using migrators;
@@ -20,7 +12,6 @@
     using NAnt.Core.Attributes;
     using resolvers;
     using runners;
-    using sql;
     using Environment=roundhouse.environments.Environment;
 
     [TaskName("roundhouse")]
@@ -169,7 +160,8 @@
 
         public void run_the_task()
         {
-            set_up_properties();
+            ApplicationConfiguraton.set_defaults_if_properties_are_not_set(this);
+
             if (Restore && string.IsNullOrEmpty(RestoreFromPath))
             {
                 throw new Exception(
@@ -182,7 +174,7 @@
                 ApplicationParameters.name,
                 SqlFilesDirectory);
 
-            IRunner roundhouse_runner = new RoundhouseRunner(
+            IRunner roundhouse_runner = new RoundhouseMigrationRunner(
                 RepositoryPath,
                 Container.get_an_instance_of<Environment>(),
                 Container.get_an_instance_of<KnownFolders>(),
@@ -196,76 +188,13 @@
             }
             catch (Exception exception)
             {
-                infrastructure.logging.Log.
-                    bound_to(this).
+                infrastructure.logging.Log.bound_to(this).
                     log_an_error_event_containing("{0} encountered an error:{1}{2}",
-                                                  ApplicationParameters.name, System.Environment.NewLine, exception);
+                                                  ApplicationParameters.name, 
+                                                  System.Environment.NewLine, 
+                                                  exception
+                                                  );
                 throw;
-            }
-        }
-        
-        public void set_up_properties()
-        {
-            if (string.IsNullOrEmpty(ServerName))
-            {
-                ServerName = ApplicationParameters.default_server_name;
-            }
-
-            if (string.IsNullOrEmpty(UpFolderName))
-            {
-                UpFolderName = ApplicationParameters.default_up_folder_name;
-            }
-            if (string.IsNullOrEmpty(DownFolderName))
-            {
-                DownFolderName = ApplicationParameters.default_down_folder_name;
-            }
-            if (string.IsNullOrEmpty(RunFirstFolderName))
-            {
-                RunFirstFolderName = ApplicationParameters.default_run_first_folder_name;
-            }
-            if (string.IsNullOrEmpty(FunctionsFolderName))
-            {
-                FunctionsFolderName = ApplicationParameters.default_functions_folder_name;
-            }
-            if (string.IsNullOrEmpty(ViewsFolderName))
-            {
-                ViewsFolderName = ApplicationParameters.default_views_folder_name;
-            }
-            if (string.IsNullOrEmpty(SprocsFolderName))
-            {
-                SprocsFolderName = ApplicationParameters.default_sprocs_folder_name;
-            }
-            if (string.IsNullOrEmpty(PermissionsFolderName))
-            {
-                PermissionsFolderName = ApplicationParameters.default_permissions_folder_name;
-            }
-            if (string.IsNullOrEmpty(SchemaName))
-            {
-                SchemaName = ApplicationParameters.default_roundhouse_schema_name;
-            }
-            if (string.IsNullOrEmpty(ScriptsRunTableName))
-            {
-                ScriptsRunTableName = ApplicationParameters.default_scripts_run_table_name;
-            }
-            if (string.IsNullOrEmpty(VersionTableName))
-            {
-                VersionTableName = ApplicationParameters.default_version_table_name;
-            }
-            if (string.IsNullOrEmpty(VersionFile))
-            {
-                VersionFile = ApplicationParameters.default_version_file;
-            }
-            if (string.IsNullOrEmpty(VersionXPath))
-            {
-                VersionXPath = ApplicationParameters.default_version_x_path;
-            }
-            if (string.IsNullOrEmpty(EnvironmentName))
-            {
-                EnvironmentName = ApplicationParameters.default_environment_name;
-            }
-            if (string.IsNullOrEmpty(OutputPath))
-            {
-                OutputPath = ApplicationParameters.default_output_path;
             }
         }
     }

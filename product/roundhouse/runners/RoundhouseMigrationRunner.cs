@@ -9,7 +9,7 @@ namespace roundhouse.runners
     using migrators;
     using resolvers;
 
-    public class RoundhouseRunner : IRunner
+    public class RoundhouseMigrationRunner : IRunner
     {
         private readonly string repository_path;
         private readonly Environment environment;
@@ -19,7 +19,7 @@ namespace roundhouse.runners
         private readonly VersionResolver version_resolver;
         private const string SQL_EXTENSION = "*.sql";
 
-        public RoundhouseRunner(
+        public RoundhouseMigrationRunner(
                 string repository_path,
                 Environment environment,
                 KnownFolders known_folders,
