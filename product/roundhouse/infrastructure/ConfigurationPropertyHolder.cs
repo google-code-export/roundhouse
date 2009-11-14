@@ -32,5 +32,6 @@ namespace roundhouse.infrastructure
         string OutputPath { get; set; }
         bool WarnOnOneTimeScriptChanges { get; set; }
         bool NonInteractive { get; set; }
+        string DatabaseType { get; set; }
     }
 }

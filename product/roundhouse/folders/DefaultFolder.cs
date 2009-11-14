@@ -2,7 +2,7 @@ using roundhouse.infrastructure.filesystem;
 
 namespace roundhouse.folders
 {
-    public class DefaultFolder : Folder
+    public sealed class DefaultFolder : Folder
     {
         private readonly FileSystemAccess file_system;
 

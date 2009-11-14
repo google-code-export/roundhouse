@@ -9,7 +9,7 @@ namespace roundhouse.runners
     using migrators;
     using resolvers;
 
-    public class RoundhouseMigrationRunner : IRunner
+    public sealed class RoundhouseMigrationRunner : IRunner
     {
         private readonly string repository_path;
         private readonly Environment environment;

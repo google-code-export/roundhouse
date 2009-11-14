@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse.console", "produ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse.tests.integration", "product\roundhouse.tests.integration\roundhouse.tests.integration.csproj", "{705033B8-10BA-4E7F-854E-08A7C5590DC5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "databases", "databases", "{BCFAF88B-B6C0-48C1-B23E-FCC95B75588C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse.databases.sqlserver2008", "product\roundhouse.databases.sqlserver2008\roundhouse.databases.sqlserver2008.csproj", "{8613D56F-B226-49BC-AC7A-19B70C827668}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,10 @@ Global
 		{705033B8-10BA-4E7F-854E-08A7C5590DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{705033B8-10BA-4E7F-854E-08A7C5590DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{705033B8-10BA-4E7F-854E-08A7C5590DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8613D56F-B226-49BC-AC7A-19B70C827668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8613D56F-B226-49BC-AC7A-19B70C827668}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8613D56F-B226-49BC-AC7A-19B70C827668}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8613D56F-B226-49BC-AC7A-19B70C827668}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,5 +54,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{0726928C-FDAC-4C79-B423-841C7E0DF5B8} = {807C6B2C-496F-4A41-ABFE-EA5478EB9CFF}
 		{705033B8-10BA-4E7F-854E-08A7C5590DC5} = {807C6B2C-496F-4A41-ABFE-EA5478EB9CFF}
+		{8613D56F-B226-49BC-AC7A-19B70C827668} = {BCFAF88B-B6C0-48C1-B23E-FCC95B75588C}
 	EndGlobalSection
 EndGlobal

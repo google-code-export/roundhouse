@@ -1,8 +1,6 @@
 namespace roundhouse.infrastructure.logging.custom
 {
-
-
-    public class Log4NetLogger : Logger
+    public sealed class Log4NetLogger : Logger
     {
         private readonly log4net.ILog logger;
 

@@ -4,7 +4,7 @@ namespace roundhouse.cryptography
     using System.Security.Cryptography;
     using System.Text;
 
-    public class MD5CryptographicService : CryptographicService
+    public sealed class MD5CryptographicService : CryptographicService
     {
         private readonly MD5 crypto_provider;
 

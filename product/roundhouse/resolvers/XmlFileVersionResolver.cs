@@ -6,7 +6,7 @@ using roundhouse.infrastructure.logging;
 
 namespace roundhouse.resolvers
 {
-    public class XmlFileVersionResolver : VersionResolver
+    public sealed class XmlFileVersionResolver : VersionResolver
     {
         private readonly FileSystemAccess file_system;
         private readonly string x_path;

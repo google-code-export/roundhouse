@@ -2,7 +2,7 @@ namespace roundhouse.infrastructure.logging.custom
 {
     using System.Collections.Generic;
 
-    public class MultipleLogger : Logger
+    public sealed class MultipleLogger : Logger
     {
         private readonly IList<Logger> the_loggers;
 

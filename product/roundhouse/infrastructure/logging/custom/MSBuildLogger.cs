@@ -2,7 +2,7 @@ namespace roundhouse.infrastructure.logging.custom
 {
     using Microsoft.Build.Framework;
 
-    public class MSBuildLogger : Logger
+    public sealed class MSBuildLogger : Logger
     {
         private readonly IBuildEngine build_engine;
         private readonly object calling_task;

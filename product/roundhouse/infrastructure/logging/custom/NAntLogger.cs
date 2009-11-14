@@ -2,7 +2,7 @@ namespace roundhouse.infrastructure.logging.custom
 {
     using NAnt.Core;
 
-    public class NAntLogger : Logger
+    public sealed class NAntLogger : Logger
     {
         private readonly Task nant_task;
 

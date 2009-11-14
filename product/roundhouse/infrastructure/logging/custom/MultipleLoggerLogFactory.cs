@@ -3,7 +3,7 @@ namespace roundhouse.infrastructure.logging.custom
     using System;
     using containers;
 
-    public class MultipleLoggerLogFactory : LogFactory
+    public sealed class MultipleLoggerLogFactory : LogFactory
     {
         public Logger create_logger_bound_to(Object type)
         {
