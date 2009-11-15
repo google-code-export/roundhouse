@@ -32,7 +32,7 @@
       versionXPath="${xml.file.version.xpath}"
       upFolderName="up"
       downFolderName="down"
-      runFirstFolderName="runFirst"
+      runFirstAfterUpFolderName="runFirstAfterUp"
       functionsFolderName="functions"
       viewsFolderName="views"
       sprocsFolderName="sprocs"
