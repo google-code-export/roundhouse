@@ -100,9 +100,9 @@
         [StringValidator(AllowEmpty = false)]
         public string DownFolderName { get; set; }
 
-        [TaskAttribute("runFirstFolderName", Required = false)]
+        [TaskAttribute("runFirstAfterUpFolderName", Required = false)]
         [StringValidator(AllowEmpty = false)]
-        public string RunFirstFolderName { get; set; }
+        public string RunFirstAfterUpFolderName { get; set; }
 
         [TaskAttribute("functionsFolderName", Required = false)]
         [StringValidator(AllowEmpty = false)]

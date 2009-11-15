@@ -31,7 +31,7 @@ namespace roundhouse.console
         public string VersionXPath { get; set; }
         public string UpFolderName { get; set; }
         public string DownFolderName { get; set; }
-        public string RunFirstFolderName { get; set; }
+        public string RunFirstAfterUpFolderName { get; set; }
         public string FunctionsFolderName { get; set; }
         public string ViewsFolderName { get; set; }
         public string SprocsFolderName { get; set; }

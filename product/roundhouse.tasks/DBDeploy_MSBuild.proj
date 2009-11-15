@@ -30,7 +30,7 @@
         VersionXPath="$(VersionFileXPath)"
         UpFolderName="up"
         DownFolderName="down"
-        RunFirstFolderName="runFirst"
+        RunFirstAfterUpFolderName="runFirstAfterUp"
         FunctionsFolderName="functions"
         ViewsFolderName="views"
         SprocsFolderName="sprocs"

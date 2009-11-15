@@ -18,7 +18,7 @@ namespace roundhouse.infrastructure
         string VersionXPath { get; set; }
         string UpFolderName { get; set; }
         string DownFolderName { get; set; }
-        string RunFirstFolderName { get; set; }
+        string RunFirstAfterUpFolderName { get; set; }
         string FunctionsFolderName { get; set; }
         string ViewsFolderName { get; set; }
         string SprocsFolderName { get; set; }
