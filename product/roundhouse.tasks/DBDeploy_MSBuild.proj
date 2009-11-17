@@ -20,7 +20,7 @@
 
 
   <Target Name="ApplyDatabaseChanges">
-    <Message Text="Running RoundhousE on $(DBServer) ($(DBName)). Looking in $(DBSqlFilesPath) for sql scripts." />
+    <!--<Message Text="Running RoundhousE on $(DBServer) ($(DBName)). Looking in $(DBSqlFilesPath) for sql scripts." />-->
     <Roundhouse
         ServerName="$(DBServer)"
         DatabaseName="$(DBName)"

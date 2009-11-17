@@ -2,36 +2,34 @@ namespace roundhouse.folders
 {
     public sealed class DefaultKnownFolders : KnownFolders
     {
-        public DefaultKnownFolders(Folder up,
-                                   Folder down,
-                                   Folder run_first,
-                                   Folder functions,
-                                   Folder views,
-                                   Folder sprocs,
-                                   Folder permissions
+        public DefaultKnownFolders(MigrationsFolder up,
+                                   MigrationsFolder down,
+                                   MigrationsFolder run_first_after_up,
+                                   MigrationsFolder functions,
+                                   MigrationsFolder views,
+                                   MigrationsFolder sprocs,
+                                   MigrationsFolder permissions,
+                                   Folder change_drop
             )
         {
             this.up = up;
             this.down = down;
-            this.run_first = run_first;
+            this.run_first_after_up = run_first_after_up;
             this.functions = functions;
             this.views = views;
             this.sprocs = sprocs;
             this.permissions = permissions;
+            this.change_drop = change_drop;
         }
 
-        public Folder up {get;private set;}
-        
-        public Folder down {get;private set;}
+        public MigrationsFolder up { get; private set; }
+        public MigrationsFolder down { get; private set; }
+        public MigrationsFolder run_first_after_up { get; private set; }
+        public MigrationsFolder functions { get; private set; }
+        public MigrationsFolder views { get; private set; }
+        public MigrationsFolder sprocs { get; private set; }
+        public MigrationsFolder permissions { get; private set; }
+        public Folder change_drop{get; private set;}
        
-        public Folder run_first {get;private set;}
-        
-        public Folder functions {get;private set;}
-      
-        public Folder views {get;private set;}
-      
-        public Folder sprocs {get;private set;}
-       
-        public Folder permissions {get;private set;}
     }
 }

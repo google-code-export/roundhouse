@@ -46,8 +46,10 @@ namespace roundhouse.console
                 Container.get_an_instance_of<KnownFolders>(),
                 Container.get_an_instance_of<FileSystemAccess>(),
                 Container.get_an_instance_of<DatabaseMigrator>(),
-                Container.get_an_instance_of<VersionResolver>()
+                Container.get_an_instance_of<VersionResolver>(),
+                true
                 );
+            //todo: decide how we set interactive for command line
             try
             {
                 roundhouse_runner.run();

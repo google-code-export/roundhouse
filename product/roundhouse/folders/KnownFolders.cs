@@ -2,12 +2,13 @@ namespace roundhouse.folders
 {
     public interface KnownFolders
     {
-        Folder up { get; }
-        Folder down { get; }
-        Folder run_first { get; }
-        Folder functions { get; }
-        Folder views { get; }
-        Folder sprocs { get; }
-        Folder permissions { get; }
+        MigrationsFolder up { get; }
+        MigrationsFolder down { get; }
+        MigrationsFolder run_first_after_up { get; }
+        MigrationsFolder functions { get; }
+        MigrationsFolder views { get; }
+        MigrationsFolder sprocs { get; }
+        MigrationsFolder permissions { get; }
+        Folder change_drop { get; }
     }
 }

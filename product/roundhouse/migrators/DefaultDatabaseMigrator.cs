@@ -114,8 +114,10 @@ namespace roundhouse.migrators
                              database.insert_version_script(repository_path, repository_version));
         }
 
-        public void run_sql(string sql_to_run, string script_name, bool run_this_script_once, long version_id)
+        public bool run_sql(string sql_to_run, string script_name, bool run_this_script_once, long version_id)
         {
+            bool this_sql_ran = false;
+
             if (this_is_a_one_time_script_that_has_changes_but_has_already_been_run(script_name, sql_to_run, run_this_script_once))
             {
                 if (error_on_one_time_script_changes)
@@ -130,11 +132,14 @@ namespace roundhouse.migrators
                 Log.bound_to(this).log_an_info_event_containing("Running {0} on {1} - {2}.", script_name, database.server_name, database.database_name);
                 database.run_sql(database.database_name, sql_to_run);
                 record_script_in_scripts_run_table(script_name, sql_to_run, run_this_script_once, version_id);
+                this_sql_ran = true;
             }
             else
             {
                 Log.bound_to(this).log_an_info_event_containing("Skipped {0} either due to being a one time script or finding no changes.", script_name);
             }
+
+            return this_sql_ran;
         }
 
         public void record_script_in_scripts_run_table(string script_name, string sql_to_run, bool run_this_script_once, long version_id)
