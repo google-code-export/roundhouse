@@ -22,7 +22,7 @@
   <target name="go" depends="run_roundhouse" />
 
   <target name="run_roundhouse">
-    <echo message="Running RoundhousE on ${server.database} (${database.name}). Looking in ${dirs.db} for sql scripts." />
+    <!--<echo message="Running RoundhousE on ${server.database} (${database.name}). Looking in ${dirs.db} for sql scripts." />-->
     <roundhouse
       serverName="${server.database}"
       databaseName="${database.name}"

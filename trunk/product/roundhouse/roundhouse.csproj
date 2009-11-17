@@ -84,6 +84,8 @@
     <Compile Include="folders\DefaultKnownFolders.cs" />
     <Compile Include="folders\Folder.cs" />
     <Compile Include="folders\KnownFolders.cs" />
+    <Compile Include="folders\DefaultMigrationsFolder.cs" />
+    <Compile Include="folders\MigrationsFolder.cs" />
     <Compile Include="infrastructure\ApplicationConfiguraton.cs" />
     <Compile Include="infrastructure\ApplicationParameters.cs" />
     <Compile Include="infrastructure\ConfigurationPropertyHolder.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="infrastructure\filesystem\WindowsFileSystemAccess.cs" />
     <Compile Include="infrastructure\loaders\DefaultAssemblyLoader.cs" />
     <Compile Include="infrastructure\loaders\DefaultInstanceCreator.cs" />
+    <Compile Include="infrastructure\logging\custom\FileLogger.cs" />
     <Compile Include="infrastructure\logging\custom\MSBuildLogger.cs" />
     <Compile Include="infrastructure\logging\custom\MultipleLoggerLogFactory.cs" />
     <Compile Include="infrastructure\logging\custom\MultipleLogger.cs" />

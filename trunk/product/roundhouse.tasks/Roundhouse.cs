@@ -173,18 +173,14 @@
             }
             ApplicationConfiguraton.build_the_container(this);
 
-            infrastructure.logging.Log.bound_to(this).log_an_info_event_containing(
-                "Executing {0} against contents of {1}.",
-                ApplicationParameters.name,
-                SqlFilesDirectory);
-
             IRunner roundhouse_runner = new RoundhouseMigrationRunner(
                 RepositoryPath,
                 Container.get_an_instance_of<Environment>(),
                 Container.get_an_instance_of<KnownFolders>(),
                 Container.get_an_instance_of<FileSystemAccess>(),
                 Container.get_an_instance_of<DatabaseMigrator>(),
-                Container.get_an_instance_of<VersionResolver>()
+                Container.get_an_instance_of<VersionResolver>(),
+                !NonInteractive
                 );
             try
             {
