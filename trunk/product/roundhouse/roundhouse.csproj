@@ -88,6 +88,7 @@
     <Compile Include="folders\MigrationsFolder.cs" />
     <Compile Include="infrastructure\ApplicationConfiguraton.cs" />
     <Compile Include="infrastructure\ApplicationParameters.cs" />
+    <Compile Include="infrastructure\commandline.options\Options.cs" />
     <Compile Include="infrastructure\ConfigurationPropertyHolder.cs" />
     <Compile Include="infrastructure\containers\Container.cs" />
     <Compile Include="infrastructure\containers\custom\WindsorContainer.cs" />

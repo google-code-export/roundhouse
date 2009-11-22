@@ -100,9 +100,18 @@ namespace roundhouse.infrastructure
                                                          get_run_date_time_string());
 
             windsor_container.AddComponent<LogFactory, MultipleLoggerLogFactory>();
+            IList<Logger> loggers = new List<Logger>();
             Logger nant_logger = new NAntLogger(configuration_property_holder.NAntTask);
-            Logger msbuild_logger = new MSBuildLogger(configuration_property_holder, configuration_property_holder.MSBuildTask.BuildEngine);
+            loggers.Add(nant_logger);
+
+            if (configuration_property_holder.MSBuildTask !=null)
+            {
+                Logger msbuild_logger = new MSBuildLogger(configuration_property_holder, configuration_property_holder.MSBuildTask.BuildEngine);
+                loggers.Add(msbuild_logger);
+            }
+            
             Logger log4net_logger = new Log4NetLogger(configuration_property_holder.Log4NetLogger);
+            loggers.Add(log4net_logger);
             Logger file_logger = new FileLogger(
                         combine_items_into_one_path(
                             windsor_container,
@@ -111,7 +120,8 @@ namespace roundhouse.infrastructure
                             ),
                         windsor_container.Resolve<FileSystemAccess>()
                     );
-            Logger multi_logger = new MultipleLogger(new List<Logger> { nant_logger, msbuild_logger, log4net_logger});
+            //loggers.Add(file_logger);
+            Logger multi_logger = new MultipleLogger(loggers);
             windsor_container.Kernel.AddComponentInstance<Logger>(multi_logger);
             
             var identity_of_runner = string.Empty;

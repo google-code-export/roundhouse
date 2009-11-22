@@ -16,7 +16,7 @@
   <property name="dirs.deployment" value="${dirs.drop}\${folder.deployment}" />
   <property name="path.file.test_databases" value="${dirs.current}\..\product\testdatabase" />
 
-  <target name="go" depends="copy_nant_to_deploy, cleanup_roundhouse_drop, copy_roundhouse_files_to_deploy, restructure_roundhouse_drop_folder, copy_test_databases_to_deploy" description="Packaging" />
+  <target name="go" depends="copy_nant_to_deploy, cleanup_roundhouse_drop, restructure_roundhouse_drop_folder, copy_roundhouse_files_to_deploy_nant, copy_roundhouse_files_to_deploy_console, copy_test_databases_to_deploy" description="Packaging" />
 
   <target name="copy_nant_to_deploy">
     <echo message="Copying NAnt folder items to ${dirs.deployment}\NAnt."/>
@@ -38,18 +38,7 @@
       </fileset>
     </delete>
   </target>
-  
-  <target name="copy_roundhouse_files_to_deploy">
-    <echo message="Copying roundhouse assemblies to ${dirs.deployment}\NAnt."/>
-    <copy todir="${dirs.deployment}\NAnt">
-      <fileset basedir="${dirs.drop}\RoundhousE">
-        <exclude name="Microsoft.Build.Framework.dll" />
-        <include name="*.dll" />
-        <include name="samples.xml" />
-      </fileset>
-    </copy>
-  </target>
-  
+
   <target name="restructure_roundhouse_drop_folder">
     <echo message="Moving NAnt specific items to ${dirs.drop}\${folder.app.drop}\NAnt." />
     <copy todir="${dirs.drop}\${folder.app.drop}\NAnt">
@@ -92,6 +81,24 @@
     </delete>
   </target>
   
+  <target name="copy_roundhouse_files_to_deploy_nant">
+    <echo message="Copying roundhouse assemblies to ${dirs.deployment}\NAnt."/>
+    <copy todir="${dirs.deployment}\NAnt">
+      <fileset basedir="${dirs.drop}\${folder.app.drop}\NAnt">
+        <include name="*.*" />
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="copy_roundhouse_files_to_deploy_console">
+    <echo message="Copying roundhouse assemblies to ${dirs.deployment}\Console."/>
+    <copy todir="${dirs.deployment}\Console">
+      <fileset basedir="${dirs.drop}\${folder.app.drop}\ConsoleApp">
+        <include name="*.*" />
+      </fileset>
+    </copy>
+  </target>
+
   <target name="copy_test_databases_to_deploy">
     <echo message="Copying roundhouse test databases from ${path.file.test_databases} to ${dirs.deployment}."/>
      <copy todir="${dirs.deployment}">
