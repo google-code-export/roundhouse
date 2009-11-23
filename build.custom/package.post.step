@@ -35,6 +35,10 @@
         <include name="developwithpassion.commons.core.infrastructure*" />
         <include name="NAnt*.xml" />
         <include name="*.pdb" />
+        <include name="*SqlServer.BatchParser*.dll" />
+        <include name="*SqlServer.Replication.dll" />
+        <include name="*SqlServer.Rmo.dll" />
+        <include name="*SqlServer.*Enum.dll" />
       </fileset>
     </delete>
   </target>
@@ -69,7 +73,6 @@
         <exclude name="dbdeploy_nant.deploy" />
         <exclude name="samples.xml" />
         <exclude name="roundhouse.tasks.dll" />
-        <!--<exclude name="NAnt.Core.dll" />-->
         <include name="*.*" />
       </fileset>
     </copy>
