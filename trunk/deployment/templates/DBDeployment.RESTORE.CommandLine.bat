@@ -9,8 +9,8 @@ SET repository.path="${repository.path}"
 SET version.file="${file.version}"
 SET version.xpath="//buildInfo/version"
 SET environment=${environment}
-SET restore.path=${restore.from.path}
+SET restore.path=%DIR%${database.name}.bak
 
-"%DIR%Console\rh.exe" /d=%database.name% /f=%sql.files.directory% /s=%server.database% /vf=%version.file% /vx=%version.xpath% /env=%environment% /restore /rfp=%restore.path%
+"%DIR%Console\rh.exe" /d=%database.name% /f=%sql.files.directory% /s=%server.database% /vf=%version.file% /vx=%version.xpath% /r=%repository.path% /env=%environment% /restore /rfp=%restore.path%
 
 pause

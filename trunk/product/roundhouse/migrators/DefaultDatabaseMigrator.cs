@@ -17,10 +17,6 @@ namespace roundhouse.migrators
 
         public DefaultDatabaseMigrator(Database database, CryptographicService crypto_provider, bool restoring_database, string restore_path, string output_path, bool error_on_one_time_script_changes)
         {
-            Log.bound_to(this).log_a_debug_event_containing(
-                "Using an instance of SqlServerDatabase with {0},{1},{2},{3},{4}.",
-                 database.server_name, database.database_name, database.roundhouse_schema_name,
-                database.version_table_name, database.scripts_run_table_name);
             this.database = database;
             this.crypto_provider = crypto_provider;
             this.restoring_database = restoring_database;

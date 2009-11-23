@@ -84,7 +84,8 @@ namespace roundhouse.runners
             //todo: permissions folder is based on environment if there are any environment files
 
             remove_share_from_change_drop_folder();
-            Log.bound_to(this).log_an_info_event_containing("{0} has kicked your database ({1})! You are now at version {2}. All changes and backups can be found at \"{3}\".",
+            Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} has kicked your database ({2})! You are now at version {3}. All changes and backups can be found at \"{4}\".",
+                                        System.Environment.NewLine,
                                         ApplicationParameters.name,
                                         database_migrator.database.database_name,
                                         new_version,
