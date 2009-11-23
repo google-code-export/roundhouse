@@ -264,7 +264,6 @@ namespace roundhouse.databases.sqlserver2005
             Server sql_server = new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
             sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
             object return_value = sql_server.ConnectionContext.ExecuteScalar(sql_to_run);
-            Log.bound_to(this).log_a_debug_event_containing("Version Id return value was {0}", return_value);
 
             return return_value;
         }
