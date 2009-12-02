@@ -132,7 +132,7 @@ namespace roundhouse.migrators
             }
             else
             {
-                Log.bound_to(this).log_an_info_event_containing("Skipped {0} either due to being a one time script or finding no changes.", script_name);
+                Log.bound_to(this).log_an_info_event_containing("Skipped {0} - {1}.", script_name, run_this_script_once ? "One time script" : "No changes were found to run");
             }
 
             return this_sql_ran;
@@ -178,7 +178,7 @@ namespace roundhouse.migrators
             if (string.IsNullOrEmpty(old_text_hash)) return true;
 
             string new_text_hash = create_hash(sql_to_run);
-            
+
             if (string.Compare(old_text_hash, new_text_hash, true) == 0)
             {
                 hash_is_same = true;

@@ -139,10 +139,14 @@
         [TaskAttribute("restore", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public bool Restore { get; set; }
-
+        
         [TaskAttribute("restoreFromPath", Required = false)]
         [StringValidator(AllowEmpty = true)]
         public string RestoreFromPath { get; set; }
+
+        [TaskAttribute("drop", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool Drop { get; set; }
 
         [TaskAttribute("outputPath", Required = false)]
         [StringValidator(AllowEmpty = true)]
@@ -180,8 +184,8 @@
                 Container.get_an_instance_of<FileSystemAccess>(),
                 Container.get_an_instance_of<DatabaseMigrator>(),
                 Container.get_an_instance_of<VersionResolver>(),
-                !NonInteractive
-                );
+                !NonInteractive,
+                Drop);
             try
             {
                 roundhouse_runner.run();

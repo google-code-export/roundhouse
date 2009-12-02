@@ -42,8 +42,8 @@ namespace roundhouse.console
                 Container.get_an_instance_of<FileSystemAccess>(),
                 Container.get_an_instance_of<DatabaseMigrator>(),
                 Container.get_an_instance_of<VersionResolver>(),
-                true
-                );
+                !configuration.NonInteractive,
+                configuration.Drop);
 
             try
             {
@@ -62,6 +62,7 @@ namespace roundhouse.console
 
             if (!configuration.NonInteractive)
             {
+                Console.WriteLine("{0}Please press enter to continue...",Environment.NewLine);
                 Console.Read();
             }
         }
@@ -155,6 +156,10 @@ namespace roundhouse.console
                 .Add("rfp=|restorefrom=|restorefrompath=",
                     "RestoreFromPath - This tells the restore where to get to the backed up database. Defaults to null. Required if /restore has been set. NOTE: will try to use Litespeed for the restore if the last two characters of the name are LS (as in DudeLS.bak).",
                     option => configuration.RestoreFromPath = option)
+                //drop
+                .Add("drop",
+                    "Drop - This instructs RH to remove a database and not run migration scripts. Defaults to false.",
+                    option => configuration.Drop = option != null)
                 //output
                 .Add("o=|output=|outputpath=",
                     string.Format("OutputPath - This is where everything related to the migration is stored. This includes any backups, all items that ran, permission dumps, logs, etc. Defaults to \"{0}\".",
