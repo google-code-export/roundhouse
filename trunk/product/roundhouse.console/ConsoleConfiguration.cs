@@ -46,5 +46,6 @@ namespace roundhouse.console
         public bool WarnOnOneTimeScriptChanges { get; set; }
         public bool NonInteractive { get; set; }
         public string DatabaseType {get; set;}
+        public bool Drop { get; set; }
     }
 }

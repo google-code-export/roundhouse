@@ -33,5 +33,6 @@ namespace roundhouse.infrastructure
         bool WarnOnOneTimeScriptChanges { get; set; }
         bool NonInteractive { get; set; }
         string DatabaseType { get; set; }
+        bool Drop { get; set; }
     }
 }

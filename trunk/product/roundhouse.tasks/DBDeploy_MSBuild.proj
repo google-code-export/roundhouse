@@ -14,7 +14,7 @@
     <VersionFileXPath>//buildInfo/version</VersionFileXPath>
     <DBRestore>false</DBRestore>
     <DBRestorePath>\\tell\me\where\YOURDATABASENAME.bak</DBRestorePath>
-
+    <DBDrop>false</DBDrop>
     <Interactive>true</Interactive>
   </PropertyGroup>
 
@@ -40,7 +40,8 @@
         ScriptsRunTableName="ScriptsRun"
         EnvironmentName="$(Environment)"
         Restore="$(DBRestore)"
-        RestoreFromPath="$(DBRestorePath)"        
+        RestoreFromPath="$(DBRestorePath)"
+        Drop="$(DBDrop)"
         OutputPath="C:\RoundhousE_runs"
         WarnOnOneTimeScriptChanges="false"
         NonInteractive="false"

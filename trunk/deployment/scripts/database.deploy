@@ -18,6 +18,7 @@
   <property name="restore" value="false" overwrite="false" />
   <property name="restore.from.path" value="" overwrite="false" />
   <property name="restore.from.path.full" value="${path::get-full-path(restore.from.path)}" if="${restore.from.path!= ''}" />
+  <property name="drop" value="false" overwrite="false" />
   
   <target name="go" depends="run_roundhouse" />
 
@@ -33,6 +34,7 @@
       environmentName="${environment}"
       restore="${restore}"
       restoreFromPath="${restore.from.path.full}" 
+      drop="${drop}"
       />
   </target>
 

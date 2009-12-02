@@ -74,9 +74,10 @@ namespace roundhouse.databases.sqlserver2005
         {
             return string.Format(
                 @"USE Master 
-                        IF NOT EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
+                        IF EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
                         BEGIN 
-                            ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE 
+                            ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+                            EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = '{0}' 
                             DROP DATABASE [{0}] 
                         END",
                 database_name);
