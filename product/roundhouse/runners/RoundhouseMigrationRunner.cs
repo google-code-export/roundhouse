@@ -21,6 +21,7 @@ namespace roundhouse.runners
         private readonly VersionResolver version_resolver;
         private readonly bool interactive;
         private readonly bool dropping_the_database;
+        private readonly bool run_in_a_transaction;
         private const string SQL_EXTENSION = "*.sql";
 
         public RoundhouseMigrationRunner(
@@ -31,7 +32,8 @@ namespace roundhouse.runners
                 DatabaseMigrator database_migrator,
                 VersionResolver version_resolver,
                 bool interactive,
-                bool dropping_the_database)
+                bool dropping_the_database,
+                bool run_in_a_transaction)
         {
             this.known_folders = known_folders;
             this.repository_path = repository_path;
@@ -41,6 +43,7 @@ namespace roundhouse.runners
             this.version_resolver = version_resolver;
             this.interactive = interactive;
             this.dropping_the_database = dropping_the_database;
+            this.run_in_a_transaction = run_in_a_transaction;
         }
 
         public void run()
@@ -57,57 +60,66 @@ namespace roundhouse.runners
                 Console.ReadLine();
             }
 
-
-
             create_change_drop_folder();
             Log.bound_to(this).log_a_debug_event_containing("The change_drop folder is: {0}", known_folders.change_drop.folder_full_path);
 
             create_share_and_set_permissions_for_change_drop_folder();
 
-            database_migrator.backup_database_if_it_exists();
-
-            if (!dropping_the_database)
+            try
             {
+                database_migrator.connect(run_in_a_transaction);
 
-                database_migrator.create_or_restore_database();
-                database_migrator.verify_or_create_roundhouse_tables();
+                database_migrator.backup_database_if_it_exists();
 
-                string current_version = database_migrator.get_current_version(repository_path);
-                string new_version = version_resolver.resolve_version();
-                Log.bound_to(this).log_an_info_event_containing("Migrating {0} from version {1} to {2}.", database_migrator.database.database_name, current_version, new_version);
+                if (!dropping_the_database)
+                {
 
+                    database_migrator.create_or_restore_database();
+                    database_migrator.verify_or_create_roundhouse_tables();
 
-                long version_id = database_migrator.version_the_database(repository_path, new_version);
+                    string current_version = database_migrator.get_current_version(repository_path);
+                    string new_version = version_resolver.resolve_version();
+                    Log.bound_to(this).log_an_info_event_containing("Migrating {0} from version {1} to {2}.", database_migrator.database.database_name, current_version, new_version);
 
-                traverse_files_and_run_sql(known_folders.up.folder_full_path, version_id, known_folders.up);
+                    long version_id = database_migrator.version_the_database(repository_path, new_version);
 
-                //todo: remember when looking through all files below here, change CREATE to ALTER
-                // we are going to create the create if not exists script
+                    traverse_files_and_run_sql(known_folders.up.folder_full_path, version_id, known_folders.up);
 
-                traverse_files_and_run_sql(known_folders.run_first_after_up.folder_full_path, version_id, known_folders.run_first_after_up);
-                traverse_files_and_run_sql(known_folders.functions.folder_full_path, version_id, known_folders.functions);
-                traverse_files_and_run_sql(known_folders.views.folder_full_path, version_id, known_folders.views);
-                traverse_files_and_run_sql(known_folders.sprocs.folder_full_path, version_id, known_folders.sprocs);
-                traverse_files_and_run_sql(known_folders.permissions.folder_full_path, version_id, known_folders.permissions);
+                    //todo: remember when looking through all files below here, change CREATE to ALTER
+                    // we are going to create the create if not exists script
 
-                //todo: permissions folder is based on environment if there are any environment files
+                    traverse_files_and_run_sql(known_folders.run_first_after_up.folder_full_path, version_id, known_folders.run_first_after_up);
+                    traverse_files_and_run_sql(known_folders.functions.folder_full_path, version_id, known_folders.functions);
+                    traverse_files_and_run_sql(known_folders.views.folder_full_path, version_id, known_folders.views);
+                    traverse_files_and_run_sql(known_folders.sprocs.folder_full_path, version_id, known_folders.sprocs);
+                    traverse_files_and_run_sql(known_folders.permissions.folder_full_path, version_id, known_folders.permissions);
 
-                remove_share_from_change_drop_folder();
-                Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} has kicked your database ({2})! You are now at version {3}. All changes and backups can be found at \"{4}\".",
-                                            System.Environment.NewLine,
-                                            ApplicationParameters.name,
-                                            database_migrator.database.database_name,
-                                            new_version,
-                                            known_folders.change_drop.folder_full_path);
+                    //todo: permissions folder is based on environment if there are any environment files
+
+                    remove_share_from_change_drop_folder();
+                    Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} has kicked your database ({2})! You are now at version {3}. All changes and backups can be found at \"{4}\".",
+                                                System.Environment.NewLine,
+                                                ApplicationParameters.name,
+                                                database_migrator.database.database_name,
+                                                new_version,
+                                                known_folders.change_drop.folder_full_path);
+                }
+                else
+                {
+                    database_migrator.delete_database();
+                    Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} has removed database ({2}). All changes and backups can be found at \"{3}\".",
+                                                System.Environment.NewLine,
+                                                ApplicationParameters.name,
+                                                database_migrator.database.database_name,
+                                                known_folders.change_drop.folder_full_path);
+                }
+
+                database_migrator.disconnect();
             }
-            else
+            catch (Exception ex)
             {
-                database_migrator.delete_database();
-                Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} has removed database ({2}). All changes and backups can be found at \"{3}\".",
-                                            System.Environment.NewLine,
-                                            ApplicationParameters.name,
-                                            database_migrator.database.database_name,
-                                            known_folders.change_drop.folder_full_path);
+                Log.bound_to(this).log_an_error_event_containing("RH encountered an error.{0}{1}{2}", run_in_a_transaction ? "You ran in a transaction. The database should be in the state it was in prior to this piece running. This does not include a drop/create or any creation of a database, as those items can not run in a transaction." : string.Empty, System.Environment.NewLine, ex.ToString());
+                throw;
             }
         }
 
@@ -129,8 +141,7 @@ namespace roundhouse.runners
             //todo: implement removal of the file share
         }
 
-
-        //todo: understand what environment you are deploying to so you can decide what to run
+        //todo: understand what environment you are deploying to so you can decide what to run - it was suggested there be a specific tag in the file name. Like vw_something.ENV.sql and that be a static "ENV". Then to key off of the actual environment name on the front of the file (ex. TEST.vw_something.ENV.sql)
         //todo:down story
 
         public void traverse_files_and_run_sql(string directory, long version_id, MigrationsFolder migration_folder)

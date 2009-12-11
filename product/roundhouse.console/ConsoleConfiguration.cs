@@ -47,5 +47,6 @@ namespace roundhouse.console
         public bool NonInteractive { get; set; }
         public string DatabaseType {get; set;}
         public bool Drop { get; set; }
+        public bool WithTransaction { get; set; }
     }
 }

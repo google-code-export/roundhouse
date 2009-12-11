@@ -14,6 +14,7 @@ namespace roundhouse.migrators
         private readonly string restore_path;
         private readonly string output_path;
         private readonly bool error_on_one_time_script_changes;
+        private bool running_in_a_transaction = false;
 
         public DefaultDatabaseMigrator(Database database, CryptographicService crypto_provider, bool restoring_database, string restore_path, string output_path, bool error_on_one_time_script_changes)
         {
@@ -25,10 +26,27 @@ namespace roundhouse.migrators
             this.error_on_one_time_script_changes = error_on_one_time_script_changes;
         }
 
+        public void connect(bool with_transaction)
+        {
+            running_in_a_transaction = with_transaction;
+            database.open_connection(with_transaction);
+        }
+
+        public void disconnect()
+        {
+            database.close_connection();
+        }
+
         public void create_or_restore_database()
         {
             Log.bound_to(this).log_an_info_event_containing("Creating {0} database on {1} server if it doesn't exist.",
                                                              database.database_name, database.server_name);
+            
+            if (running_in_a_transaction)
+            {
+                database.close_connection();
+                database.open_connection(false);
+            }
             database.run_sql(database.MASTER_DATABASE_NAME,
                              database.create_database_script()
                 );
@@ -36,6 +54,12 @@ namespace roundhouse.migrators
             if (restoring_database)
             {
                 restore_database(restore_path);
+            }
+
+            if (running_in_a_transaction)
+            {
+                database.close_connection();
+                database.open_connection(true);
             }
         }
 

@@ -5,6 +5,8 @@ namespace roundhouse.migrators
     public interface DatabaseMigrator
     {
         Database database { get; set; }
+        void connect(bool with_transaction);
+        void disconnect();
         void backup_database_if_it_exists();
         void create_or_restore_database();
         void restore_database(string restore_from_path);
