@@ -120,9 +120,20 @@ namespace roundhouse.migrators
         {
             Log.bound_to(this).log_an_info_event_containing("Deleting {0} database on {1} server.",
                                                             database.database_name, database.server_name);
+
+            if (running_in_a_transaction)
+            {
+                database.close_connection();
+                database.open_connection(false);
+            }
             database.run_sql(database.MASTER_DATABASE_NAME,
                              database.delete_database_script()
                 );
+            if (running_in_a_transaction)
+            {
+                database.close_connection();
+                database.open_connection(true);
+            }
         }
 
         public long version_the_database(string repository_path, string repository_version)
