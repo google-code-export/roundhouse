@@ -1,6 +1,8 @@
+using System;
+
 namespace roundhouse.sql
 {
-    public interface Database
+    public interface Database : IDisposable
     {
         string server_name { get; set; }
         string database_name { get; set; }
@@ -24,5 +26,8 @@ namespace roundhouse.sql
         void run_sql(string database_name, string sql_to_run);
         object run_sql_scalar(string database_name, string sql_to_run);
         string get_version_script(string repository_path);
+
+        void open_connection(bool with_transaction);
+        void close_connection();
     }
 }

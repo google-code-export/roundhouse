@@ -16,6 +16,8 @@ namespace roundhouse.databases.sqlserver2005
         public string version_table_name { get; set; }
         public string scripts_run_table_name { get; set; }
         public string user_name { get; set; }
+        private Server sql_server;
+        private bool running_a_transaction = false;
 
         public SqlServerDatabase()
         {
@@ -160,6 +162,27 @@ namespace roundhouse.databases.sqlserver2005
                 roundhouse_schema_name, version_table_name, repository_path);
         }
 
+        public void open_connection(bool with_transaction)
+        {
+            sql_server = new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, MASTER_DATABASE_NAME))));
+            sql_server.ConnectionContext.Connect();
+            if (with_transaction)
+            {
+                sql_server.ConnectionContext.BeginTransaction();
+                running_a_transaction = true;
+            }
+        }
+
+        public void close_connection()
+        {
+            if (running_a_transaction)
+            {
+                sql_server.ConnectionContext.CommitTransaction();
+            }
+            
+            sql_server.ConnectionContext.Disconnect();
+        }
+
         public string insert_version_script(string repository_path, string repository_version)
         {
             return string.Format(
@@ -254,15 +277,12 @@ namespace roundhouse.databases.sqlserver2005
 
         public void run_sql(string database_name, string sql_to_run)
         {
-            Server sql_server =
-                new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
             sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
             sql_server.ConnectionContext.ExecuteNonQuery(sql_to_run);
         }
 
         public object run_sql_scalar(string database_name, string sql_to_run)
         {
-            Server sql_server = new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
             sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
             object return_value = sql_server.ConnectionContext.ExecuteScalar(sql_to_run);
 
@@ -271,25 +291,21 @@ namespace roundhouse.databases.sqlserver2005
 
         private DataTable execute_datatable(string sql_to_run)
         {
-            DataSet result = new DataSet();
-
-            using (SqlConnection connection = new SqlConnection(build_connection_string(server_name, database_name)))
-            {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand())
-                {
-                    command.Connection = connection;
-                    command.CommandText = "USE " + database_name;
-                    command.ExecuteNonQuery();
-                    command.CommandText = sql_to_run;
-                    SqlDataAdapter da = new SqlDataAdapter(command.CommandText, command.Connection);
-                    da.Fill(result);
-                    command.Dispose();
-                }
-                //todo close the connection?
-            }
-
+            sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
+            DataSet result = sql_server.ConnectionContext.ExecuteWithResults(sql_to_run);
+            
             return result.Tables.Count == 0 ? null : result.Tables[0];
         }
+
+        private bool disposing = false;
+        public void Dispose()
+        {
+            if (!disposing)
+            {
+                //todo: do we have anything to dispose?
+                disposing = true;
+            }
+        }
+
     }
 }

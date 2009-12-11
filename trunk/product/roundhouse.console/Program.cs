@@ -43,7 +43,8 @@ namespace roundhouse.console
                 Container.get_an_instance_of<DatabaseMigrator>(),
                 Container.get_an_instance_of<VersionResolver>(),
                 !configuration.NonInteractive,
-                configuration.Drop);
+                configuration.Drop,
+                configuration.WithTransaction);
 
             try
             {
@@ -173,6 +174,10 @@ namespace roundhouse.console
                 .Add("ni|noninteractive",
                     "NonInteractive - tells RH not to ask for any input when it runs. Defaults to false.",
                     option => configuration.NonInteractive = option != null)
+                //drop
+                .Add("t|trx|transaction|wt|withtransaction",
+                    "WithTransaction - This instructs RH to run inside of a transaction. Defaults to false.",
+                    option => configuration.WithTransaction = option != null)
                ;
 
             try
@@ -203,6 +208,8 @@ namespace roundhouse.console
                     "/w[arnononetimescriptchanges] " +
                     "/n[on]i[nteractive] " +
                     "/d[atabase]t[ype] VALUE " +
+                    "/drop " +
+                    "/t[ransaction] " +
                     "]";
                 show_help(usage_message, option_set);
             }

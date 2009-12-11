@@ -107,6 +107,16 @@ namespace roundhouse.sql
             return database.get_version_script(repository_path);
         }
 
+        public void open_connection(bool with_transaction)
+        {
+            database.open_connection(with_transaction);
+        }
+
+        public void close_connection()
+        {
+            database.close_connection();
+        }
+
         public string insert_version_script(string repository_path, string repository_version)
         {
             return database.insert_version_script(repository_path, repository_version);
@@ -135,6 +145,16 @@ namespace roundhouse.sql
         public object run_sql_scalar(string database_name, string sql_to_run)
         {
             return database.run_sql_scalar(database_name, sql_to_run);
+        }
+
+        private bool disposing = false;
+        public void Dispose()
+        {
+            if (!disposing)
+            {
+                database.Dispose();
+                disposing = true;
+            }
         }
     }
 }

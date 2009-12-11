@@ -163,7 +163,11 @@
         [TaskAttribute("databaseType", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public string DatabaseType { get; set; }
-       
+
+        [TaskAttribute("withTransaction", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool WithTransaction { get; set; }
+
         #endregion
 
         public void run_the_task()
@@ -185,7 +189,8 @@
                 Container.get_an_instance_of<DatabaseMigrator>(),
                 Container.get_an_instance_of<VersionResolver>(),
                 !NonInteractive,
-                Drop);
+                Drop,
+                WithTransaction);
             try
             {
                 roundhouse_runner.run();

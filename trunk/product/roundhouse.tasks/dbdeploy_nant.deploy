@@ -49,6 +49,7 @@
       warnOnOneTimeScriptChanges="false"
       nonInteractive="false"
       databaseType="roundhouse.databases.sqlserver2008.SqlServerDatabase, roundhouse.databases.sqlserver2008"
+      withTransaction="false"
       />
   </target>
 
