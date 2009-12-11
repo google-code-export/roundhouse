@@ -118,7 +118,7 @@ namespace roundhouse.runners
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_an_error_event_containing("RH encountered an error.{0}{1}{2}", run_in_a_transaction ? "You ran in a transaction. The database should be in the state it was in prior to this piece running. This does not include a drop/create or any creation of a database, as those items can not run in a transaction." : string.Empty, System.Environment.NewLine, ex.ToString());
+                Log.bound_to(this).log_an_error_event_containing("RH encountered an error.{0}{1}{2}", run_in_a_transaction ? " You were running in a transaction though, so the database should be in the state it was in prior to this piece running. This does not include a drop/create or any creation of a database, as those items can not run in a transaction." : string.Empty, System.Environment.NewLine, ex.ToString());
                 throw;
             }
         }
