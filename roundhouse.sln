@@ -6,6 +6,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse.tests", "product\roundhouse.tests\roundhouse.tests.csproj", "{0726928C-FDAC-4C79-B423-841C7E0DF5B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roundhouse.tasks", "product\roundhouse.tasks\roundhouse.tasks.csproj", "{7CC86537-E4F4-42F0-973F-39F38E43E347}"
+	ProjectSection(ProjectDependencies) = postProject
+		{97CA60FD-D550-4098-8B59-E6CD1F1A3AF2} = {97CA60FD-D550-4098-8B59-E6CD1F1A3AF2}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{807C6B2C-496F-4A41-ABFE-EA5478EB9CFF}"
 EndProject

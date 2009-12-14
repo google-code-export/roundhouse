@@ -2,6 +2,7 @@ namespace roundhouse.infrastructure
 {
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
     using System.Security.Principal;
     using Castle.Windsor;
     using containers;
@@ -92,7 +93,7 @@ namespace roundhouse.infrastructure
             IWindsorContainer windsor_container = new WindsorContainer();
 
             windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
-            
+
             Folder change_drop_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),
                                                          combine_items_into_one_path(windsor_container, configuration_property_holder.OutputPath,
                                                                                      configuration_property_holder.DatabaseName,
@@ -104,26 +105,26 @@ namespace roundhouse.infrastructure
             Logger nant_logger = new NAntLogger(configuration_property_holder.NAntTask);
             loggers.Add(nant_logger);
 
-            if (configuration_property_holder.MSBuildTask !=null)
+            if (configuration_property_holder.MSBuildTask != null)
             {
                 Logger msbuild_logger = new MSBuildLogger(configuration_property_holder, configuration_property_holder.MSBuildTask.BuildEngine);
                 loggers.Add(msbuild_logger);
             }
-            
+
             Logger log4net_logger = new Log4NetLogger(configuration_property_holder.Log4NetLogger);
             loggers.Add(log4net_logger);
             Logger file_logger = new FileLogger(
                         combine_items_into_one_path(
                             windsor_container,
                             change_drop_folder.folder_full_path,
-                            string.Format("{0}_{1}.log",ApplicationParameters.name,change_drop_folder.folder_name)
+                            string.Format("{0}_{1}.log", ApplicationParameters.name, change_drop_folder.folder_name)
                             ),
                         windsor_container.Resolve<FileSystemAccess>()
                     );
             //loggers.Add(file_logger);
             Logger multi_logger = new MultipleLogger(loggers);
             windsor_container.Kernel.AddComponentInstance<Logger>(multi_logger);
-            
+
             var identity_of_runner = string.Empty;
             var windows_identity = WindowsIdentity.GetCurrent();
             if (windows_identity != null)
@@ -131,9 +132,28 @@ namespace roundhouse.infrastructure
                 identity_of_runner = windows_identity.Name;
             }
 
-            Database database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type(configuration_property_holder.DatabaseType);
+            Database database_to_migrate;
+            try
+            {
+                database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type(configuration_property_holder.DatabaseType);
+            }
+            catch (NullReferenceException ex)
+            {
+                if (Assembly.GetExecutingAssembly().FullName.Contains("rh"))
+                {
+                    string database_type = configuration_property_holder.DatabaseType;
+                    database_type = database_type.Substring(0, database_type.IndexOf(','));
+                    const string console_name = "rh";
+                    database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type(database_type + ", " + console_name);
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-            if (restore_from_file_ends_with_LiteSpeed_extension(windsor_container,configuration_property_holder.RestoreFromPath))
+
+            if (restore_from_file_ends_with_LiteSpeed_extension(windsor_container, configuration_property_holder.RestoreFromPath))
             {
                 database_to_migrate = new SqlServerLiteSpeedDatabase(database_to_migrate);
             }
@@ -186,7 +206,7 @@ namespace roundhouse.infrastructure
                                                                               configuration_property_holder.SqlFilesDirectory,
                                                                               configuration_property_holder.PermissionsFolderName, false);
 
-           
+
             KnownFolders known_folders = new DefaultKnownFolders(up_folder, down_folder, run_first_folder, functions_folder, views_folder, sprocs_folder,
                                                                  permissions_folder, change_drop_folder);
             windsor_container.Kernel.AddComponentInstance<KnownFolders>(known_folders);
@@ -208,7 +228,7 @@ namespace roundhouse.infrastructure
             return string.Format("{0:yyyyMMdd_HHmmss_ffff}", DateTime.Now);
         }
 
-        private static bool restore_from_file_ends_with_LiteSpeed_extension(IWindsorContainer windsor_container,string restore_path)
+        private static bool restore_from_file_ends_with_LiteSpeed_extension(IWindsorContainer windsor_container, string restore_path)
         {
             if (string.IsNullOrEmpty(restore_path)) return false;
 
