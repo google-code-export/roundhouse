@@ -55,6 +55,11 @@ namespace roundhouse.sql
             return database.create_database_script();
         }
 
+        public string set_recovery_mode_script(bool simple)
+        {
+            return database.set_recovery_mode_script(simple);
+        }
+
         public void backup_database(string output_path_minus_database)
         {
             database.backup_database(output_path_minus_database);

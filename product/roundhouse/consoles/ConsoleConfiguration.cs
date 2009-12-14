@@ -48,5 +48,6 @@ namespace roundhouse.consoles
         public string DatabaseType {get; set;}
         public bool Drop { get; set; }
         public bool WithTransaction { get; set; }
+        public bool RecoveryModeSimple { get; set; }
     }
 }

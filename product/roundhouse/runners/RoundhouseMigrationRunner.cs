@@ -22,6 +22,7 @@ namespace roundhouse.runners
         private readonly bool interactive;
         private readonly bool dropping_the_database;
         private readonly bool run_in_a_transaction;
+        private readonly bool use_simple_recovery;
         private const string SQL_EXTENSION = "*.sql";
 
         public RoundhouseMigrationRunner(
@@ -33,7 +34,8 @@ namespace roundhouse.runners
                 VersionResolver version_resolver,
                 bool interactive,
                 bool dropping_the_database,
-                bool run_in_a_transaction)
+                bool run_in_a_transaction,
+                bool use_simple_recovery)
         {
             this.known_folders = known_folders;
             this.repository_path = repository_path;
@@ -44,6 +46,7 @@ namespace roundhouse.runners
             this.interactive = interactive;
             this.dropping_the_database = dropping_the_database;
             this.run_in_a_transaction = run_in_a_transaction;
+            this.use_simple_recovery = use_simple_recovery;
         }
 
         public void run()
@@ -75,6 +78,7 @@ namespace roundhouse.runners
                 {
 
                     database_migrator.create_or_restore_database();
+                    database_migrator.set_recovery_mode(use_simple_recovery);
                     database_migrator.verify_or_create_roundhouse_tables();
 
                     string current_version = database_migrator.get_current_version(repository_path);
