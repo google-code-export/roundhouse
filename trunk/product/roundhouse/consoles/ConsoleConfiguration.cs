@@ -1,4 +1,4 @@
-namespace roundhouse.console
+namespace roundhouse.consoles
 {
     using infrastructure;
     using log4net;

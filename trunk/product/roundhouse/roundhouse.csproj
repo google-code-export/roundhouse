@@ -52,7 +52,6 @@
     <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\references\log4net\log4net.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Framework">
       <Private>True</Private>
@@ -78,6 +77,7 @@
     <Compile Include="..\..\SolutionVersion.cs">
       <Link>SolutionVersion.cs</Link>
     </Compile>
+    <Compile Include="consoles\ConsoleConfiguration.cs" />
     <Compile Include="cryptography\CryptographicService.cs" />
     <Compile Include="cryptography\MD5CryptographicService.cs" />
     <Compile Include="environments\DefaultEnvironment.cs" />

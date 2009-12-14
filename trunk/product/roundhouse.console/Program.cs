@@ -5,6 +5,7 @@
 namespace roundhouse.console
 {
     using System;
+    using consoles;
     using folders;
     using infrastructure;
     using infrastructure.containers;

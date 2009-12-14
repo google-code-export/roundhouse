@@ -49,10 +49,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\references\Castle\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+    <Reference Include="log4net, Version=1.2.9.0, Culture=neutral, PublicKeyToken=b32731d11ce58905">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\references\log4net\log4net.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="NAnt.Core, Version=0.86.3412.0, Culture=neutral">
@@ -76,7 +75,6 @@
     <Compile Include="..\..\SolutionVersion.cs">
       <Link>SolutionVersion.cs</Link>
     </Compile>
-    <Compile Include="ConsoleConfiguration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
