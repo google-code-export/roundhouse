@@ -1,6 +1,7 @@
 ﻿using log4net.Config;
+using roundhouse.infrastructure.app.logging;
 
-[assembly: XmlConfigurator(Watch = true)]
+//[assembly: XmlConfigurator(Watch = true)]
 
 namespace roundhouse.console
 {
@@ -25,14 +26,13 @@ namespace roundhouse.console
         {
             //todo: determine if this a call to the diff or the migrator
             run_migrator(args);
-
         }
 
         public static void run_migrator(string[] args)
         {
             ConfigurationPropertyHolder configuration = new ConsoleConfiguration(_logger);
             parse_arguments_and_set_up_migrator_configuration(configuration, args);
-
+            //Log4NetAppender.configure(configuration);
             ApplicationConfiguraton.set_defaults_if_properties_are_not_set(configuration);
             ApplicationConfiguraton.build_the_container(configuration);
 
@@ -65,7 +65,7 @@ namespace roundhouse.console
 
             if (!configuration.NonInteractive)
             {
-                Console.WriteLine("{0}Please press enter to continue...",Environment.NewLine);
+                Console.WriteLine("{0}Please press enter to continue...", Environment.NewLine);
                 Console.Read();
             }
         }
@@ -75,8 +75,8 @@ namespace roundhouse.console
             bool help = false;
 
             OptionSet option_set = new OptionSet()
-                .Add("?|help|h", 
-                    "Prints out the options.", 
+                .Add("?|help|h",
+                    "Prints out the options.",
                     option => help = option != null)
                 .Add("d=|db=|database=|databasename=",
                     "REQUIRED: DatabaseName - The database you want to create/migrate.",
@@ -198,7 +198,7 @@ namespace roundhouse.console
             if (help)
             {
                 _logger.Info("Usage of RoundhousE (RH)");
-                const string usage_message = 
+                const string usage_message =
                     "rh.exe /d[atabase] VALUE /[sql]f[ilesdirectory] VALUE " +
                     "[" +
                     "/s[ervername] VALUE " +
