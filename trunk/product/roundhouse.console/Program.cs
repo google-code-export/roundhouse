@@ -45,7 +45,8 @@ namespace roundhouse.console
                 Container.get_an_instance_of<VersionResolver>(),
                 !configuration.NonInteractive,
                 configuration.Drop,
-                configuration.WithTransaction);
+                configuration.WithTransaction,
+                configuration.RecoveryModeSimple);
 
             try
             {
@@ -175,10 +176,14 @@ namespace roundhouse.console
                 .Add("ni|noninteractive",
                     "NonInteractive - tells RH not to ask for any input when it runs. Defaults to false.",
                     option => configuration.NonInteractive = option != null)
-                //drop
+                //transaction
                 .Add("t|trx|transaction|wt|withtransaction",
                     "WithTransaction - This instructs RH to run inside of a transaction. Defaults to false.",
                     option => configuration.WithTransaction = option != null)
+                //simple
+                .Add("simple",
+                    "RecoveryModeSimple - This instructs RH to set the database recovery mode to simple recovery. Defaults to false.",
+                    option => configuration.RecoveryModeSimple = option != null)
                ;
 
             try

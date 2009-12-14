@@ -168,6 +168,10 @@
         [StringValidator(AllowEmpty = false)]
         public bool WithTransaction { get; set; }
 
+        [TaskAttribute("recoveryModeSimple", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool RecoveryModeSimple { get; set; }
+
         #endregion
 
         public void run_the_task()
@@ -190,7 +194,8 @@
                 Container.get_an_instance_of<VersionResolver>(),
                 !NonInteractive,
                 Drop,
-                WithTransaction);
+                WithTransaction,
+                RecoveryModeSimple);
             try
             {
                 roundhouse_runner.run();

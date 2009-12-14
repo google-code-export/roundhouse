@@ -35,5 +35,6 @@ namespace roundhouse.infrastructure
         string DatabaseType { get; set; }
         bool Drop { get; set; }
         bool WithTransaction { get; set; }
+        bool RecoveryModeSimple { get; set; }
     }
 }

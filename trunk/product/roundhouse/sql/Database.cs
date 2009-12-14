@@ -13,6 +13,7 @@ namespace roundhouse.sql
         string MASTER_DATABASE_NAME { get; }
 
         string create_database_script();
+        string set_recovery_mode_script(bool simple);
         void backup_database(string output_path_minus_database);
         string restore_database_script(string restore_from_path);
         string delete_database_script();

@@ -63,6 +63,7 @@
       nonInteractive="false"
       databaseType="roundhouse.databases.sqlserver2008.SqlServerDatabase, roundhouse.databases.sqlserver2008"
       withTransaction="false"
+      recoveryModeSimple="false"
       />
 
   </nant>
@@ -133,6 +134,7 @@
       NonInteractive="false"
       DatabaseType="roundhouse.databases.sqlserver2008.SqlServerDatabase, roundhouse.databases.sqlserver2008"
       WithTransaction="false"
+      RecoveryModeSimple="false"
       />
 
   </msbuild>

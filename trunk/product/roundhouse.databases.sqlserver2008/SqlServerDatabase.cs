@@ -38,9 +38,18 @@ namespace roundhouse.databases.sqlserver2008
                          BEGIN 
                             CREATE DATABASE [{0}] 
                          END
-                        ALTER DATABASE [{0}] SET RECOVERY SIMPLE
                         ",
                 database_name);
+        }
+
+        public string set_recovery_mode_script(bool simple)
+        {
+
+            return string.Format(
+                @"USE Master 
+                   ALTER DATABASE [{0}] SET RECOVERY {1}
+                    ",
+                     database_name,simple?"SIMPLE": "FULL");
         }
 
         public void backup_database(string output_path_minus_database)

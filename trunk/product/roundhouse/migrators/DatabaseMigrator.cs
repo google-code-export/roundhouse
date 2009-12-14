@@ -9,7 +9,8 @@ namespace roundhouse.migrators
         void disconnect();
         void backup_database_if_it_exists();
         void create_or_restore_database();
-        void restore_database(string restore_from_path);
+        void set_recovery_mode(bool simple);
+        //void restore_database(string restore_from_path);
         void delete_database();
         void verify_or_create_roundhouse_tables();
         string get_current_version(string repository_path);

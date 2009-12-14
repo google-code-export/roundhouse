@@ -41,7 +41,7 @@ namespace roundhouse.migrators
         {
             Log.bound_to(this).log_an_info_event_containing("Creating {0} database on {1} server if it doesn't exist.",
                                                              database.database_name, database.server_name);
-            
+
             if (running_in_a_transaction)
             {
                 database.close_connection();
@@ -79,8 +79,25 @@ namespace roundhouse.migrators
             //                                                database.database_name
             //                                                );
             database.run_sql(database.MASTER_DATABASE_NAME,
-                             restore_script
-                );
+                             restore_script);
+        }
+
+        public void set_recovery_mode(bool simple)
+        {
+            if (running_in_a_transaction)
+            {
+                database.close_connection();
+                database.open_connection(false);
+            }
+
+            database.run_sql(database.MASTER_DATABASE_NAME,
+                             database.set_recovery_mode_script(simple));
+
+            if (running_in_a_transaction)
+            {
+                database.close_connection();
+                database.open_connection(true);
+            }
         }
 
         public void verify_or_create_roundhouse_tables()
