@@ -88,6 +88,7 @@
     <Compile Include="folders\KnownFolders.cs" />
     <Compile Include="folders\DefaultMigrationsFolder.cs" />
     <Compile Include="folders\MigrationsFolder.cs" />
+    <Compile Include="infrastructure.app\logging\Log4NetAppender.cs" />
     <Compile Include="infrastructure\ApplicationConfiguraton.cs" />
     <Compile Include="infrastructure\ApplicationParameters.cs" />
     <Compile Include="infrastructure\commandline.options\Options.cs" />
