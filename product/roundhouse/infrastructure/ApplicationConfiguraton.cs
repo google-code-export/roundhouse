@@ -137,7 +137,7 @@ namespace roundhouse.infrastructure
             {
                 database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type(configuration_property_holder.DatabaseType);
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 if (Assembly.GetExecutingAssembly().FullName.Contains("rh"))
                 {

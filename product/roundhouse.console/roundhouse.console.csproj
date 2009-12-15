@@ -79,17 +79,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <EmbeddedResource Include="log4net.config.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\roundhouse\roundhouse.csproj">
       <Project>{A95DE649-D5BA-4402-9D9C-3D8D67E2FF44}</Project>
       <Name>roundhouse</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

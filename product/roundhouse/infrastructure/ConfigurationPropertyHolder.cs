@@ -36,5 +36,6 @@ namespace roundhouse.infrastructure
         bool Drop { get; set; }
         bool WithTransaction { get; set; }
         bool RecoveryModeSimple { get; set; }
+        bool Debug { get; set; }
     }
 }
