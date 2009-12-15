@@ -1,7 +1,7 @@
 ﻿using log4net.Config;
 using roundhouse.infrastructure.app.logging;
 
-//[assembly: XmlConfigurator(Watch = true)]
+[assembly: XmlConfigurator(Watch = true)]
 
 namespace roundhouse.console
 {
@@ -21,6 +21,8 @@ namespace roundhouse.console
     internal class Program
     {
         private static readonly ILog _logger = LogManager.GetLogger(typeof(Program));
+        private static readonly FileSystemAccess file_system = new WindowsFileSystemAccess();
+        private static KnownFolders known_folders;
 
         private static void Main(string[] args)
         {
@@ -36,10 +38,12 @@ namespace roundhouse.console
             ApplicationConfiguraton.set_defaults_if_properties_are_not_set(configuration);
             ApplicationConfiguraton.build_the_container(configuration);
 
+            known_folders = Container.get_an_instance_of<KnownFolders>();
+
             IRunner roundhouse_runner = new RoundhouseMigrationRunner(
                 configuration.RepositoryPath,
                 Container.get_an_instance_of<environments.Environment>(),
-                Container.get_an_instance_of<KnownFolders>(),
+                known_folders,
                 Container.get_an_instance_of<FileSystemAccess>(),
                 Container.get_an_instance_of<DatabaseMigrator>(),
                 Container.get_an_instance_of<VersionResolver>(),
@@ -61,6 +65,9 @@ namespace roundhouse.console
                                                   exception
                                                   );
                 throw;
+            } finally
+            {
+                copy_log_file_to_change_drop_folder();
             }
 
             if (!configuration.NonInteractive)
@@ -237,6 +244,28 @@ namespace roundhouse.console
             _logger.Info(message);
             option_set.WriteOptionDescriptions(Console.Error);
             Environment.Exit(-1);
+        }
+
+        private static void copy_log_file_to_change_drop_folder()
+        {
+            string log_file = ApplicationParameters.logging_file;
+            string log_file_name = file_system.get_file_name_from(log_file);
+
+            try
+            {
+                string destination_file = file_system.combine_paths(known_folders.change_drop.folder_full_path, log_file_name);
+                file_system.file_copy(log_file, destination_file, true);
+            }
+            catch (Exception exception)
+            {
+                Log.bound_to(typeof(Program)).
+                    log_an_error_event_containing("{0} encountered an error:{1}{2}",
+                                                  ApplicationParameters.name,
+                                                  Environment.NewLine,
+                                                  exception
+                                                  );
+            }
+            
         }
     }
 }

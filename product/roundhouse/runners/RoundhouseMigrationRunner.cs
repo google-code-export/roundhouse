@@ -127,8 +127,6 @@ namespace roundhouse.runners
             }
         }
 
-        //todo: write a file_log to the change_drop folder
-
         private void create_change_drop_folder()
         {
             file_system.create_directory(known_folders.change_drop.folder_full_path);
@@ -176,5 +174,6 @@ namespace roundhouse.runners
             Log.bound_to(this).log_a_debug_event_containing("Copying file {0} to {1}.", file_system.get_file_name_from(sql_file_ran), destination_file);
             file_system.file_copy(sql_file_ran, destination_file, true);
         }
+        
     }
 }
