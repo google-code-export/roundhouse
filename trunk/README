@@ -36,7 +36,7 @@ RELEASE NOTES
 =0.0.0.82=
 * The command line version (rh.exe) is merged into a single assembly with all dependencies (except Microsoft.SQL dlls) internalized. No configuration file necessary either. (r77, r82)
 * Log from console runner is now copied into the change_drop folder. (r81)
-* Recovery mode is now explicit. Default is full. Otherwise pass in /simple. (r78)
+* Recovery mode is now explicit. Default is full. Otherwise pass in /simple. (r78) http://code.google.com/p/roundhouse/issues/detail?id=8
 * Excluded the drop database from transactions (not that you would call /drop with /t). (r76)
 
 =0.0.0.74=
