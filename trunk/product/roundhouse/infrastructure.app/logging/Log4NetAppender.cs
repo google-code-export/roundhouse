@@ -1,28 +1,19 @@
+using System;
+using System.IO;
 using System.Reflection;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
-using log4net.Core;
 using log4net.Layout;
-using log4net.Repository;
 
 namespace roundhouse.infrastructure.app.logging
 {
     public class Log4NetAppender
     {
         private static ILog _logger = LogManager.GetLogger(typeof (Log4NetAppender));
-        //public static IEnumerable<IAppender> configure_appenders_with(ConfigurationPropertyHolder configuration)
-        //{
-        //    IList<IAppender> appenders = new List<IAppender>();
-        //    appenders.Add(set_up_rolling_file_appender(configuration));
-        //    appenders.Add(set_up_console_appender(configuration));
-
-        //    return appenders;
-        //}
-
-        private static IAppender set_up_console_appender(ConfigurationPropertyHolder configuration)
+      
+        private static IAppender set_up_console_appender()
         {
-            _logger.Warn("Setting up console");
             ConsoleAppender appender = new ConsoleAppender();
             appender.Name = "ConsoleAppender";
             
@@ -35,9 +26,9 @@ namespace roundhouse.infrastructure.app.logging
             return appender;
         }
 
-        private static IAppender set_up_rolling_file_appender(ConfigurationPropertyHolder configuration)
+        private static IAppender set_up_rolling_file_appender()
         {
-            string file_name = configuration.OutputPath + "\\RoundhousE.Changes.log";
+            string file_name = ApplicationParameters.logging_file;
 
             RollingFileAppender appender = new RollingFileAppender();
             appender.Name = "RollingLogFileAppender";
@@ -54,15 +45,30 @@ namespace roundhouse.infrastructure.app.logging
             return appender;
         }
 
-        public static void configure(ConfigurationPropertyHolder configuration)
+        public static void configure()
         {
-            ILoggerRepository log_repository = LogManager.GetRepository(Assembly.GetCallingAssembly());
-            log_repository.Threshold = Level.Info;
+            //ILoggerRepository log_repository = LogManager.GetRepository(Assembly.GetCallingAssembly());
+            //log_repository.Threshold = Level.Info;
             
-            BasicConfigurator.Configure(log_repository, set_up_console_appender(configuration));
-            BasicConfigurator.Configure(log_repository,set_up_rolling_file_appender(configuration));
+            //BasicConfigurator.Configure(log_repository, set_up_console_appender());
+            //BasicConfigurator.Configure(log_repository,set_up_rolling_file_appender());
+
+            string assembly_name = ApplicationParameters.log4net_configuration_assembly;
+            Stream xml_config_stream;
             
-            //log4net.Repository.Hierarchy.Logger roundhouse_logger = LoggerManager.CreateRepository(
+            try
+            {
+                xml_config_stream = Assembly.Load(assembly_name).GetManifestResourceStream(ApplicationParameters.log4net_configuration_resource);
+            }
+            catch (Exception)
+            {
+                assembly_name = "rh";
+                xml_config_stream = Assembly.Load(assembly_name).GetManifestResourceStream(ApplicationParameters.log4net_configuration_resource);
+            }
+
+            XmlConfigurator.Configure(xml_config_stream);
+
+            _logger.DebugFormat("Configured {0} from assembly {1}", assembly_name, ApplicationParameters.log4net_configuration_resource);
         }
 
     }

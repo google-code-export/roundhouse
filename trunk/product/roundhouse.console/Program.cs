@@ -1,7 +1,7 @@
-﻿using log4net.Config;
+﻿using System.Reflection;
+using log4net.Core;
+using log4net.Repository;
 using roundhouse.infrastructure.app.logging;
-
-[assembly: XmlConfigurator(Watch = true)]
 
 namespace roundhouse.console
 {
@@ -26,6 +26,7 @@ namespace roundhouse.console
 
         private static void Main(string[] args)
         {
+            Log4NetAppender.configure();
             //todo: determine if this a call to the diff or the migrator
             run_migrator(args);
         }
@@ -34,7 +35,11 @@ namespace roundhouse.console
         {
             ConfigurationPropertyHolder configuration = new ConsoleConfiguration(_logger);
             parse_arguments_and_set_up_migrator_configuration(configuration, args);
-            //Log4NetAppender.configure(configuration);
+            if (configuration.Debug)
+            {
+                change_log_to_debug_level();
+            }
+
             ApplicationConfiguraton.set_defaults_if_properties_are_not_set(configuration);
             ApplicationConfiguraton.build_the_container(configuration);
 
@@ -191,6 +196,10 @@ namespace roundhouse.console
                 .Add("simple",
                     "RecoveryModeSimple - This instructs RH to set the database recovery mode to simple recovery. Defaults to false.",
                     option => configuration.RecoveryModeSimple = option != null)
+                //debug
+                .Add("debug",
+                    "Debug - This instructs RH to write out all messages.",
+                    option => configuration.Debug = option != null)
                ;
 
             try
@@ -244,6 +253,12 @@ namespace roundhouse.console
             _logger.Info(message);
             option_set.WriteOptionDescriptions(Console.Error);
             Environment.Exit(-1);
+        }
+
+        public static void change_log_to_debug_level()
+        {
+            ILoggerRepository log_repository = LogManager.GetRepository(Assembly.GetCallingAssembly());
+            log_repository.Threshold = Level.Debug;
         }
 
         private static void copy_log_file_to_change_drop_folder()

@@ -43,6 +43,11 @@
         /// </summary>
         protected override void ExecuteTask()
         {
+            if (Debug)
+            {
+                Project.Threshold = Level.Debug;
+            }
+
             run_the_task();
         }
 
@@ -171,6 +176,10 @@
         [TaskAttribute("recoveryModeSimple", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public bool RecoveryModeSimple { get; set; }
+
+        [TaskAttribute("debug", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool Debug { get; set; }
 
         #endregion
 

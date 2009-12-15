@@ -16,7 +16,7 @@ namespace roundhouse.infrastructure.loaders
 
         public static object create_object_from_string_type(string object_to_create)
         {
-            Log.bound_to(typeof(DefaultInstanceCreator)).log_an_info_event_containing("Resolving and creating an instance of \"{0}\".", object_to_create);
+            Log.bound_to(typeof(DefaultInstanceCreator)).log_a_debug_event_containing("Resolving and creating an instance of \"{0}\".", object_to_create);
 
             Type object_type = Type.GetType(object_to_create);
 
