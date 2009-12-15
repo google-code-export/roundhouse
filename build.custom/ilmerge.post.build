@@ -17,7 +17,7 @@
   <property name="dirs.merge.from" value="${dirs.drop}\${folder.app.drop}" overwrite="false" />
   <property name="dirs.merge.to" value="${dirs.drop}\merge" overwrite="false" />
 
-  <target name="go" depends="remove_unneeded_assemblies, copy_from_merge, copy_roundhouse_files_to_deploy_console" />
+  <target name="go" depends="remove_unneeded_assemblies, copy_from_merge, copy_roundhouse_files_to_deploy_console, delete_merge_folder" />
  
   <target name="remove_unneeded_assemblies">
     <echo message="Removing unneeded assemblies before moving the merged assembly back into ${dirs.merge.from}."/>
@@ -50,6 +50,10 @@
         <include name="*.*" />
       </fileset>
     </copy>
+  </target>
+  
+  <target name="delete_merge_folder">
+      <delete dir="${dirs.merge.to}" failonerror="false"  />
   </target>
   
 </project>
