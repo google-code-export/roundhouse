@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="log4net.config.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\roundhouse\roundhouse.csproj">
