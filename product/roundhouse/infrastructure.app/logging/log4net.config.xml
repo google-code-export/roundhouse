@@ -74,8 +74,6 @@
   <logger name="roundhouse">
     <level value="INFO"/>
     <appender-ref ref="RollingLogFileAppender"/>
-    <appender-ref ref="ErrorSmtpAppender"/>
-    <appender-ref ref="ErrorEventLogAppender"/>
   </logger>
 
 </log4net>
