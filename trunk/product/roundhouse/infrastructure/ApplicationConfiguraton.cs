@@ -1,3 +1,5 @@
+using roundhouse.infrastructure.extensions;
+
 namespace roundhouse.infrastructure
 {
     using System;
@@ -132,6 +134,8 @@ namespace roundhouse.infrastructure
                 identity_of_runner = windows_identity.Name;
             }
 
+            configuration_property_holder.DatabaseType = convert_database_type_synonyms(configuration_property_holder.DatabaseType);
+
             Database database_to_migrate;
             try
             {
@@ -216,6 +220,45 @@ namespace roundhouse.infrastructure
 
 
             Container.initialize_with(new containers.custom.WindsorContainer(windsor_container));
+        }
+
+        private static string convert_database_type_synonyms(string database_type)
+        {
+            string database_type_full_name = database_type;
+
+            switch (database_type.to_lower())
+            {
+                case "2008":
+                case "sql2008":
+                case "sqlserver2008":
+                    database_type_full_name =
+                        "roundhouse.databases.sqlserver2008.SqlServerDatabase, roundhouse.databases.sqlserver2008";
+                    break;
+                case "2005":
+                case "sql2005":
+                case "sqlserver2005":
+                    database_type_full_name =
+                       "roundhouse.databases.sqlserver2005.SqlServerDatabase, roundhouse.databases.sqlserver2005";
+                    break;
+                case "2000":
+                case "sql2000":
+                case "sqlserver2000":
+                    database_type_full_name =
+                      "roundhouse.databases.sqlserver2000.SqlServerDatabase, roundhouse.databases.sqlserver2000";
+                    throw new NotSupportedException(
+                        "Microsoft SQL Server 2000? Really? Like SNL's \"really.\" Really?! Nice try though.");
+                    break;
+                case "mysql":
+                    database_type_full_name =
+                      "roundhouse.databases.mysql.MySqlDatabase, roundhouse.databases.mysql";
+                    break;
+                case "oracle":
+                    database_type_full_name =
+                     "roundhouse.databases.oracle.OracleDatabase, roundhouse.databases.oracle";
+                    break;
+            }
+
+            return database_type_full_name;
         }
 
         private static string combine_items_into_one_path(IWindsorContainer windsor_container, params string[] paths)
