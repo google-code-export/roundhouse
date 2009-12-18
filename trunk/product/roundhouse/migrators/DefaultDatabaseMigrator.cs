@@ -5,6 +5,7 @@ using roundhouse.sql;
 namespace roundhouse.migrators
 {
     using cryptography;
+    using infrastructure.extensions;
 
     public sealed class DefaultDatabaseMigrator : DatabaseMigrator
     {
@@ -162,7 +163,7 @@ namespace roundhouse.migrators
                              database.insert_version_script(repository_path, repository_version));
         }
 
-        public bool run_sql(string sql_to_run, string script_name, bool run_this_script_once, long version_id)
+        public bool run_sql(string sql_to_run, string script_name, bool run_this_script_once, bool run_this_script_every_time, long version_id, environments.Environment environment)
         {
             bool this_sql_ran = false;
 
@@ -175,7 +176,7 @@ namespace roundhouse.migrators
                 Log.bound_to(this).log_a_warning_event_containing("{0} is a one time script that has changed since it was run.", script_name);
             }
 
-            if (this_script_should_run(script_name, sql_to_run, run_this_script_once))
+            if (if_this_is_an_environment_file_its_in_the_right_environment(script_name, environment) && this_script_should_run(script_name, sql_to_run, run_this_script_once, run_this_script_every_time))
             {
                 Log.bound_to(this).log_an_info_event_containing("Running {0} on {1} - {2}.", script_name, database.server_name, database.database_name);
                 database.run_sql(database.database_name, sql_to_run);
@@ -239,8 +240,13 @@ namespace roundhouse.migrators
             return !hash_is_same;
         }
 
-        private bool this_script_should_run(string script_name, string sql_to_run, bool run_this_script_once)
+        private bool this_script_should_run(string script_name, string sql_to_run, bool run_this_script_once, bool run_this_script_every_time)
         {
+            if (run_this_script_every_time)
+            {
+                return true;
+            }
+
             if (this_script_has_run_already(script_name) && run_this_script_once)
             {
                 return false;
@@ -248,5 +254,26 @@ namespace roundhouse.migrators
 
             return this_script_has_changed_since_last_run(script_name, sql_to_run);
         }
+
+        private bool if_this_is_an_environment_file_its_in_the_right_environment(string script_name, environments.Environment environment)
+        {
+            //Log.bound_to(this).log_an_info_event_containing("Checking to see if {0} is an environment file. We are in the {1} environment.", script_name, environment.name);
+            if (!script_name.to_lower().Contains(".env."))
+            {
+                return true;
+            }
+
+            bool environment_file_is_in_the_right_environment = false;
+
+            if (script_name.to_lower().Contains(environment.name.to_lower() + "."))
+            {
+                environment_file_is_in_the_right_environment = true;
+            }
+
+            Log.bound_to(this).log_an_info_event_containing("{0} is an environment file. We are in the {1} environment. This will{2} run based on this check.", script_name, environment.name, environment_file_is_in_the_right_environment ? string.Empty : " NOT");
+
+            return environment_file_is_in_the_right_environment;
+        }
+
     }
 }

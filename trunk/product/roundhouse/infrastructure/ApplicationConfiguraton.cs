@@ -190,25 +190,25 @@ namespace roundhouse.infrastructure
 
             MigrationsFolder up_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
                                                                      configuration_property_holder.SqlFilesDirectory,
-                                                                     configuration_property_holder.UpFolderName, true);
+                                                                     configuration_property_holder.UpFolderName, true,false);
             MigrationsFolder down_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
                                                                        configuration_property_holder.SqlFilesDirectory,
-                                                                       configuration_property_holder.DownFolderName, true);
+                                                                       configuration_property_holder.DownFolderName, true, false);
             MigrationsFolder run_first_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
                                                                             configuration_property_holder.SqlFilesDirectory,
-                                                                            configuration_property_holder.RunFirstAfterUpFolderName, false);
+                                                                            configuration_property_holder.RunFirstAfterUpFolderName, false, false);
             MigrationsFolder functions_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
                                                                             configuration_property_holder.SqlFilesDirectory,
-                                                                            configuration_property_holder.FunctionsFolderName, false);
+                                                                            configuration_property_holder.FunctionsFolderName, false, false);
             MigrationsFolder views_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
                                                                         configuration_property_holder.SqlFilesDirectory,
-                                                                        configuration_property_holder.ViewsFolderName, false);
+                                                                        configuration_property_holder.ViewsFolderName, false, false);
             MigrationsFolder sprocs_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
                                                                          configuration_property_holder.SqlFilesDirectory,
-                                                                         configuration_property_holder.SprocsFolderName, false);
+                                                                         configuration_property_holder.SprocsFolderName, false, false);
             MigrationsFolder permissions_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
                                                                               configuration_property_holder.SqlFilesDirectory,
-                                                                              configuration_property_holder.PermissionsFolderName, false);
+                                                                              configuration_property_holder.PermissionsFolderName, false,true);
 
 
             KnownFolders known_folders = new DefaultKnownFolders(up_folder, down_folder, run_first_folder, functions_folder, views_folder, sprocs_folder,

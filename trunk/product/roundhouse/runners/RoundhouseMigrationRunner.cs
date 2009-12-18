@@ -66,13 +66,13 @@ namespace roundhouse.runners
             create_change_drop_folder();
             Log.bound_to(this).log_a_debug_event_containing("The change_drop folder is: {0}", known_folders.change_drop.folder_full_path);
 
-            create_share_and_set_permissions_for_change_drop_folder();
-
             try
             {
                 database_migrator.connect(run_in_a_transaction);
 
+                create_share_and_set_permissions_for_change_drop_folder();
                 database_migrator.backup_database_if_it_exists();
+                remove_share_from_change_drop_folder();
 
                 if (!dropping_the_database)
                 {
@@ -87,20 +87,17 @@ namespace roundhouse.runners
 
                     long version_id = database_migrator.version_the_database(repository_path, new_version);
 
-                    traverse_files_and_run_sql(known_folders.up.folder_full_path, version_id, known_folders.up);
+                    traverse_files_and_run_sql(known_folders.up.folder_full_path, version_id, known_folders.up, environment);
 
                     //todo: remember when looking through all files below here, change CREATE to ALTER
                     // we are going to create the create if not exists script
 
-                    traverse_files_and_run_sql(known_folders.run_first_after_up.folder_full_path, version_id, known_folders.run_first_after_up);
-                    traverse_files_and_run_sql(known_folders.functions.folder_full_path, version_id, known_folders.functions);
-                    traverse_files_and_run_sql(known_folders.views.folder_full_path, version_id, known_folders.views);
-                    traverse_files_and_run_sql(known_folders.sprocs.folder_full_path, version_id, known_folders.sprocs);
-                    traverse_files_and_run_sql(known_folders.permissions.folder_full_path, version_id, known_folders.permissions);
+                    traverse_files_and_run_sql(known_folders.run_first_after_up.folder_full_path, version_id, known_folders.run_first_after_up, environment);
+                    traverse_files_and_run_sql(known_folders.functions.folder_full_path, version_id, known_folders.functions, environment);
+                    traverse_files_and_run_sql(known_folders.views.folder_full_path, version_id, known_folders.views, environment);
+                    traverse_files_and_run_sql(known_folders.sprocs.folder_full_path, version_id, known_folders.sprocs, environment);
+                    traverse_files_and_run_sql(known_folders.permissions.folder_full_path, version_id, known_folders.permissions, environment);
 
-                    //todo: permissions folder is based on environment if there are any environment files
-
-                    remove_share_from_change_drop_folder();
                     Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} has kicked your database ({2})! You are now at version {3}. All changes and backups can be found at \"{4}\".",
                                                 System.Environment.NewLine,
                                                 ApplicationParameters.name,
@@ -146,7 +143,7 @@ namespace roundhouse.runners
         //todo: understand what environment you are deploying to so you can decide what to run - it was suggested there be a specific tag in the file name. Like vw_something.ENV.sql and that be a static "ENV". Then to key off of the actual environment name on the front of the file (ex. TEST.vw_something.ENV.sql)
         //todo:down story
 
-        public void traverse_files_and_run_sql(string directory, long version_id, MigrationsFolder migration_folder)
+        public void traverse_files_and_run_sql(string directory, long version_id, MigrationsFolder migration_folder, Environment migrating_environment)
         {
             if (!file_system.directory_exists(directory)) return;
 
@@ -154,7 +151,7 @@ namespace roundhouse.runners
             {
                 string sql_file_text = File.ReadAllText(sql_file);
                 Log.bound_to(this).log_a_debug_event_containing("Found and running {0}.", sql_file);
-                bool the_sql_ran = database_migrator.run_sql(sql_file_text, file_system.get_file_name_from(sql_file), migration_folder.should_run_items_in_folder_once, version_id);
+                bool the_sql_ran = database_migrator.run_sql(sql_file_text, file_system.get_file_name_from(sql_file), migration_folder.should_run_items_in_folder_once, migration_folder.should_run_items_in_folder_every_time, version_id, migrating_environment);
                 if (the_sql_ran)
                 {
                     copy_to_change_drop_folder(sql_file, migration_folder);
@@ -163,7 +160,7 @@ namespace roundhouse.runners
 
             foreach (string child_directory in file_system.get_all_directory_name_strings_in(directory))
             {
-                traverse_files_and_run_sql(child_directory, version_id, migration_folder);
+                traverse_files_and_run_sql(child_directory, version_id, migration_folder, migrating_environment);
             }
         }
 
@@ -174,6 +171,6 @@ namespace roundhouse.runners
             Log.bound_to(this).log_a_debug_event_containing("Copying file {0} to {1}.", file_system.get_file_name_from(sql_file_ran), destination_file);
             file_system.file_copy(sql_file_ran, destination_file, true);
         }
-        
+
     }
 }
