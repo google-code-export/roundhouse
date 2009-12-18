@@ -33,6 +33,10 @@ Donations Accepted - If you enjoy using this product or it has saved you time an
 =============
 RELEASE NOTES
 =============
+=0.0.0.86=
+* Environment awareness - RH determines an environment file first that it has ".ENV." in the file name and then if it is the proper environment file based on whether the file also contains the specific environment name. For example LOCAL.0001_DoSomething.ENV.sql will run in the LOCAL environment but no where else.
+* Runs permissions files every time regardless of changes.
+
 =0.0.0.85=
 * Added synonyms for database types - see http://code.google.com/p/roundhouse/issues/detail?id=10 for details. (r85)
 * removed some of the logging - no more event logging for limited permissions running (r83)
