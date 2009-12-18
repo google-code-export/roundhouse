@@ -16,7 +16,7 @@
   <property name="dirs.deployment" value="${dirs.drop}\${folder.deployment}" />
   <property name="path.file.test_databases" value="${dirs.current}\..\product\testdatabase" />
 
-  <target name="go" depends="copy_nant_to_deploy, cleanup_roundhouse_drop, restructure_roundhouse_drop_folder, copy_roundhouse_files_to_deploy_nant, copy_roundhouse_files_to_deploy_console, copy_test_databases_to_deploy, copy_notices" description="Packaging" />
+  <target name="go" depends="copy_nant_to_deploy, cleanup_roundhouse_drop, restructure_roundhouse_drop_folder, copy_roundhouse_files_to_deploy_nant, copy_roundhouse_files_to_deploy_console, copy_test_databases_to_deploy, create_copy_of_environment_file_for_sample, copy_notices" description="Packaging" />
 
   <target name="copy_nant_to_deploy">
     <echo message="Copying NAnt folder items to ${dirs.deployment}\NAnt."/>
@@ -111,6 +111,13 @@
     </copy>
   </target>
 
+  <target name="create_copy_of_environment_file_for_sample">
+    <copy 
+      file="${dirs.drop}\db\TestRoundhousE\permissions\LOCAL.GrantRobDataReaderDataWriterPermissions.ENV.sql"
+      tofile="${dirs.drop}\db\TestRoundhousE\permissions\TEST.GrantRobDataReaderDataWriterPermissions.ENV.sql" 
+      />
+  </target>
+  
   <target name ="copy_notices">
     <echo message="Packaging readme file to ${dirs.drop}."/>
     <copy file="${dirs.current}\..\README" tofile="${dirs.drop}\ReadMe.txt" />

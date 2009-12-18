@@ -9,7 +9,7 @@
   <property name="folder.code_drop" value="code_drop" overwrite="false" />
   <property name="dirs.drop" value="${dirs.current}\..\${folder.code_drop}" overwrite="false" />
   <property name="folder.app.drop" value="${project.name}" overwrite="false" />
-  <property name="file.roundhouse.tasks" value="${dirs.build}\roundhouse.tasks.dll" />
+  <property name="file.roundhouse.tasks" value="${dirs.build}\${folder.app.drop}\roundhouse.tasks.dll" />
   
   <target name="go" depends="load_roundhouse_task" />
 
