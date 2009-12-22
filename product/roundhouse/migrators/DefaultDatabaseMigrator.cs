@@ -1,6 +1,6 @@
 using System;
+using roundhouse.databases;
 using roundhouse.infrastructure.logging;
-using roundhouse.sql;
 
 namespace roundhouse.migrators
 {
@@ -96,24 +96,21 @@ namespace roundhouse.migrators
         {
             Log.bound_to(this).log_an_info_event_containing("Creating {0} schema if it doesn't exist.",
                                                             database.roundhouse_schema_name);
-            database.run_sql(database.database_name,
-                             database.create_roundhouse_schema_script());
+            database.create_roundhouse_schema();
             Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.",
                                                             database.roundhouse_schema_name,
                                                             database.version_table_name);
-            database.run_sql(database.database_name,
-                             database.create_roundhouse_version_table_script());
+            database.create_roundhouse_version_table();
             Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.",
                                                             database.roundhouse_schema_name,
                                                             database.scripts_run_table_name);
-            database.run_sql(database.database_name,
-                             database.create_roundhouse_scripts_run_table_script());
+            database.create_roundhouse_scripts_run_table();
         }
 
         public string get_current_version(string repository_path)
         {
-            string current_version = (string)database.run_sql_scalar(database.database_name,
-                             database.get_version_script(repository_path));
+            string current_version = database.get_version(repository_path);
+
             if (string.IsNullOrEmpty(current_version))
             {
                 current_version = "0";
@@ -147,8 +144,7 @@ namespace roundhouse.migrators
             Log.bound_to(this).log_an_info_event_containing("Versioning {0} database with version {1} based on {2}.",
                                                             database.database_name,
                                                             repository_version, repository_path);
-            return (long)database.run_sql_scalar(database.database_name,
-                             database.insert_version_script(repository_path, repository_version));
+            return database.insert_version_and_get_version_id(repository_path, repository_version);
         }
 
         public bool run_sql(string sql_to_run, string script_name, bool run_this_script_once, bool run_this_script_every_time, long version_id, environments.Environment environment)
@@ -167,7 +163,7 @@ namespace roundhouse.migrators
             if (if_this_is_an_environment_file_its_in_the_right_environment(script_name, environment) && this_script_should_run(script_name, sql_to_run, run_this_script_once, run_this_script_every_time))
             {
                 Log.bound_to(this).log_an_info_event_containing("Running {0} on {1} - {2}.", script_name, database.server_name, database.database_name);
-                database.run_sql(database.database_name, sql_to_run);
+                database.run_sql(sql_to_run);
                 record_script_in_scripts_run_table(script_name, sql_to_run, run_this_script_once, version_id);
                 this_sql_ran = true;
             }
@@ -183,7 +179,7 @@ namespace roundhouse.migrators
         {
             Log.bound_to(this).log_a_debug_event_containing("Recording {0} script ran on {1} - {2}.", script_name,
                                                             database.server_name, database.database_name);
-            database.run_sql(database.database_name, database.insert_script_run_script(script_name, sql_to_run, create_hash(sql_to_run), run_this_script_once, version_id));
+            database.insert_script_run(script_name, sql_to_run, create_hash(sql_to_run), run_this_script_once, version_id);
         }
 
         private string create_hash(string sql_to_run)
@@ -208,8 +204,7 @@ namespace roundhouse.migrators
             string old_text_hash = string.Empty;
             try
             {
-                old_text_hash = (string)database.run_sql_scalar(database.database_name,
-                                     database.get_current_script_hash_script(script_name));
+                old_text_hash = database.get_current_script_hash(script_name);
             }
             catch (Exception)
             {

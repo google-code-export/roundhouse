@@ -1,4 +1,4 @@
-namespace roundhouse.sql
+namespace roundhouse.databases
 {
     public sealed class SqlServerLiteSpeedDatabase : Database
     {
@@ -14,7 +14,7 @@ namespace roundhouse.sql
             get { return database.connection_string; }
             set { database.connection_string = value; }
         }
-        
+
         public string server_name
         {
             get { return database.server_name; }
@@ -51,6 +51,21 @@ namespace roundhouse.sql
             set { database.user_name = value; }
         }
 
+        public void initialize_connection()
+        {
+            database.initialize_connection();
+        }
+
+        public void open_connection(bool with_transaction)
+        {
+            database.open_connection(with_transaction);
+        }
+
+        public void close_connection()
+        {
+            database.close_connection();
+        }
+
         public void create_database_if_it_doesnt_exist()
         {
             database.create_database_if_it_doesnt_exist();
@@ -68,8 +83,8 @@ namespace roundhouse.sql
 
         public void restore_database(string restore_from_path)
         {
-            database.run_sql("Master", string.Format(
-                    @"USE Master 
+            database.run_sql(string.Format(
+                                           @"USE Master 
                         ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
                         ALTER DATABASE [{0}] SET MULTI_USER;
 
@@ -86,7 +101,7 @@ namespace roundhouse.sql
                         --DBCC SHRINKDATABASE ([{0}]);
                         ",
                         database_name, restore_from_path)
-                        );
+                );
         }
 
         public void delete_database_if_it_exists()
@@ -94,54 +109,39 @@ namespace roundhouse.sql
             database.delete_database_if_it_exists();
         }
 
-        public string create_roundhouse_schema_script()
+        public void create_roundhouse_schema()
         {
-            return database.create_roundhouse_schema_script();
+            throw new System.NotImplementedException();
         }
 
-        public string create_roundhouse_version_table_script()
+        public void create_roundhouse_version_table()
         {
-            return database.create_roundhouse_version_table_script();
+            throw new System.NotImplementedException();
         }
 
-        public string create_roundhouse_scripts_run_table_script()
+        public void create_roundhouse_scripts_run_table()
         {
-            return database.create_roundhouse_scripts_run_table_script();
+            throw new System.NotImplementedException();
+        }
+        
+        public void run_sql(string sql_to_run)
+        {
+            database.run_sql(sql_to_run);
         }
 
-        public string get_version_script(string repository_path)
+        public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
-            return database.get_version_script(repository_path);
+            database.insert_script_run(script_name, sql_to_run, sql_to_run_hash, run_this_script_once, version_id);
+        }
+        
+        public string get_version(string repository_path)
+        {
+            return database.get_version(repository_path);
         }
 
-        public void initialize_connection()
+        public long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
-            database.initialize_connection();
-        }
-
-        public void open_connection(bool with_transaction)
-        {
-            database.open_connection(with_transaction);
-        }
-
-        public void close_connection()
-        {
-            database.close_connection();
-        }
-
-        public string insert_version_script(string repository_path, string repository_version)
-        {
-            return database.insert_version_script(repository_path, repository_version);
-        }
-
-        public string insert_script_run_script(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
-        {
-            return database.insert_script_run_script(script_name, sql_to_run, sql_to_run_hash, run_this_script_once, version_id);
-        }
-
-        public string get_current_script_hash_script(string script_name)
-        {
-            return database.get_current_script_hash_script(script_name);
+            return database.insert_version_and_get_version_id(repository_path, repository_version);
         }
 
         public bool has_run_script_already(string script_name)
@@ -149,14 +149,14 @@ namespace roundhouse.sql
             return database.has_run_script_already(script_name);
         }
 
-        public void run_sql(string database_name, string sql_to_run)
+        public string get_current_script_hash(string script_name)
         {
-            database.run_sql(database_name, sql_to_run);
+            return database.get_current_script_hash(script_name);
         }
 
-        public object run_sql_scalar(string database_name, string sql_to_run)
+        public object run_sql_scalar(string sql_to_run)
         {
-            return database.run_sql_scalar(database_name, sql_to_run);
+            return database.run_sql_scalar(sql_to_run);
         }
 
         private bool disposing = false;

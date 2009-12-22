@@ -1,10 +1,9 @@
 namespace roundhouse.databases.oledb
 {
-    using System;
     using System.Data.OleDb;
     using infrastructure.extensions;
     using infrastructure.logging;
-    using Database = roundhouse.sql.Database;
+    using Database = databases.Database;
 
     public class OleDbDatabase : Database
     {
@@ -24,19 +23,23 @@ namespace roundhouse.databases.oledb
 
         public void initialize_connection()
         {
-            string[] parts = connection_string.Split(';');
-            foreach (string part in parts)
+            if (!string.IsNullOrEmpty(connection_string))
             {
-                if (string.IsNullOrEmpty(server_name) && part.to_lower().Contains("server"))
+                string[] parts = connection_string.Split(';');
+                foreach (string part in parts)
                 {
-                    server_name = part.Substring(part.IndexOf("=") + 1);
-                }
+                    if (string.IsNullOrEmpty(server_name) && part.to_lower().Contains("server"))
+                    {
+                        server_name = part.Substring(part.IndexOf("=") + 1);
+                    }
 
-                if (string.IsNullOrEmpty(database_name) && part.to_lower().Contains("database"))
-                {
-                    database_name = part.Substring(part.IndexOf("=") + 1);
+                    if (string.IsNullOrEmpty(database_name) && part.to_lower().Contains("database"))
+                    {
+                        database_name = part.Substring(part.IndexOf("=") + 1);
+                    }
                 }
             }
+
 
             if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name))
             {
@@ -48,6 +51,27 @@ namespace roundhouse.databases.oledb
         private static string build_connection_string(string server_name, string database_name)
         {
             return string.Format("Provider=SQLNCLI;Server={0};Database={1};Trusted_Connection=yes;", server_name, database_name);
+        }
+
+        public void open_connection(bool with_transaction)
+        {
+            server_connection = new OleDbConnection(connection_string);
+            server_connection.Open();
+
+            if (with_transaction)
+            {
+                server_connection.BeginTransaction();
+                running_a_transaction = true;
+            }
+        }
+
+        public void close_connection()
+        {
+            if (running_a_transaction)
+            {
+                //commit?
+            }
+            server_connection.Close();
         }
 
         public void create_database_if_it_doesnt_exist()
@@ -75,51 +99,24 @@ namespace roundhouse.databases.oledb
             Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for deleting a database at this time.");
         }
 
-        public string create_roundhouse_schema_script()
+        public void create_roundhouse_schema()
         {
             Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating roundhouse schema at this time.");
-            return string.Empty;
         }
 
-        public string create_roundhouse_version_table_script()
+        public void create_roundhouse_version_table()
         {
             Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating roundhouse version table at this time.");
-            return string.Empty;
         }
 
-        public string create_roundhouse_scripts_run_table_script()
+        public void create_roundhouse_scripts_run_table()
         {
             Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating roundhouse scripts run table at this time.");
-            return string.Empty;
         }
 
-        public string get_version_script(string repository_path)
+        public void run_sql(string sql_to_run)
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for retrieving versions at this time.");
-            return string.Empty;
-        }
-
-        public string insert_version_script(string repository_path, string repository_version)
-        {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for inserting versions at this time.");
-            return string.Empty;
-        }
-
-        public string insert_script_run_script(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
-        {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for recording scripts run at this time.");
-            return string.Empty;
-        }
-
-        public bool has_run_script_already(string script_name)
-        {
-            return false;
-        }
-
-        public string get_current_script_hash_script(string script_name)
-        {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for recording scripts run at this time.");
-            return string.Empty;
+            run_sql(database_name, sql_to_run);
         }
 
         public void run_sql(string database_name, string sql_to_run)
@@ -134,6 +131,39 @@ namespace roundhouse.databases.oledb
                 command.ExecuteNonQuery();
                 command.Dispose();
             }
+        }
+
+        public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
+        {
+            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for recording scripts run at this time.");
+        }
+
+        public string get_version(string repository_path)
+        {
+            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for retrieving versions at this time.");
+            return "0";
+        }
+
+        public long insert_version_and_get_version_id(string repository_path, string repository_version)
+        {
+            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for inserting versions at this time.");
+            return 0;
+        }
+
+        public bool has_run_script_already(string script_name)
+        {
+            return false;
+        }
+
+        public string get_current_script_hash(string script_name)
+        {
+            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for hashing (through recording scripts run) at this time.");
+            return string.Empty;
+        }
+
+        public object run_sql_scalar(string sql_to_run)
+        {
+            return run_sql_scalar(database_name, sql_to_run);
         }
 
         public object run_sql_scalar(string database_name, string sql_to_run)
@@ -152,27 +182,6 @@ namespace roundhouse.databases.oledb
             }
 
             return return_value;
-        }
-
-        public void open_connection(bool with_transaction)
-        {
-            server_connection = new OleDbConnection(connection_string);
-            server_connection.Open();
-
-            if (with_transaction)
-            {
-                server_connection.BeginTransaction();
-                running_a_transaction = true;
-            }
-        }
-
-        public void close_connection()
-        {
-            if (running_a_transaction)
-            {
-                //commit?
-            }
-            server_connection.Close();
         }
 
         public void Dispose()

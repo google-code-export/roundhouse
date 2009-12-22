@@ -1,3 +1,4 @@
+using roundhouse.databases;
 using roundhouse.infrastructure.extensions;
 
 namespace roundhouse.infrastructure
@@ -17,7 +18,6 @@ namespace roundhouse.infrastructure
     using logging.custom;
     using migrators;
     using resolvers;
-    using sql;
     using Environment = roundhouse.environments.Environment;
 
     public static class ApplicationConfiguraton

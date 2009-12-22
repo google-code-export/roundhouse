@@ -39,7 +39,7 @@ RELEASE NOTES
 
 =0.0.0.85=
 * Added synonyms for database types - see http://code.google.com/p/roundhouse/issues/detail?id=10 for details. (r85)
-* removed some of the logging - no more event logging for limited permissions running (r83)
+* Removed some of the logging - no more event logging for limited permissions running (r83)
 
 =0.0.0.82=
 * The command line version (rh.exe) is merged into a single assembly with all dependencies (except Microsoft.SQL dlls) internalized. No configuration file necessary either. (r77, r82)
