@@ -3,11 +3,9 @@ namespace roundhouse.databases.sqlserver2005
     using System.Data;
     using System.Data.SqlClient;
     using infrastructure.extensions;
-    using infrastructure.logging;
     using Microsoft.SqlServer.Management.Common;
     using Microsoft.SqlServer.Management.Smo;
-    using Database = roundhouse.sql.Database;
-
+    using Database = databases.Database;
 
     public sealed class SqlServerDatabase : Database
     {
@@ -18,24 +16,27 @@ namespace roundhouse.databases.sqlserver2005
         public string version_table_name { get; set; }
         public string scripts_run_table_name { get; set; }
         public string user_name { get; set; }
-        
+
         public const string MASTER_DATABASE_NAME = "Master";
         private Server sql_server;
         private bool running_a_transaction = false;
 
         public void initialize_connection()
         {
-            string[] parts = connection_string.Split(';');
-            foreach (string part in parts)
+            if (!string.IsNullOrEmpty(connection_string))
             {
-                if (string.IsNullOrEmpty(server_name) && (part.to_lower().Contains("server") || part.to_lower().Contains("data source")))
+                string[] parts = connection_string.Split(';');
+                foreach (string part in parts)
                 {
-                    server_name = part.Substring(part.IndexOf("=") + 1);
-                }
+                    if (string.IsNullOrEmpty(server_name) && (part.to_lower().Contains("server") || part.to_lower().Contains("data source")))
+                    {
+                        server_name = part.Substring(part.IndexOf("=") + 1);
+                    }
 
-                if (string.IsNullOrEmpty(database_name) && (part.to_lower().Contains("initial catalog") || part.to_lower().Contains("database")))
-                {
-                    database_name = part.Substring(part.IndexOf("=") + 1);
+                    if (string.IsNullOrEmpty(database_name) && (part.to_lower().Contains("initial catalog") || part.to_lower().Contains("database")))
+                    {
+                        database_name = part.Substring(part.IndexOf("=") + 1);
+                    }
                 }
             }
 
@@ -45,9 +46,30 @@ namespace roundhouse.databases.sqlserver2005
             }
         }
 
-        public static string build_connection_string(string server_name, string database_name)
+        private static string build_connection_string(string server_name, string database_name)
         {
             return string.Format("Server={0};initial catalog={1};Integrated Security=SSPI", server_name, database_name);
+        }
+
+        public void open_connection(bool with_transaction)
+        {
+            sql_server = new Server(new ServerConnection(new SqlConnection(connection_string)));
+            sql_server.ConnectionContext.Connect();
+            if (with_transaction)
+            {
+                sql_server.ConnectionContext.BeginTransaction();
+                running_a_transaction = true;
+            }
+        }
+
+        public void close_connection()
+        {
+            if (running_a_transaction)
+            {
+                sql_server.ConnectionContext.CommitTransaction();
+            }
+
+            sql_server.ConnectionContext.Disconnect();
         }
 
         public void create_database_if_it_doesnt_exist()
@@ -115,9 +137,9 @@ namespace roundhouse.databases.sqlserver2005
                 );
         }
 
-        public string create_roundhouse_schema_script()
+        public void create_roundhouse_schema()
         {
-            return string.Format(
+            run_sql(string.Format(
                 @"
                     USE [{0}]
                     GO
@@ -128,12 +150,13 @@ namespace roundhouse.databases.sqlserver2005
                       END
 
                 "
-                , database_name, roundhouse_schema_name);
+                , database_name, roundhouse_schema_name)
+                );
         }
 
-        public string create_roundhouse_version_table_script()
+        public void create_roundhouse_version_table()
         {
-            return string.Format(
+            run_sql(string.Format(
                 @"
                     IF NOT EXISTS(SELECT * FROM sys.tables WHERE [name] = '{1}')
                       BEGIN
@@ -149,12 +172,13 @@ namespace roundhouse.databases.sqlserver2005
                         )
                       END
                 ",
-                roundhouse_schema_name, version_table_name);
+                roundhouse_schema_name, version_table_name)
+                );
         }
 
-        public string create_roundhouse_scripts_run_table_script()
+        public void create_roundhouse_scripts_run_table()
         {
-            return string.Format(
+            run_sql(string.Format(
                 @"
                     IF NOT EXISTS(SELECT * FROM sys.tables WHERE [name] = '{1}')
                       BEGIN
@@ -176,73 +200,24 @@ namespace roundhouse.databases.sqlserver2005
 
                       END
                 ",
-                roundhouse_schema_name, scripts_run_table_name, version_table_name);
+                roundhouse_schema_name, scripts_run_table_name, version_table_name)
+                );
         }
 
-        public string get_version_script(string repository_path)
+        public void run_sql(string sql_to_run)
         {
-            return string.Format(
-                @"
-                    SELECT TOP 1 version 
-                    FROM [{0}].[{1}]
-                    WHERE 
-                        repository_path = '{2}' 
-                    ORDER BY entry_date Desc
-                ",
-                roundhouse_schema_name, version_table_name, repository_path);
+            run_sql(database_name, sql_to_run);
         }
 
-        public void open_connection(bool with_transaction)
+        public void run_sql(string database_name, string sql_to_run)
         {
-            sql_server = new Server(new ServerConnection(new SqlConnection(connection_string)));
-            sql_server.ConnectionContext.Connect();
-            if (with_transaction)
-            {
-                sql_server.ConnectionContext.BeginTransaction();
-                running_a_transaction = true;
-            }
+            sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
+            sql_server.ConnectionContext.ExecuteNonQuery(sql_to_run);
         }
 
-        public void close_connection()
+        public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
-            if (running_a_transaction)
-            {
-                sql_server.ConnectionContext.CommitTransaction();
-            }
-
-            sql_server.ConnectionContext.Disconnect();
-        }
-
-        public string insert_version_script(string repository_path, string repository_version)
-        {
-            return string.Format(
-                @"
-                    INSERT INTO [{0}].[{1}] 
-                    (
-                        repository_path
-                        ,version
-                        ,entered_by
-                    )
-                    VALUES
-                    (
-                        '{2}'
-                        ,'{3}'
-                        ,'{4}'
-                    )
-
-                    SELECT TOP 1 id 
-                    FROM [{0}].[{1}]
-                    WHERE 
-                        repository_path = '{2}' 
-                        AND version = '{3}'
-                    ORDER BY entry_date Desc
-                ",
-                roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name);
-        }
-
-        public string insert_script_run_script(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
-        {
-            return string.Format(
+            run_sql(string.Format(
                 @"
                     INSERT INTO [{0}].[{1}] 
                     (
@@ -266,12 +241,59 @@ namespace roundhouse.databases.sqlserver2005
                 roundhouse_schema_name, scripts_run_table_name, version_id,
                 script_name, sql_to_run.Replace(@"'", @"''"),
                 sql_to_run_hash,
-                run_this_script_once ? 1 : 0, user_name);
+                run_this_script_once ? 1 : 0, user_name)
+                );
+        }
+        
+        public string get_version(string repository_path)
+        {
+            string version = (string)run_sql_scalar(string.Format(
+                @"
+                    SELECT TOP 1 version 
+                    FROM [{0}].[{1}]
+                    WHERE 
+                        repository_path = '{2}' 
+                    ORDER BY entry_date Desc
+                ",
+                roundhouse_schema_name, version_table_name, repository_path)
+                );
+
+            return version;
         }
 
-        public string get_current_script_hash_script(string script_name)
+        public long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
-            return string.Format(
+            long version_id = (long)run_sql_scalar(string.Format(
+                @"
+                    INSERT INTO [{0}].[{1}] 
+                    (
+                        repository_path
+                        ,version
+                        ,entered_by
+                    )
+                    VALUES
+                    (
+                        '{2}'
+                        ,'{3}'
+                        ,'{4}'
+                    )
+
+                    SELECT TOP 1 id 
+                    FROM [{0}].[{1}]
+                    WHERE 
+                        repository_path = '{2}' 
+                        AND version = '{3}'
+                    ORDER BY entry_date Desc
+                ",
+                roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name)
+                );
+
+            return version_id;
+        }
+
+        public string get_current_script_hash(string script_name)
+        {
+            string script_hash = (string)run_sql_scalar(string.Format(
                 @"
                     SELECT TOP 1
                         text_hash
@@ -280,7 +302,10 @@ namespace roundhouse.databases.sqlserver2005
                     ORDER BY entry_date Desc
                 ",
                 roundhouse_schema_name, scripts_run_table_name, script_name
+                )
                 );
+
+            return script_hash;
         }
 
         public bool has_run_script_already(string script_name)
@@ -305,10 +330,9 @@ namespace roundhouse.databases.sqlserver2005
             return script_has_run;
         }
 
-        public void run_sql(string database_name, string sql_to_run)
+        public object run_sql_scalar(string sql_to_run)
         {
-            sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
-            sql_server.ConnectionContext.ExecuteNonQuery(sql_to_run);
+            return run_sql_scalar(database_name, sql_to_run);
         }
 
         public object run_sql_scalar(string database_name, string sql_to_run)
@@ -336,6 +360,5 @@ namespace roundhouse.databases.sqlserver2005
                 disposing = true;
             }
         }
-
     }
 }
