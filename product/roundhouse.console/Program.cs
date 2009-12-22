@@ -100,6 +100,9 @@ namespace roundhouse.console
                     string.Format("ServerName - The server and instance you would like to run on. (local) and (local)\\SQL2008 are both valid values. Defaults to \"{0}\".",
                         ApplicationParameters.default_server_name),
                     option => configuration.ServerName = option)
+                .Add("c=|cs=|connstring=|connectionstring=",
+                    string.Format("As an alternative to ServerName and Database - You can provide an entire connection string instead."),
+                    option => configuration.ConnectionString = option)
                 //database type
                 .Add("dt=|dbt=|databasetype=",
                     string.Format("DatabaseType - Tells RH what type of database it is running on. This is a plugin model. This is the fully qualified name of a class that implements the interface roundhouse.sql.Database, roundhouse. If you have your own assembly, just set it next to rh.exe and set this value appropriately. Defaults to \"{0}\" which can also run against SQL Server 2005.",

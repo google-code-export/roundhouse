@@ -12,12 +12,12 @@
     using NAnt.Core.Attributes;
     using resolvers;
     using runners;
-    using Environment=roundhouse.environments.Environment;
+    using Environment = roundhouse.environments.Environment;
 
     [TaskName("roundhouse")]
     public sealed class Roundhouse : Task, ITask, ConfigurationPropertyHolder
     {
-        private readonly ILog the_logger = LogManager.GetLogger(typeof (Roundhouse));
+        private readonly ILog the_logger = LogManager.GetLogger(typeof(Roundhouse));
 
         #region MSBuild
 
@@ -70,7 +70,7 @@
             get { return this; }
         }
 
-        [Required]
+
         [TaskAttribute("serverName", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public string ServerName { get; set; }
@@ -79,6 +79,10 @@
         [TaskAttribute("databaseName", Required = true)]
         [StringValidator(AllowEmpty = false)]
         public string DatabaseName { get; set; }
+
+        [TaskAttribute("connectionString", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public string ConnectionString { get; set; }
 
         [Required]
         [TaskAttribute("sqlFilesDirectory", Required = true)]
@@ -144,7 +148,7 @@
         [TaskAttribute("restore", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public bool Restore { get; set; }
-        
+
         [TaskAttribute("restoreFromPath", Required = false)]
         [StringValidator(AllowEmpty = true)]
         public string RestoreFromPath { get; set; }
@@ -213,8 +217,8 @@
             {
                 infrastructure.logging.Log.bound_to(this).
                     log_an_error_event_containing("{0} encountered an error:{1}{2}",
-                                                  ApplicationParameters.name, 
-                                                  System.Environment.NewLine, 
+                                                  ApplicationParameters.name,
+                                                  System.Environment.NewLine,
                                                   exception
                                                   );
                 throw;
