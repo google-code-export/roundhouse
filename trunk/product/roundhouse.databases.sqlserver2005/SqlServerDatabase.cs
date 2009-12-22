@@ -2,6 +2,7 @@ namespace roundhouse.databases.sqlserver2005
 {
     using System.Data;
     using System.Data.SqlClient;
+    using infrastructure.extensions;
     using infrastructure.logging;
     using Microsoft.SqlServer.Management.Common;
     using Microsoft.SqlServer.Management.Smo;
@@ -12,45 +13,63 @@ namespace roundhouse.databases.sqlserver2005
     {
         public string server_name { get; set; }
         public string database_name { get; set; }
+        public string connection_string { get; set; }
         public string roundhouse_schema_name { get; set; }
         public string version_table_name { get; set; }
         public string scripts_run_table_name { get; set; }
         public string user_name { get; set; }
+        
+        public const string MASTER_DATABASE_NAME = "Master";
         private Server sql_server;
         private bool running_a_transaction = false;
 
-        public SqlServerDatabase()
+        public void initialize_connection()
         {
-            MASTER_DATABASE_NAME = "Master";
-        }
+            string[] parts = connection_string.Split(';');
+            foreach (string part in parts)
+            {
+                if (string.IsNullOrEmpty(server_name) && (part.to_lower().Contains("server") || part.to_lower().Contains("data source")))
+                {
+                    server_name = part.Substring(part.IndexOf("=") + 1);
+                }
 
-        public string MASTER_DATABASE_NAME { get; private set; }
+                if (string.IsNullOrEmpty(database_name) && (part.to_lower().Contains("initial catalog") || part.to_lower().Contains("database")))
+                {
+                    database_name = part.Substring(part.IndexOf("=") + 1);
+                }
+            }
+
+            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name))
+            {
+                connection_string = build_connection_string(server_name, MASTER_DATABASE_NAME);
+            }
+        }
 
         public static string build_connection_string(string server_name, string database_name)
         {
             return string.Format("Server={0};initial catalog={1};Integrated Security=SSPI", server_name, database_name);
         }
 
-        public string create_database_script()
+        public void create_database_if_it_doesnt_exist()
         {
-            return string.Format(
+            run_sql(MASTER_DATABASE_NAME, string.Format(
                 @"USE Master 
                         IF NOT EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
                          BEGIN 
                             CREATE DATABASE [{0}] 
                          END
                         ",
-                database_name);
+                database_name));
         }
 
-        public string set_recovery_mode_script(bool simple)
+        public void set_recovery_mode(bool simple)
         {
-
-            return string.Format(
+            run_sql(MASTER_DATABASE_NAME, string.Format(
                 @"USE Master 
                    ALTER DATABASE [{0}] SET RECOVERY {1}
                     ",
-                     database_name, simple ? "SIMPLE" : "FULL");
+                     database_name, simple ? "SIMPLE" : "FULL")
+                  );
         }
 
         public void backup_database(string output_path_minus_database)
@@ -61,9 +80,9 @@ namespace roundhouse.databases.sqlserver2005
             //sql_server.BackupDevices.Add(new BackupDevice(sql_server,database_name));
         }
 
-        public string restore_database_script(string restore_from_path)
+        public void restore_database(string restore_from_path)
         {
-            return string.Format(
+            run_sql(MASTER_DATABASE_NAME, string.Format(
                 @"USE Master 
                         ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
                         
@@ -78,12 +97,13 @@ namespace roundhouse.databases.sqlserver2005
                         ALTER DATABASE [{0}] SET RECOVERY SIMPLE;
                         --DBCC SHRINKDATABASE ([{0}]);
                         ",
-                database_name, restore_from_path);
+                database_name, restore_from_path)
+                );
         }
 
-        public string delete_database_script()
+        public void delete_database_if_it_exists()
         {
-            return string.Format(
+            run_sql(MASTER_DATABASE_NAME, string.Format(
                 @"USE Master 
                         IF EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
                         BEGIN 
@@ -91,7 +111,8 @@ namespace roundhouse.databases.sqlserver2005
                             EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = '{0}' 
                             DROP DATABASE [{0}] 
                         END",
-                database_name);
+                database_name)
+                );
         }
 
         public string create_roundhouse_schema_script()
@@ -173,7 +194,7 @@ namespace roundhouse.databases.sqlserver2005
 
         public void open_connection(bool with_transaction)
         {
-            sql_server = new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, MASTER_DATABASE_NAME))));
+            sql_server = new Server(new ServerConnection(new SqlConnection(connection_string)));
             sql_server.ConnectionContext.Connect();
             if (with_transaction)
             {
@@ -188,7 +209,7 @@ namespace roundhouse.databases.sqlserver2005
             {
                 sql_server.ConnectionContext.CommitTransaction();
             }
-            
+
             sql_server.ConnectionContext.Disconnect();
         }
 
@@ -302,7 +323,7 @@ namespace roundhouse.databases.sqlserver2005
         {
             sql_server.ConnectionContext.ExecuteNonQuery(string.Format("USE {0}", database_name));
             DataSet result = sql_server.ConnectionContext.ExecuteWithResults(sql_to_run);
-            
+
             return result.Tables.Count == 0 ? null : result.Tables[0];
         }
 

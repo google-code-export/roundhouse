@@ -6,17 +6,19 @@ namespace roundhouse.sql
     {
         string server_name { get; set; }
         string database_name { get; set; }
+        string connection_string { get; set; }
+        void initialize_connection();
         string roundhouse_schema_name { get; set; }
         string version_table_name { get; set; }
         string scripts_run_table_name { get; set; }
         string user_name { get; set; }
-        string MASTER_DATABASE_NAME { get; }
 
-        string create_database_script();
-        string set_recovery_mode_script(bool simple);
+        void create_database_if_it_doesnt_exist();
+        void set_recovery_mode(bool simple);
         void backup_database(string output_path_minus_database);
-        string restore_database_script(string restore_from_path);
-        string delete_database_script();
+        void restore_database(string restore_from_path);
+        void delete_database_if_it_exists();
+
         string create_roundhouse_schema_script();
         string create_roundhouse_version_table_script();
         string create_roundhouse_scripts_run_table_script();

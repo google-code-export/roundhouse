@@ -25,6 +25,7 @@ namespace roundhouse.consoles
         public ILog Log4NetLogger { get; private set; }
         public string ServerName { get; set; }
         public string DatabaseName { get; set; }
+        public string ConnectionString { get; set; }
         public string SqlFilesDirectory { get; set; }
         public string RepositoryPath { get; set; }
         public string VersionFile { get; set; }

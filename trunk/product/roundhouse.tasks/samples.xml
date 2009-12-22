@@ -40,6 +40,7 @@
     <roundhouse
       serverName="(local)"
       databaseName="YOURDATABASENAME"
+      connectionString=""
       sqlFilesDirectory="..\..\db"
       repositoryPath="http://tellmewherethisis.com/svn/"
       versionFile="_BuildInfo.xml"
@@ -111,6 +112,7 @@
     <Roundhouse
       ServerName="(local)"
       DatabaseName="YOURDATABASENAME"
+      ConnectionString=""
       SqlFilesDirectory="..\..\db"
       RepositoryPath="http://tellmewherethisis.com/svn/"
       VersionFile="..\_BuildInfo.xml"

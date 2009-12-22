@@ -24,6 +24,7 @@
     <Roundhouse
         ServerName="$(DBServer)"
         DatabaseName="$(DBName)"
+        ConnectionString=""
         SqlFilesDirectory="$(DBSqlFilesPath)"
         RepositoryPath="$(RepositoryPath)"
         VersionFile="$(VersionFile)"

@@ -12,6 +12,7 @@ namespace roundhouse.infrastructure
 
         string ServerName { get; set; }
         string DatabaseName { get; set; }
+        string ConnectionString { get; set; }
         string SqlFilesDirectory { get; set; }
         string RepositoryPath { get; set; }
         string VersionFile { get; set; }

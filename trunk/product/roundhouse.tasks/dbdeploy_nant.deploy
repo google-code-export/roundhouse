@@ -27,6 +27,7 @@
     <roundhouse
       serverName="${server.database}"
       databaseName="${database.name}"
+      connectionString=""
       sqlFilesDirectory="${dirs.db}"
       repositoryPath="${repository.path}"
       versionFile="${path.file.version}"

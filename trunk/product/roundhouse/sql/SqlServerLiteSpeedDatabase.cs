@@ -9,6 +9,12 @@ namespace roundhouse.sql
             this.database = database;
         }
 
+        public string connection_string
+        {
+            get { return database.connection_string; }
+            set { database.connection_string = value; }
+        }
+        
         public string server_name
         {
             get { return database.server_name; }
@@ -45,19 +51,14 @@ namespace roundhouse.sql
             set { database.user_name = value; }
         }
 
-        public string MASTER_DATABASE_NAME
+        public void create_database_if_it_doesnt_exist()
         {
-            get { return database.MASTER_DATABASE_NAME; }
+            database.create_database_if_it_doesnt_exist();
         }
 
-        public string create_database_script()
+        public void set_recovery_mode(bool simple)
         {
-            return database.create_database_script();
-        }
-
-        public string set_recovery_mode_script(bool simple)
-        {
-            return database.set_recovery_mode_script(simple);
+            database.set_recovery_mode(simple);
         }
 
         public void backup_database(string output_path_minus_database)
@@ -65,10 +66,10 @@ namespace roundhouse.sql
             database.backup_database(output_path_minus_database);
         }
 
-        public string restore_database_script(string restore_from_path)
+        public void restore_database(string restore_from_path)
         {
-            return string.Format(
-                @"USE Master 
+            database.run_sql("Master", string.Format(
+                    @"USE Master 
                         ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
                         ALTER DATABASE [{0}] SET MULTI_USER;
 
@@ -84,12 +85,13 @@ namespace roundhouse.sql
                         ALTER DATABASE [{0}] SET RECOVERY SIMPLE;
                         --DBCC SHRINKDATABASE ([{0}]);
                         ",
-                    database_name, restore_from_path);
+                        database_name, restore_from_path)
+                        );
         }
 
-        public string delete_database_script()
+        public void delete_database_if_it_exists()
         {
-            return database.delete_database_script();
+            database.delete_database_if_it_exists();
         }
 
         public string create_roundhouse_schema_script()
@@ -112,6 +114,11 @@ namespace roundhouse.sql
             return database.get_version_script(repository_path);
         }
 
+        public void initialize_connection()
+        {
+            database.initialize_connection();
+        }
+
         public void open_connection(bool with_transaction)
         {
             database.open_connection(with_transaction);
@@ -129,7 +136,7 @@ namespace roundhouse.sql
 
         public string insert_script_run_script(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
-            return database.insert_script_run_script(script_name, sql_to_run,sql_to_run_hash, run_this_script_once, version_id);
+            return database.insert_script_run_script(script_name, sql_to_run, sql_to_run_hash, run_this_script_once, version_id);
         }
 
         public string get_current_script_hash_script(string script_name)
