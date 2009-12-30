@@ -27,6 +27,11 @@ namespace roundhouse.databases
             set { database.database_name = value; }
         }
 
+        public string provider {
+            get { return database.provider; }
+            set { database.provider = value; }
+        }
+
         public string roundhouse_schema_name
         {
             get { return database.roundhouse_schema_name; }
@@ -109,17 +114,17 @@ namespace roundhouse.databases
             database.delete_database_if_it_exists();
         }
 
-        public void create_roundhouse_schema()
+        public void create_roundhouse_schema_if_it_doesnt_exist()
         {
             throw new System.NotImplementedException();
         }
 
-        public void create_roundhouse_version_table()
+        public void create_roundhouse_version_table_if_it_doesnt_exist()
         {
             throw new System.NotImplementedException();
         }
 
-        public void create_roundhouse_scripts_run_table()
+        public void create_roundhouse_scripts_run_table_if_it_doesnt_exist()
         {
             throw new System.NotImplementedException();
         }

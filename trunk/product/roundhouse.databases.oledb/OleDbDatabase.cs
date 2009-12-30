@@ -10,6 +10,7 @@ namespace roundhouse.databases.oledb
 
         public string server_name { get; set; }
         public string database_name { get; set; }
+        public string provider { get; set; }
         public string connection_string { get; set; }
         public string roundhouse_schema_name { get; set; }
         public string version_table_name { get; set; }
@@ -99,17 +100,17 @@ namespace roundhouse.databases.oledb
             Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for deleting a database at this time.");
         }
 
-        public void create_roundhouse_schema()
+        public void create_roundhouse_schema_if_it_doesnt_exist()
         {
             Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating roundhouse schema at this time.");
         }
 
-        public void create_roundhouse_version_table()
+        public void create_roundhouse_version_table_if_it_doesnt_exist()
         {
             Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating roundhouse version table at this time.");
         }
 
-        public void create_roundhouse_scripts_run_table()
+        public void create_roundhouse_scripts_run_table_if_it_doesnt_exist()
         {
             Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating roundhouse scripts run table at this time.");
         }

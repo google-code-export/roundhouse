@@ -1,3 +1,5 @@
+using roundhouse.sql;
+
 namespace roundhouse.databases.sqlserver2008
 {
     using System.Data;
@@ -12,6 +14,7 @@ namespace roundhouse.databases.sqlserver2008
     {
         public string server_name { get; set; }
         public string database_name { get; set; }
+        public string provider { get; set; }
         public string connection_string { get; set; }
         public string roundhouse_schema_name { get; set; }
         public string version_table_name { get; set; }
@@ -75,24 +78,12 @@ namespace roundhouse.databases.sqlserver2008
 
         public void create_database_if_it_doesnt_exist()
         {
-            run_sql(MASTER_DATABASE_NAME, string.Format(
-                @"USE Master 
-                        IF NOT EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
-                         BEGIN 
-                            CREATE DATABASE [{0}] 
-                         END
-                        ",
-                database_name));
+            run_sql(MASTER_DATABASE_NAME, SqlScripts.t_sql_scripts.create_database(database_name));
         }
 
         public void set_recovery_mode(bool simple)
         {
-            run_sql(MASTER_DATABASE_NAME, string.Format(
-                @"USE Master 
-                   ALTER DATABASE [{0}] SET RECOVERY {1}
-                    ",
-                     database_name, simple ? "SIMPLE" : "FULL")
-                  );
+            run_sql(MASTER_DATABASE_NAME, SqlScripts.t_sql_scripts.set_recovery_mode(database_name, simple));
         }
 
         public void backup_database(string output_path_minus_database)
@@ -105,104 +96,27 @@ namespace roundhouse.databases.sqlserver2008
 
         public void restore_database(string restore_from_path)
         {
-            run_sql(MASTER_DATABASE_NAME, string.Format(
-                @"USE Master 
-                        ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-                        
-                        RESTORE DATABASE [{0}]
-                        FROM DISK = N'{1}'
-                        WITH NOUNLOAD
-                        , STATS = 10
-                        , RECOVERY
-                        , REPLACE;
-
-                        ALTER DATABASE [{0}] SET MULTI_USER;
-                        ALTER DATABASE [{0}] SET RECOVERY SIMPLE;
-                        --DBCC SHRINKDATABASE ([{0}]);
-                        ",
-                database_name, restore_from_path)
-                );
+            run_sql(MASTER_DATABASE_NAME, SqlScripts.t_sql_scripts.restore_database(database_name,restore_from_path));
         }
 
         public void delete_database_if_it_exists()
         {
-            run_sql(MASTER_DATABASE_NAME, string.Format(
-                @"USE Master 
-                        IF EXISTS(SELECT * FROM sys.databases WHERE [name] = '{0}') 
-                        BEGIN 
-                            ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
-                            EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = '{0}' 
-                            DROP DATABASE [{0}] 
-                        END",
-                database_name)
-                );
+            run_sql(MASTER_DATABASE_NAME, SqlScripts.t_sql_scripts.delete_database(database_name));
         }
 
-        public void create_roundhouse_schema()
+        public void create_roundhouse_schema_if_it_doesnt_exist()
         {
-            run_sql(string.Format(
-                @"
-                    USE [{0}]
-                    GO
-
-                    IF NOT EXISTS(SELECT * FROM sys.schemas WHERE [name] = '{1}')
-                      BEGIN
-	                    EXEC('CREATE SCHEMA [{1}]')
-                      END
-
-                "
-                , database_name, roundhouse_schema_name)
-                );
+            run_sql(SqlScripts.t_sql_scripts.create_roundhouse_schema(roundhouse_schema_name));
         }
 
-        public void create_roundhouse_version_table()
+        public void create_roundhouse_version_table_if_it_doesnt_exist()
         {
-            run_sql(string.Format(
-                @"
-                    IF NOT EXISTS(SELECT * FROM sys.tables WHERE [name] = '{1}')
-                      BEGIN
-                        CREATE TABLE [{0}].[{1}]
-                        (
-                            id                          BigInt			NOT NULL	IDENTITY(1,1)
-                            ,repository_path			VarChar(255)	NULL
-                            ,version			        VarChar(35)	    NULL
-                            ,entry_date					DateTime        NOT NULL	DEFAULT (GetDate())
-                            ,modified_date				DateTime        NOT NULL	DEFAULT (GetDate())
-                            ,entered_by                 VarChar(50)     NULL
-                            ,CONSTRAINT [PK_{1}_id] PRIMARY KEY CLUSTERED (id) 
-                        )
-                      END
-                ",
-                roundhouse_schema_name, version_table_name)
-                );
+            run_sql(SqlScripts.t_sql_scripts.create_roundhouse_version_table(roundhouse_schema_name,version_table_name));
         }
 
-        public void create_roundhouse_scripts_run_table()
+        public void create_roundhouse_scripts_run_table_if_it_doesnt_exist()
         {
-            run_sql(string.Format(
-                @"
-                    IF NOT EXISTS(SELECT * FROM sys.tables WHERE [name] = '{1}')
-                      BEGIN
-                        CREATE TABLE [{0}].[{1}]
-                        (
-                            id                          BigInt			NOT NULL	IDENTITY(1,1)
-                            ,version_id                 BigInt			NULL
-                            ,script_name                VarChar(255)	NULL
-                            ,text_of_script             Text        	NULL
-                            ,text_hash                  VarChar(512)    NULL
-                            ,one_time_script            Bit         	NULL        DEFAULT(0)
-                            ,entry_date					DateTime        NOT NULL	DEFAULT (GetDate())
-                            ,modified_date				DateTime        NOT NULL	DEFAULT (GetDate())
-                            ,entered_by                 VarChar(50)     NULL
-                            ,CONSTRAINT [PK_{1}_id] PRIMARY KEY CLUSTERED (id) 
-                        )
-                        
-                        ALTER TABLE [{0}].[{1}] WITH CHECK ADD CONSTRAINT [FK_.{1}_{2}_version_id] FOREIGN KEY(version_id) REFERENCES [{0}].[{2}] (id)
-
-                      END
-                ",
-                roundhouse_schema_name, scripts_run_table_name, version_table_name)
-                );
+            run_sql(SqlScripts.t_sql_scripts.create_roundhouse_scripts_run_table(roundhouse_schema_name, version_table_name,scripts_run_table_name));
         }
 
         public void run_sql(string sql_to_run)
@@ -218,111 +132,29 @@ namespace roundhouse.databases.sqlserver2008
 
         public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
-            run_sql(string.Format(
-                @"
-                    INSERT INTO [{0}].[{1}] 
-                    (
-                        version_id
-                        ,script_name
-                        ,text_of_script
-                        ,text_hash
-                        ,one_time_script
-                        ,entered_by
-                    )
-                    VALUES
-                    (
-                        {2}
-                        ,'{3}'
-                        ,'{4}'
-                        ,'{5}'
-                        ,{6}
-                        ,'{7}'
-                    )
-                ",
-                roundhouse_schema_name, scripts_run_table_name, version_id,
-                script_name, sql_to_run.Replace(@"'", @"''"),
-                sql_to_run_hash,
-                run_this_script_once ? 1 : 0, user_name)
-                );
+            run_sql(SqlScripts.t_sql_scripts.insert_script_run(roundhouse_schema_name,scripts_run_table_name,version_id,script_name,sql_to_run,sql_to_run_hash,run_this_script_once,user_name));
         }
 
         public string get_version(string repository_path)
         {
-            string version = (string)run_sql_scalar(string.Format(
-                @"
-                    SELECT TOP 1 version 
-                    FROM [{0}].[{1}]
-                    WHERE 
-                        repository_path = '{2}' 
-                    ORDER BY entry_date Desc
-                ",
-                roundhouse_schema_name, version_table_name, repository_path)
-                );
-
-            return version;
+            return (string)run_sql_scalar(SqlScripts.t_sql_scripts.get_version(roundhouse_schema_name, version_table_name,repository_path));
         }
 
         public long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
-            long version_id = (long)run_sql_scalar(string.Format(
-                @"
-                    INSERT INTO [{0}].[{1}] 
-                    (
-                        repository_path
-                        ,version
-                        ,entered_by
-                    )
-                    VALUES
-                    (
-                        '{2}'
-                        ,'{3}'
-                        ,'{4}'
-                    )
-
-                    SELECT TOP 1 id 
-                    FROM [{0}].[{1}]
-                    WHERE 
-                        repository_path = '{2}' 
-                        AND version = '{3}'
-                    ORDER BY entry_date Desc
-                ",
-                roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name)
-                );
-
-            return version_id;
+            return (long)run_sql_scalar(SqlScripts.t_sql_scripts.insert_version_and_get_version_id(roundhouse_schema_name,version_table_name,repository_path,repository_version, user_name));
         }
 
         public string get_current_script_hash(string script_name)
         {
-            string script_hash = (string)run_sql_scalar(string.Format(
-                @"
-                    SELECT TOP 1
-                        text_hash
-                    FROM [{0}].[{1}]
-                    WHERE script_name = '{2}'
-                    ORDER BY entry_date Desc
-                ",
-                roundhouse_schema_name, scripts_run_table_name, script_name
-                )
-                );
-
-            return script_hash;
+            return (string)run_sql_scalar(SqlScripts.t_sql_scripts.get_current_script_hash(roundhouse_schema_name,scripts_run_table_name, script_name));
         }
 
         public bool has_run_script_already(string script_name)
         {
             bool script_has_run = false;
 
-            string sql_to_run = string.Format(
-                @"
-                    SELECT 
-                        script_name
-                    FROM [{0}].[{1}]
-                    WHERE script_name = '{2}'
-                ",
-                roundhouse_schema_name, scripts_run_table_name, script_name
-                );
-            DataTable data_table = execute_datatable(sql_to_run);
+            DataTable data_table = execute_datatable(SqlScripts.t_sql_scripts.has_script_run(roundhouse_schema_name,scripts_run_table_name,script_name));
             if (data_table.Rows.Count > 0)
             {
                 script_has_run = true;

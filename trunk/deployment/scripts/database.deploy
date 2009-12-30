@@ -11,7 +11,7 @@
   <property name="server.database" value="__DATABASE_SERVER__" overwrite="false" />
   <property name="database.name" value="__DATABASE_NAME__" overwrite="false" />
   <property name="environment" value="" overwrite="false" />
-  <property name="dirs.db" value="${dirs.current}\..\${folder.database}\${database.name}" overwrite="false" />
+  <property name="dirs.db.deploy" value="${dirs.current}\..\..\${folder.database}\${database.name}" overwrite="false" />
   <property name="file.version" value="${project.name}.dll" overwrite="false" />
   <property name="xml.file.version.xpath" value="//buildInfo/version" overwrite="false" />
   <property name="path.file.version" value="${dirs.current}\..\..\${folder.app.drop}\NAnt\${file.version}" overwrite="false" />
@@ -28,7 +28,7 @@
     <roundhouse
       serverName="${server.database}"
       databaseName="${database.name}"
-      sqlFilesDirectory="${dirs.db}"
+      sqlFilesDirectory="${dirs.db.deploy}"
       repositoryPath="${repository.path}"
       versionFile="${file.version}"
       versionXPath="${xml.file.version.xpath}"
