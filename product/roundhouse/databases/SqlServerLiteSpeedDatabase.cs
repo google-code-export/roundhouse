@@ -114,19 +114,24 @@ namespace roundhouse.databases
             database.delete_database_if_it_exists();
         }
 
+        public void use_database(string database_name)
+        {
+            database.use_database(database_name);
+        }
+
         public void create_roundhouse_schema_if_it_doesnt_exist()
         {
-            throw new System.NotImplementedException();
+            database.create_roundhouse_schema_if_it_doesnt_exist();
         }
 
         public void create_roundhouse_version_table_if_it_doesnt_exist()
         {
-            throw new System.NotImplementedException();
+            database.create_roundhouse_version_table_if_it_doesnt_exist();
         }
 
         public void create_roundhouse_scripts_run_table_if_it_doesnt_exist()
         {
-            throw new System.NotImplementedException();
+            database.create_roundhouse_scripts_run_table_if_it_doesnt_exist();
         }
         
         public void run_sql(string sql_to_run)

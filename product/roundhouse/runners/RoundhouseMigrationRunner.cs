@@ -79,6 +79,7 @@ namespace roundhouse.runners
 
                     database_migrator.create_or_restore_database();
                     database_migrator.set_recovery_mode(use_simple_recovery);
+                    database_migrator.transfer_to_database_for_changes();
                     database_migrator.verify_or_create_roundhouse_tables();
 
                     string current_version = database_migrator.get_current_version(repository_path);

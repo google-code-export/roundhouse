@@ -92,6 +92,11 @@ namespace roundhouse.migrators
             }
         }
 
+        public void transfer_to_database_for_changes()
+        {
+            database.use_database(database.database_name);
+        }
+
         public void verify_or_create_roundhouse_tables()
         {
             Log.bound_to(this).log_an_info_event_containing("Creating {0} schema if it doesn't exist.",

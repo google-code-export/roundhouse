@@ -256,6 +256,10 @@ namespace roundhouse.infrastructure
                     database_type_full_name =
                      "roundhouse.databases.oracle.OracleDatabase, roundhouse.databases.oracle";
                     break;
+                case "oledb":
+                    database_type_full_name =
+                     "roundhouse.databases.oledb.OleDbDatabase, roundhouse.databases.oledb";
+                    break;
             }
 
             return database_type_full_name;
