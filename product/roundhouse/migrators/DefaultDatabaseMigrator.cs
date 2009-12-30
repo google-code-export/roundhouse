@@ -96,15 +96,15 @@ namespace roundhouse.migrators
         {
             Log.bound_to(this).log_an_info_event_containing("Creating {0} schema if it doesn't exist.",
                                                             database.roundhouse_schema_name);
-            database.create_roundhouse_schema();
+            database.create_roundhouse_schema_if_it_doesnt_exist();
             Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.",
                                                             database.roundhouse_schema_name,
                                                             database.version_table_name);
-            database.create_roundhouse_version_table();
+            database.create_roundhouse_version_table_if_it_doesnt_exist();
             Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.",
                                                             database.roundhouse_schema_name,
                                                             database.scripts_run_table_name);
-            database.create_roundhouse_scripts_run_table();
+            database.create_roundhouse_scripts_run_table_if_it_doesnt_exist();
         }
 
         public string get_current_version(string repository_path)
