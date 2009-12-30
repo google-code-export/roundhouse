@@ -1,13 +1,14 @@
+using System;
+using System.Data;
+using System.Data.OleDb;
+using roundhouse.infrastructure.extensions;
+using roundhouse.infrastructure.logging;
+using roundhouse.sql;
+
 namespace roundhouse.databases.oledb
 {
-    using System.Data.OleDb;
-    using infrastructure.extensions;
-    using infrastructure.logging;
-    using Database = databases.Database;
-
     public class OleDbDatabase : Database
     {
-
         public string server_name { get; set; }
         public string database_name { get; set; }
         public string provider { get; set; }
@@ -17,10 +18,12 @@ namespace roundhouse.databases.oledb
         public string scripts_run_table_name { get; set; }
         public string user_name { get; set; }
 
+        public const string MASTER_DATABASE_NAME = "Master";
         private OleDbConnection server_connection;
-        private bool running_a_transaction = false;
-        private bool disposing = false;
+        private bool running_a_transaction;
+        private bool disposing;
         private const int sixty_seconds = 60;
+        private SqlScript sql_scripts;
 
         public void initialize_connection()
         {
@@ -41,22 +44,34 @@ namespace roundhouse.databases.oledb
                 }
             }
 
-
             if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name))
             {
                 connection_string = build_connection_string(server_name, database_name);
             }
 
+            if (connection_string.to_lower().Contains("sqlserver") || connection_string.to_lower().Contains("sqlncli"))
+            {
+                connection_string = build_connection_string(server_name, MASTER_DATABASE_NAME);
+            }
+
+            server_connection = new OleDbConnection(connection_string);
+            provider = server_connection.Provider;
+
+            SqlScripts.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
+            if (sql_scripts == null)
+            {
+                sql_scripts = SqlScripts.t_sql_scripts;
+            }
         }
 
         private static string build_connection_string(string server_name, string database_name)
         {
-            return string.Format("Provider=SQLNCLI;Server={0};Database={1};Trusted_Connection=yes;", server_name, database_name);
+            return string.Format("Provider=SQLNCLI;Server={0};Database={1};Trusted_Connection=yes;", server_name,
+                                 database_name);
         }
 
         public void open_connection(bool with_transaction)
         {
-            server_connection = new OleDbConnection(connection_string);
             server_connection.Open();
 
             if (with_transaction)
@@ -77,57 +92,121 @@ namespace roundhouse.databases.oledb
 
         public void create_database_if_it_doesnt_exist()
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating a database at this time.");
+            try
+            {
+                run_sql(sql_scripts.create_database(database_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for creating a database at this time.",
+                    provider);
+            }
         }
 
         public void set_recovery_mode(bool simple)
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for setting recovery mode to simple at this time.");
+            try
+            {
+                run_sql(sql_scripts.set_recovery_mode(database_name, simple));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for setting recovery mode to simple at this time.",
+                    provider);
+            }
         }
 
         public void backup_database(string output_path_minus_database)
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for backing up a database at this time.");
+            //Log.bound_to(this).log_a_warning_event_containing("OleDB with provider {0} does not provide a facility for backing up a database at this time.", provider);
         }
 
         public void restore_database(string restore_from_path)
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for restoring a database at this time.");
+            try
+            {
+                run_sql(sql_scripts.restore_database(database_name, restore_from_path));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for restoring a database at this time.",
+                    provider);
+            }
         }
 
         public void delete_database_if_it_exists()
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for deleting a database at this time.");
+            try
+            {
+                run_sql(sql_scripts.delete_database(database_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for deleting a database at this time.",
+                    provider);
+            }
+        }
+
+        public void use_database(string database_name)
+        {
+            run_sql(sql_scripts.use_database(database_name));
         }
 
         public void create_roundhouse_schema_if_it_doesnt_exist()
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating roundhouse schema at this time.");
+            try
+            {
+                run_sql(sql_scripts.create_roundhouse_schema(roundhouse_schema_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for creating roundhouse schema at this time.",
+                    provider);
+            }
         }
 
         public void create_roundhouse_version_table_if_it_doesnt_exist()
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating roundhouse version table at this time.");
+            try
+            {
+                run_sql(sql_scripts.create_roundhouse_version_table(roundhouse_schema_name, version_table_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for creating roundhouse version table at this time.",
+                    provider);
+            }
         }
 
         public void create_roundhouse_scripts_run_table_if_it_doesnt_exist()
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for creating roundhouse scripts run table at this time.");
+            try
+            {
+                run_sql(sql_scripts.create_roundhouse_scripts_run_table(roundhouse_schema_name, version_table_name,
+                                                                        scripts_run_table_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for creating roundhouse scripts run table at this time.",
+                    provider);
+            }
         }
 
         public void run_sql(string sql_to_run)
-        {
-            run_sql(database_name, sql_to_run);
-        }
-
-        public void run_sql(string database_name, string sql_to_run)
         {
             if (string.IsNullOrEmpty(sql_to_run)) return;
 
             using (OleDbCommand command = server_connection.CreateCommand())
             {
                 command.CommandText = sql_to_run;
-                command.CommandType = System.Data.CommandType.Text;
+                command.CommandType = CommandType.Text;
                 command.CommandTimeout = sixty_seconds;
                 command.ExecuteNonQuery();
                 command.Dispose();
@@ -136,38 +215,94 @@ namespace roundhouse.databases.oledb
 
         public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for recording scripts run at this time.");
+            try
+            {
+                run_sql(sql_scripts.insert_script_run(roundhouse_schema_name, scripts_run_table_name, version_id,
+                                                      script_name,
+                                                      sql_to_run, sql_to_run_hash, run_this_script_once, user_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for recording scripts run at this time.",
+                    provider);
+            }
         }
 
         public string get_version(string repository_path)
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for retrieving versions at this time.");
-            return "0";
+            try
+            {
+                return
+                    (string)
+                    run_sql_scalar(sql_scripts.get_version(roundhouse_schema_name, version_table_name, repository_path));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for retrieving versions at this time.",
+                    provider);
+                return "0";
+            }
         }
 
         public long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for inserting versions at this time.");
-            return 0;
+            try
+            {
+                return (long)run_sql_scalar(sql_scripts.insert_version_and_get_version_id(roundhouse_schema_name,
+                                                                                           version_table_name, repository_path,
+                                                                                           repository_version, user_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for inserting versions at this time.", provider);
+                return 0;
+            }
         }
 
         public bool has_run_script_already(string script_name)
         {
-            return false;
+            try
+            {
+                bool script_has_run = false;
+
+                DataTable data_table =
+                    execute_datatable(sql_scripts.has_script_run(roundhouse_schema_name, scripts_run_table_name,
+                                                                 script_name));
+                if (data_table.Rows.Count > 0)
+                {
+                    script_has_run = true;
+                }
+
+                return script_has_run;
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for determining if a script has run at this time.",
+                    provider);
+                return false;
+            }
         }
 
         public string get_current_script_hash(string script_name)
         {
-            Log.bound_to(this).log_a_warning_event_containing("OleDB does not provide a facility for hashing (through recording scripts run) at this time.");
-            return string.Empty;
+            try
+            {
+                return (string)run_sql_scalar(sql_scripts.get_current_script_hash(roundhouse_schema_name, scripts_run_table_name, script_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for hashing (through recording scripts run) at this time.",
+                    provider);
+                return string.Empty;
+            }
         }
 
         public object run_sql_scalar(string sql_to_run)
-        {
-            return run_sql_scalar(database_name, sql_to_run);
-        }
-
-        public object run_sql_scalar(string database_name, string sql_to_run)
         {
             object return_value = new object();
 
@@ -176,13 +311,37 @@ namespace roundhouse.databases.oledb
             using (OleDbCommand command = server_connection.CreateCommand())
             {
                 command.CommandText = sql_to_run;
-                command.CommandType = System.Data.CommandType.Text;
+                command.CommandType = CommandType.Text;
                 command.CommandTimeout = sixty_seconds;
                 return_value = command.ExecuteScalar();
                 command.Dispose();
             }
 
             return return_value;
+        }
+
+        private DataTable execute_datatable(string sql_to_run)
+        {
+            DataSet result = new DataSet();
+
+            using (OleDbCommand command = server_connection.CreateCommand())
+            {
+                command.CommandText = sql_to_run;
+                command.CommandType = CommandType.Text;
+                command.CommandTimeout = sixty_seconds;
+                using (OleDbDataReader data_reader = command.ExecuteReader())
+                {
+                    DataTable data_table = new DataTable();
+                    data_table.Load(data_reader);
+                    data_reader.Close();
+                    data_reader.Dispose();
+
+                    result.Tables.Add(data_table);
+                }
+                command.Dispose();
+            }
+
+            return result.Tables.Count == 0 ? null : result.Tables[0];
         }
 
         public void Dispose()

@@ -127,9 +127,10 @@
     <Compile Include="migrators\DatabaseMigrator.cs" />
     <Compile Include="migrators\DefaultDatabaseMigrator.cs" />
     <Compile Include="databases\SqlServerLiteSpeedDatabase.cs" />
+    <Compile Include="sql\AccessSQLScript.cs" />
     <Compile Include="sql\SqlScript.cs" />
     <Compile Include="sql\SqlScripts.cs" />
-    <Compile Include="sql\TSQLScripts.cs" />
+    <Compile Include="sql\TSQLScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="infrastructure.app\logging\log4net.config.xml" />
