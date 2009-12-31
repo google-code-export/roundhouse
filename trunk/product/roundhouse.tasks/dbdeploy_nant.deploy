@@ -10,6 +10,7 @@
   <property name="folder.database" value="__DATABASE_FOLDER_NAME__" overwrite="false" />
   <property name="server.database" value="__DATABASE_SERVER__" overwrite="false" />
   <property name="database.name" value="__DATABASE_NAME__" overwrite="false" />
+  <property name="connection.string" value="__DATABASE_NAME__" overwrite="false" />
   <property name="environment" value="" overwrite="false" />
   <property name="dirs.db" value="${dirs.current}\..\..\${folder.database}\${database.name}" overwrite="false" />
   <property name="file.version" value="${project.name}.dll" overwrite="false" />
@@ -27,7 +28,7 @@
     <roundhouse
       serverName="${server.database}"
       databaseName="${database.name}"
-      connectionString=""
+      connectionString="${connection.string}"
       sqlFilesDirectory="${dirs.db}"
       repositoryPath="${repository.path}"
       versionFile="${path.file.version}"

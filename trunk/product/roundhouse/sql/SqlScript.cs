@@ -15,8 +15,9 @@ namespace roundhouse.sql
         //functions
         string use_database(string database_name);
         string get_version(string roundhouse_schema_name, string version_table_name, string repository_path);
-        string insert_version_and_get_version_id(string roundhouse_schema_name, string version_table_name,
+        string insert_version(string roundhouse_schema_name, string version_table_name,
                                                  string repository_path, string repository_version, string user_name);
+        string get_version_id(string roundhouse_schema_name, string version_table_name, string repository_path);
         string get_current_script_hash(string roundhouse_schema_name, string scripts_run_table_name, string script_name);
         string has_script_run(string roundhouse_schema_name, string scripts_run_table_name, string script_name);
         string insert_script_run(string roundhouse_schema_name, string scripts_run_table_name, long version_id,
