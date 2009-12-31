@@ -33,6 +33,13 @@ Donations Accepted - If you enjoy using this product or it has saved you time an
 =============
 RELEASE NOTES
 =============
+=0.2.0.97=
+* OleDB Support - RH can now be run for advanced database connections with a connection string. (r96)
+  - OleDB may not support creating/restoring/deleting databases.
+  - Microsoft Access is supported through OleDB.
+  - Other databases will need to have scripts written for their type before they would be supported.
+
+
 =0.0.0.86=
 * Environment awareness - RH determines an environment file first that it has ".ENV." in the file name and then if it is the proper environment file based on whether the file also contains the specific environment name. For example LOCAL.0001_DoSomething.ENV.sql will run in the LOCAL environment but no where else.
 * Runs permissions files every time regardless of changes.
