@@ -214,7 +214,9 @@ namespace roundhouse.databases.oledb
 
             using (OleDbCommand command = server_connection.CreateCommand())
             {
-                foreach (string sql_statement in sql_to_run.Split(';'))
+                string[] separation_characters = new string[] {";","GO"};
+
+                foreach (string sql_statement in sql_to_run.Split(separation_characters,StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (script_has_text_to_run(sql_statement))
                     {
@@ -243,7 +245,7 @@ namespace roundhouse.databases.oledb
                                                       script_name,
                                                       sql_to_run, sql_to_run_hash, run_this_script_once, user_name));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Log.bound_to(this).log_a_warning_event_containing(
                     "OleDB with provider {0} does not provide a facility for recording scripts run at this time.",
@@ -275,7 +277,7 @@ namespace roundhouse.databases.oledb
                 run_sql(sql_scripts.insert_version(roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name));
                 return (long)run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Log.bound_to(this).log_a_warning_event_containing(
                     "OleDB with provider {0} does not provide a facility for inserting versions at this time.", provider);
