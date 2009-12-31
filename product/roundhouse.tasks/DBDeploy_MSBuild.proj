@@ -8,6 +8,7 @@
     <Environment>LOCAL</Environment>
     <DBServer>(local)</DBServer>
     <DBName>YOURDATABASENAME</DBName>
+    <DBConnectionString>INSERTCONNECTIONSTRING</DBConnectionString>
     <DBSqlFilesPath>..\..\db</DBSqlFilesPath>
     <RepositoryPath>http://tellmewherethisis.com/svn/</RepositoryPath>
     <VersionFile>..\_BuildInfo.xml</VersionFile>
@@ -24,7 +25,7 @@
     <Roundhouse
         ServerName="$(DBServer)"
         DatabaseName="$(DBName)"
-        ConnectionString=""
+        ConnectionString="$(DBConnectionString)"
         SqlFilesDirectory="$(DBSqlFilesPath)"
         RepositoryPath="$(RepositoryPath)"
         VersionFile="$(VersionFile)"

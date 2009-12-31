@@ -138,7 +138,7 @@ namespace roundhouse.sql
                 roundhouse_schema_name, version_table_name, repository_path);
         }
 
-        public string insert_version_and_get_version_id(string roundhouse_schema_name, string version_table_name, string repository_path, string repository_version, string user_name)
+        public string insert_version(string roundhouse_schema_name, string version_table_name, string repository_path, string repository_version, string user_name)
         {
             return string.Format(
                 @"
@@ -154,16 +154,23 @@ namespace roundhouse.sql
                         ,'{3}'
                         ,'{4}'
                     )
+                ",
+                roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name);
 
+        }
+
+        public string get_version_id(string roundhouse_schema_name,string version_table_name,string repository_path)
+        {
+            return string.Format(
+               @"
+                   
                     SELECT TOP 1 id 
                     FROM [{0}].[{1}]
                     WHERE 
                         repository_path = '{2}' 
-                        AND version = '{3}'
                     ORDER BY entry_date Desc
                 ",
-                roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name);
-
+               roundhouse_schema_name, version_table_name, repository_path);
         }
 
         public string get_current_script_hash(string roundhouse_schema_name, string scripts_run_table_name, string script_name)

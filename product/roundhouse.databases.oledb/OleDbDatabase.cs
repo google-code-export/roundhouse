@@ -250,9 +250,8 @@ namespace roundhouse.databases.oledb
         {
             try
             {
-                return (long)run_sql_scalar(sql_scripts.insert_version_and_get_version_id(roundhouse_schema_name,
-                                                                                           version_table_name, repository_path,
-                                                                                           repository_version, user_name));
+                run_sql(sql_scripts.insert_version(roundhouse_schema_name,version_table_name, repository_path,repository_version, user_name));
+                return (long) run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path));
             }
             catch (Exception)
             {
