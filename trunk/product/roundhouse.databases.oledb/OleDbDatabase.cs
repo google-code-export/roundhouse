@@ -153,7 +153,16 @@ namespace roundhouse.databases.oledb
 
         public void use_database(string database_name)
         {
-            run_sql(sql_scripts.use_database(database_name));
+            try
+            {
+                run_sql(sql_scripts.use_database(database_name));
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for transfering to a database name at this time.",
+                    provider);
+            }
         }
 
         public void create_roundhouse_schema_if_it_doesnt_exist()
@@ -165,7 +174,7 @@ namespace roundhouse.databases.oledb
             catch (Exception)
             {
                 Log.bound_to(this).log_a_warning_event_containing(
-                    "OleDB with provider {0} does not provide a facility for creating roundhouse schema at this time.",
+                    "Either the schema has already been created OR OleDB with provider {0} does not provide a facility for creating roundhouse schema at this time.",
                     provider);
             }
         }
@@ -179,7 +188,7 @@ namespace roundhouse.databases.oledb
             catch (Exception)
             {
                 Log.bound_to(this).log_a_warning_event_containing(
-                    "OleDB with provider {0} does not provide a facility for creating roundhouse version table at this time.",
+                    "Either the version table has already been created OR OleDB with provider {0} does not provide a facility for creating roundhouse version table at this time.",
                     provider);
             }
         }
@@ -194,7 +203,7 @@ namespace roundhouse.databases.oledb
             catch (Exception)
             {
                 Log.bound_to(this).log_a_warning_event_containing(
-                    "OleDB with provider {0} does not provide a facility for creating roundhouse scripts run table at this time.",
+                    "Either the scripts run table has already been created OR OleDB with provider {0} does not provide a facility for creating roundhouse scripts run table at this time.",
                     provider);
             }
         }
@@ -205,12 +214,25 @@ namespace roundhouse.databases.oledb
 
             using (OleDbCommand command = server_connection.CreateCommand())
             {
-                command.CommandText = sql_to_run;
-                command.CommandType = CommandType.Text;
-                command.CommandTimeout = sixty_seconds;
-                command.ExecuteNonQuery();
+                foreach (string sql_statement in sql_to_run.Split(';'))
+                {
+                    if (script_has_text_to_run(sql_statement))
+                    {
+                        command.CommandText = sql_statement + ";";
+                        command.CommandType = CommandType.Text;
+                        command.CommandTimeout = sixty_seconds;
+                        command.ExecuteNonQuery();
+                    }
+
+                }
+
                 command.Dispose();
             }
+        }
+
+        private bool script_has_text_to_run(string sql_statement)
+        {
+            return !string.IsNullOrEmpty(sql_statement.to_lower().Replace(Environment.NewLine, string.Empty).Replace(" ", string.Empty));
         }
 
         public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
@@ -250,8 +272,8 @@ namespace roundhouse.databases.oledb
         {
             try
             {
-                run_sql(sql_scripts.insert_version(roundhouse_schema_name,version_table_name, repository_path,repository_version, user_name));
-                return (long) run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path));
+                run_sql(sql_scripts.insert_version(roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name));
+                return (long)run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path));
             }
             catch (Exception)
             {
