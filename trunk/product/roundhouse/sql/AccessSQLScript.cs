@@ -105,7 +105,7 @@ namespace roundhouse.sql
                     );
                 ",
                 version_table_name, repository_path, repository_version, user_name,
-                DateTime.Now.ToShortDateString(), DateTime.Now.ToShortDateString());
+                DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"), DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
         }
 
         public string get_version_id(string roundhouse_schema_name, string version_table_name, string repository_path)
@@ -157,7 +157,6 @@ namespace roundhouse.sql
                     (
                         version_id
                         ,script_name
-                        ,text_of_script
                         ,text_hash
                         ,one_time_script
                         ,entered_by
@@ -169,18 +168,17 @@ namespace roundhouse.sql
                         {1}
                         ,'{2}'
                         ,'{3}'
-                        ,'{4}'
-                        ,{5}
+                        ,{4}
+                        ,'{5}'
                         ,'{6}'
                         ,'{7}'
-                        ,'{8}'
                     );
                 ",
                 scripts_run_table_name, version_id,
-                script_name, sql_to_run.Replace(@"'", @"''"),
+                script_name, 
                 sql_to_run_hash,
                 run_this_script_once ? 1 : 0, user_name,
-                DateTime.Now.ToShortDateString(), DateTime.Now.ToShortDateString());
+                DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"), DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
         }
     }
 }

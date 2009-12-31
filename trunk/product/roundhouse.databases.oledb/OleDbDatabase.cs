@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using roundhouse.infrastructure.extensions;
@@ -214,9 +215,8 @@ namespace roundhouse.databases.oledb
 
             using (OleDbCommand command = server_connection.CreateCommand())
             {
-                string[] separation_characters = new string[] {";","GO"};
 
-                foreach (string sql_statement in sql_to_run.Split(separation_characters,StringSplitOptions.RemoveEmptyEntries))
+                foreach (string sql_statement in split_sql_into_multiple_statements(sql_to_run))
                 {
                     if (script_has_text_to_run(sql_statement))
                     {
@@ -225,11 +225,16 @@ namespace roundhouse.databases.oledb
                         command.CommandTimeout = sixty_seconds;
                         command.ExecuteNonQuery();
                     }
-
                 }
-
                 command.Dispose();
             }
+        }
+
+        private IList<string> split_sql_into_multiple_statements(string sql_to_run)
+        {
+            string[] separation_characters = new string[] { ";", "GO" };
+
+            return sql_to_run.Split(separation_characters, StringSplitOptions.RemoveEmptyEntries);
         }
 
         private bool script_has_text_to_run(string sql_statement)
@@ -257,9 +262,7 @@ namespace roundhouse.databases.oledb
         {
             try
             {
-                return
-                    (string)
-                    run_sql_scalar(sql_scripts.get_version(roundhouse_schema_name, version_table_name, repository_path));
+                return (string)run_sql_scalar(sql_scripts.get_version(roundhouse_schema_name, version_table_name, repository_path));
             }
             catch (Exception)
             {
@@ -272,17 +275,21 @@ namespace roundhouse.databases.oledb
 
         public long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
+            long version_id = 0;
             try
             {
                 run_sql(sql_scripts.insert_version(roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name));
-                return (long)run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path));
+                string version_id_temp = run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path)).ToString();
+
+                long.TryParse(version_id_temp, out version_id);
             }
             catch (Exception ex)
             {
                 Log.bound_to(this).log_a_warning_event_containing(
                     "OleDB with provider {0} does not provide a facility for inserting versions at this time.", provider);
-                return 0;
             }
+
+            return version_id;
         }
 
         public bool has_run_script_already(string script_name)
