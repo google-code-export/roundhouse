@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Linq;
 
 namespace roundhouse.infrastructure.filesystem
 {
@@ -295,7 +296,8 @@ namespace roundhouse.infrastructure.filesystem
         /// <returns>A list of files inside of an existing directory</returns>
         public string[] get_all_file_name_strings_in(string directory,string pattern)
         {
-            return Directory.GetFiles(directory, pattern);
+            string[] returnList = Directory.GetFiles(directory, pattern);
+            return returnList.OrderBy(x => x).ToArray();
         }
 
         #endregion
