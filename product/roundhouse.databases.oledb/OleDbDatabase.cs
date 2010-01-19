@@ -20,6 +20,7 @@ namespace roundhouse.databases.oledb
         public string user_name { get; set; }
 
         public const string MASTER_DATABASE_NAME = "Master";
+        private string connect_options = "Trusted_Connection";
         private OleDbConnection server_connection;
         private bool running_a_transaction;
         private bool disposing;
@@ -43,16 +44,34 @@ namespace roundhouse.databases.oledb
                         database_name = part.Substring(part.IndexOf("=") + 1);
                     }
                 }
+
+                if (!connection_string.to_lower().Contains(connect_options.to_lower()))
+                {
+                    connect_options = string.Empty;
+                    foreach (string part in parts)
+                    {
+                        if (!part.to_lower().Contains("server") && !part.to_lower().Contains("data source") && !part.to_lower().Contains("initial catalog") &&
+                            !part.to_lower().Contains("database"))
+                        {
+                            connect_options += part + ";";
+                        }
+                    }
+                }
             }
 
-            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name))
+            if (connect_options == "Trusted_Connection")
             {
-                connection_string = build_connection_string(server_name, database_name);
+                connect_options = "Trusted_Connection=yes;";
+            }
+
+            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name.to_lower()))
+            {
+                connection_string = build_connection_string(server_name, database_name,connect_options);
             }
 
             if (connection_string.to_lower().Contains("sqlserver") || connection_string.to_lower().Contains("sqlncli"))
             {
-                connection_string = build_connection_string(server_name, MASTER_DATABASE_NAME);
+                connection_string = build_connection_string(server_name, MASTER_DATABASE_NAME,connect_options);
             }
 
             server_connection = new OleDbConnection(connection_string);
@@ -65,10 +84,9 @@ namespace roundhouse.databases.oledb
             }
         }
 
-        private static string build_connection_string(string server_name, string database_name)
+        private static string build_connection_string(string server_name, string database_name,string connection_options)
         {
-            return string.Format("Provider=SQLNCLI;Server={0};Database={1};Trusted_Connection=yes;", server_name,
-                                 database_name);
+            return string.Format("Provider=SQLNCLI;Server={0};Database={1};{2}", server_name, database_name, connection_options);
         }
 
         public void open_connection(bool with_transaction)
