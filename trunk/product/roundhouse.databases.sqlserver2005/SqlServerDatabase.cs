@@ -154,7 +154,7 @@ namespace roundhouse.databases.sqlserver2005
         public long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
             run_sql(sql_scripts.insert_version(roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name));
-            return (long)run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path)); 
+            return (long)run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path));
         }
 
         public string get_current_script_hash(string script_name)
