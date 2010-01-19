@@ -142,11 +142,11 @@ namespace roundhouse.databases.oledb
             //Log.bound_to(this).log_a_warning_event_containing("OleDB with provider {0} does not provide a facility for backing up a database at this time.", provider);
         }
 
-        public void restore_database(string restore_from_path)
+        public void restore_database(string restore_from_path, string custom_restore_options)
         {
             try
             {
-                run_sql(sql_scripts.restore_database(database_name, restore_from_path));
+                run_sql(sql_scripts.restore_database(database_name, restore_from_path, custom_restore_options));
             }
             catch (Exception)
             {

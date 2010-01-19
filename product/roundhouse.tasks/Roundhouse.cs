@@ -153,6 +153,10 @@
         [StringValidator(AllowEmpty = true)]
         public string RestoreFromPath { get; set; }
 
+        [TaskAttribute("restoreCustomOptions", Required = false)]
+        [StringValidator(AllowEmpty = true)]
+        public string RestoreCustomOptions { get; set; }
+
         [TaskAttribute("drop", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public bool Drop { get; set; }

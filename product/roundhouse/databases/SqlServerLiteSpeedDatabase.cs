@@ -27,7 +27,8 @@ namespace roundhouse.databases
             set { database.database_name = value; }
         }
 
-        public string provider {
+        public string provider
+        {
             get { return database.provider; }
             set { database.provider = value; }
         }
@@ -86,10 +87,10 @@ namespace roundhouse.databases
             database.backup_database(output_path_minus_database);
         }
 
-        public void restore_database(string restore_from_path)
+        public void restore_database(string restore_from_path, string custom_restore_options)
         {
             database.run_sql(string.Format(
-                                           @"USE Master 
+                                 @"USE Master 
                         ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
                         ALTER DATABASE [{0}] SET MULTI_USER;
 
@@ -99,14 +100,17 @@ namespace roundhouse.databases
                             @with = N'RECOVERY', 
                             @with = N'NOUNLOAD',
                             @with = N'REPLACE',
-                            @with = N'STATS = 10';
+                            @with = N'STATS = 10'
+                            {2};
 
                         ALTER DATABASE [{0}] SET MULTI_USER;
                         ALTER DATABASE [{0}] SET RECOVERY SIMPLE;
                         --DBCC SHRINKDATABASE ([{0}]);
                         ",
-                        database_name, restore_from_path)
-                );
+                         database_name, restore_from_path,
+                         string.IsNullOrEmpty(custom_restore_options) ? string.Empty : ", @with = N'" + custom_restore_options.Replace("'","''") + "'"
+                       ));
+
         }
 
         public void delete_database_if_it_exists()
@@ -133,7 +137,7 @@ namespace roundhouse.databases
         {
             database.create_roundhouse_scripts_run_table_if_it_doesnt_exist();
         }
-        
+
         public void run_sql(string sql_to_run)
         {
             database.run_sql(sql_to_run);
@@ -143,7 +147,7 @@ namespace roundhouse.databases
         {
             database.insert_script_run(script_name, sql_to_run, sql_to_run_hash, run_this_script_once, version_id);
         }
-        
+
         public string get_version(string repository_path)
         {
             return database.get_version(repository_path);

@@ -123,10 +123,10 @@ namespace roundhouse.databases.sqlserver2005
             //sql_server.BackupDevices.Add(new BackupDevice(sql_server,database_name));
         }
 
-        public void restore_database(string restore_from_path)
+        public void restore_database(string restore_from_path, string custom_restore_options)
         {
             use_database(MASTER_DATABASE_NAME);
-            run_sql(sql_scripts.restore_database(database_name, restore_from_path));
+            run_sql(sql_scripts.restore_database(database_name, restore_from_path, custom_restore_options));
         }
 
         public void delete_database_if_it_exists()

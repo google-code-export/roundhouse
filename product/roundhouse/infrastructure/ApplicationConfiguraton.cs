@@ -176,6 +176,7 @@ namespace roundhouse.infrastructure
             DatabaseMigrator database_migrator = new DefaultDatabaseMigrator(windsor_container.Resolve<Database>(), crypto_provider,
                                                                              configuration_property_holder.Restore,
                                                                              configuration_property_holder.RestoreFromPath,
+                                                                             configuration_property_holder.RestoreCustomOptions,
                                                                              configuration_property_holder.OutputPath,
                                                                              !configuration_property_holder.WarnOnOneTimeScriptChanges);
             windsor_container.Kernel.AddComponentInstance<DatabaseMigrator>(database_migrator);

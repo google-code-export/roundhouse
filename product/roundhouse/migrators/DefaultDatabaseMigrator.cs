@@ -13,16 +13,18 @@ namespace roundhouse.migrators
         private readonly CryptographicService crypto_provider;
         private readonly bool restoring_database;
         private readonly string restore_path;
+        private readonly string custom_restore_options;
         private readonly string output_path;
         private readonly bool error_on_one_time_script_changes;
         private bool running_in_a_transaction = false;
 
-        public DefaultDatabaseMigrator(Database database, CryptographicService crypto_provider, bool restoring_database, string restore_path, string output_path, bool error_on_one_time_script_changes)
+        public DefaultDatabaseMigrator(Database database, CryptographicService crypto_provider, bool restoring_database, string restore_path, string custom_restore_options, string output_path, bool error_on_one_time_script_changes)
         {
             this.database = database;
             this.crypto_provider = crypto_provider;
             this.restoring_database = restoring_database;
             this.restore_path = restore_path;
+            this.custom_restore_options = custom_restore_options;
             this.output_path = output_path;
             this.error_on_one_time_script_changes = error_on_one_time_script_changes;
         }
@@ -53,7 +55,7 @@ namespace roundhouse.migrators
 
             if (restoring_database)
             {
-                restore_database(restore_path);
+                restore_database(restore_path, custom_restore_options);
             }
 
             if (running_in_a_transaction)
@@ -68,12 +70,10 @@ namespace roundhouse.migrators
             database.backup_database(output_path);
         }
 
-        public void restore_database(string restore_from_path)
+        public void restore_database(string restore_from_path,string restore_options)
         {
-            Log.bound_to(this).log_an_info_event_containing("Restoring {0} database on {1} server from path {2}.",
-                                                        database.database_name, database.server_name, restore_from_path);
-
-            database.restore_database(restore_from_path);
+            Log.bound_to(this).log_an_info_event_containing("Restoring {0} database on {1} server from path {2}.",database.database_name, database.server_name, restore_from_path);
+            database.restore_database(restore_from_path, restore_options);
         }
 
         public void set_recovery_mode(bool simple)

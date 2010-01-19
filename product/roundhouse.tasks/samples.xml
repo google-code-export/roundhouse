@@ -15,6 +15,7 @@
       sqlFilesDirectory="..\..\db"
       restore="true"
       restoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
+      restoreCustomOptions=""
       />
 
     <!-- versioning with a dll -->
@@ -58,6 +59,7 @@
       environmentName="LOCAL"
       restore="false"
       restoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
+      restoreCustomOptions=""
       drop="false"
       outputPath="C:\RoundhousE_runs"
       warnOnOneTimeScriptChanges="false"
@@ -87,6 +89,7 @@
       SqlFilesDirectory="..\..\db"
       Restore="true"
       RestoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
+      RestoreCustomOptions=""
       />
 
     <!-- versioning with a dll -->
@@ -130,6 +133,7 @@
       EnvironmentName="LOCAL"
       Restore="false"
       RestoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
+      RestoreCustomOptions=""
       Drop="false"
       OutputPath="C:\RoundhousE_runs"
       WarnOnOneTimeScriptChanges="false"

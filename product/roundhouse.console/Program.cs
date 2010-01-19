@@ -174,6 +174,9 @@ namespace roundhouse.console
                 .Add("rfp=|restorefrom=|restorefrompath=",
                     "RestoreFromPath - This tells the restore where to get to the backed up database. Defaults to null. Required if /restore has been set. NOTE: will try to use Litespeed for the restore if the last two characters of the name are LS (as in DudeLS.bak).",
                     option => configuration.RestoreFromPath = option)
+                .Add("rco=|restoreoptions=|restorecustomoptions=",
+                    "RestoreCustomOptions - This provides the restore any custom options as in MOVE='Somewhere or another'.",
+                    option => configuration.RestoreCustomOptions = option)
                 //drop
                 .Add("drop",
                     "Drop - This instructs RH to remove a database and not run migration scripts. Defaults to false.",

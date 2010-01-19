@@ -1,5 +1,7 @@
 namespace roundhouse.sql
 {
+    using infrastructure.extensions;
+
     public sealed class TSQLScript : SqlScript
     {
         public string create_database(string database_name)
@@ -23,7 +25,7 @@ namespace roundhouse.sql
                 database_name, simple ? "SIMPLE" : "FULL");
         }
 
-        public string restore_database(string database_name, string restore_from_path)
+        public string restore_database(string database_name, string restore_from_path, string custom_restore_options)
         {
             return string.Format(
                 @"USE Master 
@@ -34,12 +36,16 @@ namespace roundhouse.sql
                         WITH NOUNLOAD
                         , STATS = 10
                         , RECOVERY
-                        , REPLACE;
+                        , REPLACE
+                        {2};
 
                         ALTER DATABASE [{0}] SET MULTI_USER;
                         --DBCC SHRINKDATABASE ([{0}]);
                         ",
-                database_name, restore_from_path);
+                database_name, restore_from_path, 
+                custom_restore_options.to_lower().StartsWith(",") ? custom_restore_options : ", " + custom_restore_options
+                );
+
         }
 
         public string delete_database(string database_name)
@@ -159,7 +165,7 @@ namespace roundhouse.sql
 
         }
 
-        public string get_version_id(string roundhouse_schema_name,string version_table_name,string repository_path)
+        public string get_version_id(string roundhouse_schema_name, string version_table_name, string repository_path)
         {
             return string.Format(
                @"

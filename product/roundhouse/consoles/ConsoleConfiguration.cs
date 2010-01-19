@@ -43,6 +43,7 @@ namespace roundhouse.consoles
         public string EnvironmentName { get; set; }
         public bool Restore { get; set; }
         public string RestoreFromPath { get; set; }
+        public string RestoreCustomOptions { get; set; }
         public string OutputPath { get; set; }
         public bool WarnOnOneTimeScriptChanges { get; set; }
         public bool NonInteractive { get; set; }

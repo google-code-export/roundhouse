@@ -30,6 +30,7 @@ namespace roundhouse.infrastructure
         string EnvironmentName { get; set; }
         bool Restore { get; set; }
         string RestoreFromPath { get; set; }
+        string RestoreCustomOptions { get; set; }
         string OutputPath { get; set; }
         bool WarnOnOneTimeScriptChanges { get; set; }
         bool NonInteractive { get; set; }

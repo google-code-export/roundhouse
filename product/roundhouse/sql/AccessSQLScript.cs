@@ -14,7 +14,7 @@ namespace roundhouse.sql
             throw new System.NotImplementedException();
         }
 
-        public string restore_database(string database_name, string restore_from_path)
+        public string restore_database(string database_name, string restore_from_path, string custom_restore_options)
         {
             throw new System.NotImplementedException();
         }
