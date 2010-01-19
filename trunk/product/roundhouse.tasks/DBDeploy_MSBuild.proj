@@ -15,6 +15,7 @@
     <VersionFileXPath>//buildInfo/version</VersionFileXPath>
     <DBRestore>false</DBRestore>
     <DBRestorePath>\\tell\me\where\YOURDATABASENAME.bak</DBRestorePath>
+    <DBRestoreOptions>INSERTRESTOREOPTIONS</DBRestoreOptions>
     <DBDrop>false</DBDrop>
     <Interactive>true</Interactive>
   </PropertyGroup>
@@ -43,6 +44,7 @@
         EnvironmentName="$(Environment)"
         Restore="$(DBRestore)"
         RestoreFromPath="$(DBRestorePath)"
+        RestoreCustomOptions="$(DBRestoreOptions)"
         Drop="$(DBDrop)"
         OutputPath="C:\RoundhousE_runs"
         WarnOnOneTimeScriptChanges="false"
