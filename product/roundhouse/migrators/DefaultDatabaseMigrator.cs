@@ -99,16 +99,11 @@ namespace roundhouse.migrators
 
         public void verify_or_create_roundhouse_tables()
         {
-            Log.bound_to(this).log_an_info_event_containing("Creating {0} schema if it doesn't exist.",
-                                                            database.roundhouse_schema_name);
+            Log.bound_to(this).log_an_info_event_containing("Creating {0} schema if it doesn't exist.",database.roundhouse_schema_name);
             database.create_roundhouse_schema_if_it_doesnt_exist();
-            Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.",
-                                                            database.roundhouse_schema_name,
-                                                            database.version_table_name);
+            Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.",database.roundhouse_schema_name,database.version_table_name);
             database.create_roundhouse_version_table_if_it_doesnt_exist();
-            Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.",
-                                                            database.roundhouse_schema_name,
-                                                            database.scripts_run_table_name);
+            Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.",database.roundhouse_schema_name,database.scripts_run_table_name);
             database.create_roundhouse_scripts_run_table_if_it_doesnt_exist();
         }
 
@@ -126,8 +121,7 @@ namespace roundhouse.migrators
 
         public void delete_database()
         {
-            Log.bound_to(this).log_an_info_event_containing("Deleting {0} database on {1} server if it exists.",
-                                                            database.database_name, database.server_name);
+            Log.bound_to(this).log_an_info_event_containing("Deleting {0} database on {1} server if it exists.", database.database_name, database.server_name);
 
             if (running_in_a_transaction)
             {
@@ -182,8 +176,7 @@ namespace roundhouse.migrators
 
         public void record_script_in_scripts_run_table(string script_name, string sql_to_run, bool run_this_script_once, long version_id)
         {
-            Log.bound_to(this).log_a_debug_event_containing("Recording {0} script ran on {1} - {2}.", script_name,
-                                                            database.server_name, database.database_name);
+            Log.bound_to(this).log_a_debug_event_containing("Recording {0} script ran on {1} - {2}.", script_name, database.server_name, database.database_name);
             database.insert_script_run(script_name, sql_to_run, create_hash(sql_to_run), run_this_script_once, version_id);
         }
 
