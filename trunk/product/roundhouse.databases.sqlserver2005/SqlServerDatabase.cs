@@ -1,5 +1,3 @@
-using roundhouse.sql;
-
 namespace roundhouse.databases.sqlserver2005
 {
     using System.Data;
@@ -7,7 +5,8 @@ namespace roundhouse.databases.sqlserver2005
     using infrastructure.extensions;
     using Microsoft.SqlServer.Management.Common;
     using Microsoft.SqlServer.Management.Smo;
-    using Database = databases.Database;
+    using sql;
+    using Database=roundhouse.databases.Database;
 
     public sealed class SqlServerDatabase : Database
     {
@@ -21,8 +20,9 @@ namespace roundhouse.databases.sqlserver2005
         public string user_name { get; set; }
 
         public const string MASTER_DATABASE_NAME = "Master";
+        private string connect_options = "Integrated Security";
         private Server sql_server;
-        private bool running_a_transaction = false;
+        private bool running_a_transaction;
         private SqlScript sql_scripts;
 
         public void initialize_connection()
@@ -42,11 +42,30 @@ namespace roundhouse.databases.sqlserver2005
                         database_name = part.Substring(part.IndexOf("=") + 1);
                     }
                 }
+
+                if (!connection_string.to_lower().Contains(connect_options.to_lower()))
+                {
+                    connect_options = string.Empty;
+                    foreach (string part in parts)
+                    {
+                        if (!part.to_lower().Contains("server") && !part.to_lower().Contains("data source") && !part.to_lower().Contains("initial catalog") &&
+                            !part.to_lower().Contains("database"))
+                        {
+                            connect_options += part + ";";
+                        }
+                    }
+                }
+
             }
 
-            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name))
+            if (connect_options == "Integrated Security")
             {
-                connection_string = build_connection_string(server_name, MASTER_DATABASE_NAME);
+                connect_options = "Integrated Security=SSPI;";
+            }
+
+            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name.to_lower()))
+            {
+                connection_string = build_connection_string(server_name, MASTER_DATABASE_NAME, connect_options);
             }
 
             sql_server = new Server(new ServerConnection(new SqlConnection(connection_string)));
@@ -59,9 +78,9 @@ namespace roundhouse.databases.sqlserver2005
             }
         }
 
-        private static string build_connection_string(string server_name, string database_name)
+        private static string build_connection_string(string server_name, string database_name, string connection_options)
         {
-            return string.Format("Server={0};initial catalog={1};Integrated Security=SSPI", server_name, database_name);
+            return string.Format("Server={0};initial catalog={1};{2}", server_name, database_name, connection_options);
         }
 
         public void open_connection(bool with_transaction)
@@ -143,7 +162,8 @@ namespace roundhouse.databases.sqlserver2005
 
         public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
-            run_sql(sql_scripts.insert_script_run(roundhouse_schema_name, scripts_run_table_name, version_id, script_name, sql_to_run, sql_to_run_hash, run_this_script_once, user_name));
+            run_sql(sql_scripts.insert_script_run(roundhouse_schema_name, scripts_run_table_name, version_id, script_name, sql_to_run, sql_to_run_hash,
+                                                  run_this_script_once, user_name));
         }
 
         public string get_version(string repository_path)
@@ -189,7 +209,8 @@ namespace roundhouse.databases.sqlserver2005
             return result.Tables.Count == 0 ? null : result.Tables[0];
         }
 
-        private bool disposing = false;
+        private bool disposing;
+
         public void Dispose()
         {
             if (!disposing)

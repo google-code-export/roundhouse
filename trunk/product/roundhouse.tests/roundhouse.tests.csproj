@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -84,6 +85,7 @@
     <Compile Include="..\..\SolutionVersion.cs">
       <Link>SolutionVersion.cs</Link>
     </Compile>
+    <Compile Include="databases\SqlServerDatabaseSpecs.cs" />
     <Compile Include="EmptyTestContainer.cs" />
     <Compile Include="cryptography\CryptographicServiceSpecs.cs" />
     <Compile Include="infrastructure\containers\ContainerSpecs.cs" />
@@ -98,6 +100,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\roundhouse.databases.sqlserver2008\roundhouse.databases.sqlserver2008.csproj">
+      <Project>{8613D56F-B226-49BC-AC7A-19B70C827668}</Project>
+      <Name>roundhouse.databases.sqlserver2008</Name>
+    </ProjectReference>
     <ProjectReference Include="..\roundhouse\roundhouse.csproj">
       <Project>{A95DE649-D5BA-4402-9D9C-3D8D67E2FF44}</Project>
       <Name>roundhouse</Name>
