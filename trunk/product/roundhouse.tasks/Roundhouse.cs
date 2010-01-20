@@ -195,7 +195,7 @@ namespace roundhouse.tasks
 
         public void run_the_task()
         {
-            Log4NetAppender.configure();
+            Log4NetAppender.configure_without_console();
             ApplicationConfiguraton.set_defaults_if_properties_are_not_set(this);
 
             if (Restore && string.IsNullOrEmpty(RestoreFromPath))
