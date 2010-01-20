@@ -11,7 +11,6 @@ namespace roundhouse.console
     using infrastructure;
     using infrastructure.containers;
     using infrastructure.filesystem;
-    using infrastructure.logging;
     using log4net;
     using migrators;
     using resolvers;
@@ -57,23 +56,7 @@ namespace roundhouse.console
                 configuration.WithTransaction,
                 configuration.RecoveryModeSimple);
 
-            try
-            {
-                roundhouse_runner.run();
-            }
-            catch (Exception exception)
-            {
-                Log.bound_to(typeof(Program)).
-                    log_an_error_event_containing("{0} encountered an error:{1}{2}",
-                                                  ApplicationParameters.name,
-                                                  Environment.NewLine,
-                                                  exception
-                                                  );
-                throw;
-            } finally
-            {
-                copy_log_file_to_change_drop_folder();
-            }
+            roundhouse_runner.run();
 
             if (!configuration.NonInteractive)
             {
@@ -266,27 +249,6 @@ namespace roundhouse.console
             ILoggerRepository log_repository = LogManager.GetRepository(Assembly.GetCallingAssembly());
             log_repository.Threshold = Level.Debug;
         }
-
-        private static void copy_log_file_to_change_drop_folder()
-        {
-            string log_file = ApplicationParameters.logging_file;
-            string log_file_name = file_system.get_file_name_from(log_file);
-
-            try
-            {
-                string destination_file = file_system.combine_paths(known_folders.change_drop.folder_full_path, log_file_name);
-                file_system.file_copy(log_file, destination_file, true);
-            }
-            catch (Exception exception)
-            {
-                Log.bound_to(typeof(Program)).
-                    log_an_error_event_containing("{0} encountered an error:{1}{2}",
-                                                  ApplicationParameters.name,
-                                                  Environment.NewLine,
-                                                  exception
-                                                  );
-            }
-            
-        }
+        
     }
 }
