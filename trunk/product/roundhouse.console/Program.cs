@@ -1,7 +1,10 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
 using log4net.Core;
 using log4net.Repository;
 using roundhouse.infrastructure.app.logging;
+using roundhouse.infrastructure.extensions;
 
 namespace roundhouse.console
 {
@@ -27,7 +30,34 @@ namespace roundhouse.console
         {
             Log4NetAppender.configure();
             //todo: determine if this a call to the diff or the migrator
-            run_migrator(args);
+            IList argument_list = new List<string>();
+            foreach (string arg in args)
+            {
+                argument_list.Add(arg);
+            }
+
+            if (argument_list.Count == 1)
+            {
+                foreach (string argument in argument_list)
+                {
+                    if (argument.to_lower().Contains("version"))
+                    {
+                        report_version();
+                    }
+                }
+            }
+            else
+            {
+                run_migrator(args);
+            }
+            
+        }
+
+        public static void report_version()
+        {
+            string version = infrastructure.Version.get_current_assembly_version();
+            _logger.InfoFormat("{0} - version {1} from http://projectroundhouse.org.",ApplicationParameters.name,version);
+            
         }
 
         public static void run_migrator(string[] args)
@@ -249,6 +279,6 @@ namespace roundhouse.console
             ILoggerRepository log_repository = LogManager.GetRepository(Assembly.GetCallingAssembly());
             log_repository.Threshold = Level.Debug;
         }
-        
+
     }
 }

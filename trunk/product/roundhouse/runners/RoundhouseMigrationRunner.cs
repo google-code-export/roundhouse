@@ -51,9 +51,9 @@ namespace roundhouse.runners
 
         public void run()
         {
-
-            Log.bound_to(this).log_an_info_event_containing("Running {0} against {1} - {2}. Looking in {3} for scripts to run.",
+            Log.bound_to(this).log_an_info_event_containing("Running {0} v{1} against {2} - {3}. Looking in {4} for scripts to run.",
                     ApplicationParameters.name,
+                    infrastructure.Version.get_current_assembly_version(),
                     database_migrator.database.server_name,
                     database_migrator.database.database_name,
                     known_folders.up.folder_path);
@@ -105,9 +105,10 @@ namespace roundhouse.runners
                     Log.bound_to(this).log_an_info_event_containing("Looking for {0} scripts in \"{1}\".", "Permission", known_folders.permissions.folder_full_path);
                     traverse_files_and_run_sql(known_folders.permissions.folder_full_path, version_id, known_folders.permissions, environment);
 
-                    Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} has kicked your database ({2})! You are now at version {3}. All changes and backups can be found at \"{4}\".",
+                    Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} v{2} has kicked your database ({3})! You are now at version {4}. All changes and backups can be found at \"{5}\".",
                                                 System.Environment.NewLine,
                                                 ApplicationParameters.name,
+                                                infrastructure.Version.get_current_assembly_version(),
                                                 database_migrator.database.database_name,
                                                 new_version,
                                                 known_folders.change_drop.folder_full_path);
