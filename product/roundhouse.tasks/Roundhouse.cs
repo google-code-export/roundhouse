@@ -1,4 +1,6 @@
-﻿namespace roundhouse.tasks
+﻿using roundhouse.infrastructure.app.logging;
+
+namespace roundhouse.tasks
 {
     using System;
     using folders;
@@ -193,6 +195,7 @@
 
         public void run_the_task()
         {
+            Log4NetAppender.configure();
             ApplicationConfiguraton.set_defaults_if_properties_are_not_set(this);
 
             if (Restore && string.IsNullOrEmpty(RestoreFromPath))
@@ -213,20 +216,9 @@
                 Drop,
                 WithTransaction,
                 RecoveryModeSimple);
-            try
-            {
-                roundhouse_runner.run();
-            }
-            catch (Exception exception)
-            {
-                infrastructure.logging.Log.bound_to(this).
-                    log_an_error_event_containing("{0} encountered an error:{1}{2}",
-                                                  ApplicationParameters.name,
-                                                  System.Environment.NewLine,
-                                                  exception
-                                                  );
-                throw;
-            }
+
+            roundhouse_runner.run();
         }
+
     }
 }
