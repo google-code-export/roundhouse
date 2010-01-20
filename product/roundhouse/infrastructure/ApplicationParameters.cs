@@ -23,5 +23,6 @@ namespace roundhouse.infrastructure
         public static string logging_file = @"C:\Temp\RoundhousE\roundhouse.changes.log";
         public static string log4net_configuration_assembly = @"roundhouse";
         public static string log4net_configuration_resource = @"roundhouse.infrastructure.app.logging.log4net.config.xml";
+        public static string log4net_configuration_resource_no_console = @"roundhouse.infrastructure.app.logging.log4net.config.no.console.xml";
     }
 }

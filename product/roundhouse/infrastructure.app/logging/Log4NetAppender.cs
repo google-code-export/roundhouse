@@ -71,5 +71,31 @@ namespace roundhouse.infrastructure.app.logging
             _logger.DebugFormat("Configured {0} from assembly {1}", assembly_name, ApplicationParameters.log4net_configuration_resource);
         }
 
+        public static void configure_without_console()
+        {
+            //ILoggerRepository log_repository = LogManager.GetRepository(Assembly.GetCallingAssembly());
+            //log_repository.Threshold = Level.Info;
+
+            //BasicConfigurator.Configure(log_repository, set_up_console_appender());
+            //BasicConfigurator.Configure(log_repository,set_up_rolling_file_appender());
+
+            string assembly_name = ApplicationParameters.log4net_configuration_assembly;
+            Stream xml_config_stream;
+
+            try
+            {
+                xml_config_stream = Assembly.Load(assembly_name).GetManifestResourceStream(ApplicationParameters.log4net_configuration_resource_no_console);
+            }
+            catch (Exception)
+            {
+                assembly_name = "rh";
+                xml_config_stream = Assembly.Load(assembly_name).GetManifestResourceStream(ApplicationParameters.log4net_configuration_resource_no_console);
+            }
+
+            XmlConfigurator.Configure(xml_config_stream);
+
+            _logger.DebugFormat("Configured {0} from assembly {1}", ApplicationParameters.log4net_configuration_resource_no_console, assembly_name);
+        }
+
     }
 }
