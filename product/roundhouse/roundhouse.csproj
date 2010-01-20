@@ -116,6 +116,7 @@
     <Compile Include="infrastructure\logging\Logger.cs" />
     <Compile Include="infrastructure\logging\LogFactory.cs" />
     <Compile Include="infrastructure\logging\Log.cs" />
+    <Compile Include="infrastructure\Version.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="resolvers\ComplexVersionResolver.cs" />
     <Compile Include="resolvers\DllFileVersionResolver.cs" />

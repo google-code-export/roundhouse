@@ -33,9 +33,12 @@ Donations Accepted - If you enjoy using this product or it has saved you time an
 =============
 RELEASE NOTES
 =============
-=0.2.0.106=
+=0.2.0.108=
+* Reports version during run - see http://code.google.com/p/roundhouse/issues/detail?id=9 for details. (r108)
+* Logs what type of script it is looking for and where it is looking for them - see http://code.google.com/p/roundhouse/issues/detail?id=14 for details. (r107)
+* Removed double error reporting on exception. (r107)
 * Adding getting started documentation
-* Added a custom restore option to add additional arguments (like MOVE) to a restore (r104)
+* Added a custom restore option to add additional arguments (like MOVE) to a restore - see (http://code.google.com/p/roundhouse/issues/detail?id=12 for details. (r104)
 * Fixed a connection string initialization issue (r103)
 
 =0.2.0.101=
@@ -59,11 +62,11 @@ RELEASE NOTES
 =0.0.0.82=
 * The command line version (rh.exe) is merged into a single assembly with all dependencies (except Microsoft.SQL dlls) internalized. No configuration file necessary either. (r77, r82)
 * Log from console runner is now copied into the change_drop folder. (r81)
-* Recovery mode is now explicit. Default is full. Otherwise pass in /simple. (r78) http://code.google.com/p/roundhouse/issues/detail?id=8
+* Recovery mode is now explicit. Default is full. Otherwise pass in /simple - see http://code.google.com/p/roundhouse/issues/detail?id=8 for details. (r78) 
 * Excluded the drop database from transactions (not that you would call /drop with /t). (r76)
 
 =0.0.0.74=
-* Fixed an issue with holding connections.
+* Fixed an issue with holding connections - see http://code.google.com/p/roundhouse/issues/detail?id=7 for details. (r74)
 * Added the ability to run with transactions
 
 =======
