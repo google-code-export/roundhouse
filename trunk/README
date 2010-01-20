@@ -33,6 +33,11 @@ Donations Accepted - If you enjoy using this product or it has saved you time an
 =============
 RELEASE NOTES
 =============
+=0.2.0.106=
+* Adding getting started documentation
+* Added a custom restore option to add additional arguments (like MOVE) to a restore (r104)
+* Fixed a connection string initialization issue (r103)
+
 =0.2.0.101=
 * File Sorting - Fixed a sorting issue with file names to do explicit sorting. (r101)
 * RH has an icon of the logo (r99)
