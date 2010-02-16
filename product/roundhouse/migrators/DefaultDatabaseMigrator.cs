@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using roundhouse.databases;
 using roundhouse.infrastructure.logging;
 
@@ -17,6 +18,7 @@ namespace roundhouse.migrators
         private readonly string output_path;
         private readonly bool error_on_one_time_script_changes;
         private bool running_in_a_transaction = false;
+        private const string sql_statement_separator_regex_pattern = @"[GO|;]+[\f\n\r]";
 
         public DefaultDatabaseMigrator(Database database, CryptographicService crypto_provider, bool restoring_database, string restore_path, string custom_restore_options, string output_path, bool error_on_one_time_script_changes)
         {
@@ -162,7 +164,16 @@ namespace roundhouse.migrators
             if (if_this_is_an_environment_file_its_in_the_right_environment(script_name, environment) && this_script_should_run(script_name, sql_to_run, run_this_script_once, run_this_script_every_time))
             {
                 Log.bound_to(this).log_an_info_event_containing("Running {0} on {1} - {2}.", script_name, database.server_name, database.database_name);
-                database.run_sql(sql_to_run);
+
+                var script_regex = new Regex(sql_statement_separator_regex_pattern);
+                foreach (var sql_statement in script_regex.Split(sql_to_run))
+                {
+                    if (script_has_text_to_run(sql_statement))
+                    {
+                        database.run_sql(sql_statement);
+                    }
+                }
+
                 record_script_in_scripts_run_table(script_name, sql_to_run, run_this_script_once, version_id);
                 this_sql_ran = true;
             }
@@ -172,6 +183,11 @@ namespace roundhouse.migrators
             }
 
             return this_sql_ran;
+        }
+
+        private bool script_has_text_to_run(string sql_statement)
+        {
+            return !string.IsNullOrEmpty(sql_statement.to_lower().Replace(Environment.NewLine, string.Empty).Replace(" ", string.Empty));
         }
 
         public void record_script_in_scripts_run_table(string script_name, string sql_to_run, bool run_this_script_once, long version_id)

@@ -66,12 +66,12 @@ namespace roundhouse.databases.oledb
 
             if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name.to_lower()))
             {
-                connection_string = build_connection_string(server_name, database_name,connect_options);
+                connection_string = build_connection_string(server_name, database_name, connect_options);
             }
 
             if (connection_string.to_lower().Contains("sqlserver") || connection_string.to_lower().Contains("sqlncli"))
             {
-                connection_string = build_connection_string(server_name, MASTER_DATABASE_NAME,connect_options);
+                connection_string = build_connection_string(server_name, MASTER_DATABASE_NAME, connect_options);
             }
 
             server_connection = new OleDbConnection(connection_string);
@@ -84,7 +84,7 @@ namespace roundhouse.databases.oledb
             }
         }
 
-        private static string build_connection_string(string server_name, string database_name,string connection_options)
+        private static string build_connection_string(string server_name, string database_name, string connection_options)
         {
             return string.Format("Provider=SQLNCLI;Server={0};Database={1};{2}", server_name, database_name, connection_options);
         }
@@ -233,31 +233,12 @@ namespace roundhouse.databases.oledb
 
             using (OleDbCommand command = server_connection.CreateCommand())
             {
-
-                foreach (string sql_statement in split_sql_into_multiple_statements(sql_to_run))
-                {
-                    if (script_has_text_to_run(sql_statement))
-                    {
-                        command.CommandText = sql_statement + ";";
-                        command.CommandType = CommandType.Text;
-                        command.CommandTimeout = sixty_seconds;
-                        command.ExecuteNonQuery();
-                    }
-                }
+                command.CommandText = sql_to_run;
+                command.CommandType = CommandType.Text;
+                command.CommandTimeout = sixty_seconds;
+                command.ExecuteNonQuery();
                 command.Dispose();
             }
-        }
-
-        private IList<string> split_sql_into_multiple_statements(string sql_to_run)
-        {
-            string[] separation_characters = new string[] { ";", "GO" };
-
-            return sql_to_run.Split(separation_characters, StringSplitOptions.RemoveEmptyEntries);
-        }
-
-        private bool script_has_text_to_run(string sql_statement)
-        {
-            return !string.IsNullOrEmpty(sql_statement.to_lower().Replace(Environment.NewLine, string.Empty).Replace(" ", string.Empty));
         }
 
         public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
