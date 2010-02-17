@@ -31,6 +31,8 @@ namespace roundhouse.infrastructure
         bool Restore { get; set; }
         string RestoreFromPath { get; set; }
         string RestoreCustomOptions { get; set; }
+        int RestoreTimeout { get; set; }
+        string CreateDatabaseCustomScript { get; set; }
         string OutputPath { get; set; }
         bool WarnOnOneTimeScriptChanges { get; set; }
         bool NonInteractive { get; set; }

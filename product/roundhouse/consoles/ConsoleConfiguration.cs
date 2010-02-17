@@ -44,6 +44,8 @@ namespace roundhouse.consoles
         public bool Restore { get; set; }
         public string RestoreFromPath { get; set; }
         public string RestoreCustomOptions { get; set; }
+        public int RestoreTimeout { get; set; }
+        public string CreateDatabaseCustomScript { get; set; }
         public string OutputPath { get; set; }
         public bool WarnOnOneTimeScriptChanges { get; set; }
         public bool NonInteractive { get; set; }
