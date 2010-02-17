@@ -190,6 +190,13 @@ namespace roundhouse.console
                 .Add("rco=|restoreoptions=|restorecustomoptions=",
                     "RestoreCustomOptions - This provides the restore any custom options as in MOVE='Somewhere or another'.",
                     option => configuration.RestoreCustomOptions = option)
+                .Add("rt=|restoretimeout=",
+                    "RestoreTimeout - Allows you to specify a restore timeout in seconds. The default is 900 seconds.",
+                    option => configuration.RestoreTimeout = int.Parse(option))
+                //custom create database
+                .Add("cds=|createdatabasescript=|createdatabasecustomscript=",
+                    "CreateDatabaseCustomScript - This instructs RH to use this script for creating a database instead of the default based on the SQLType.",
+                    option => configuration.CreateDatabaseCustomScript = option)
                 //drop
                 .Add("drop",
                     "Drop - This instructs RH to remove a database and not run migration scripts. Defaults to false.",
@@ -237,13 +244,15 @@ namespace roundhouse.console
                     "rh.exe /d[atabase] VALUE /[sql]f[ilesdirectory] VALUE " +
                     "[" +
                     "/s[ervername] VALUE " +
+                    "/c[onnection]s[tring] VALUE " +
                     "/r[epositorypath] VALUE /v[ersion]f[ile] VALUE /v[ersion]x[path] VALUE " +
                     "/u[pfoldername] VALUE /do[wnfoldername] VALUE " +
                     "/r[un]f[irstafterupdatefoldername] VALUE /fu[nctionsfoldername] VALUE /v[ie]w[sfoldername] VALUE " +
                     "/sp[rocsfoldername] VALUE /p[ermissionsfoldername] VALUE " +
                     "/sc[hemaname] VALUE /v[ersion]t[ablename] VALUE /s[cripts]r[un]t[ablename] VALUE " +
                     "/env[ironmentname] VALUE " +
-                    "/restore /r[estore]f[rom]p[ath] VALUE " +
+                    "/restore /r[estore]f[rom]p[ath] VALUE /r[estore]c[ustom]o[ptions] VALUE /r[estore]t[imeout] VALUE" +
+                    "/c[reate]d[atabasecustom]s[cript] VALUE " +
                     "/env[ironmentname] VALUE " +
                     "/o[utputpath] VALUE " +
                     "/w[arnononetimescriptchanges] " +

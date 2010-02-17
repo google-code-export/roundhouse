@@ -87,6 +87,10 @@ namespace roundhouse.infrastructure
             if (string.IsNullOrEmpty(configuration_property_holder.DatabaseType))
             {
                 configuration_property_holder.DatabaseType = ApplicationParameters.default_database_type;
+            } 
+            if (configuration_property_holder.RestoreTimeout==0)
+            {
+                configuration_property_holder.RestoreTimeout = ApplicationParameters.default_restore_timeout;
             }
         }
 

@@ -159,6 +159,14 @@ namespace roundhouse.tasks
         [StringValidator(AllowEmpty = true)]
         public string RestoreCustomOptions { get; set; }
 
+        [TaskAttribute("restoreTimeout", Required = false)]
+        [StringValidator(AllowEmpty = true)]
+        public int RestoreTimeout { get; set; }
+
+        [TaskAttribute("createDatabaseCustomScript", Required = false)]
+        [StringValidator(AllowEmpty = true)]
+        public string CreateDatabaseCustomScript { get; set; }
+
         [TaskAttribute("drop", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public bool Drop { get; set; }
