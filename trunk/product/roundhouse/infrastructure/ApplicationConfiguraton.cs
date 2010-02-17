@@ -92,6 +92,7 @@ namespace roundhouse.infrastructure
 
         public static void build_the_container(ConfigurationPropertyHolder configuration_property_holder)
         {
+            Container.initialize_with(null);
             IWindsorContainer windsor_container = new WindsorContainer();
 
             windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
