@@ -18,7 +18,6 @@ namespace roundhouse.migrators
         private readonly string output_path;
         private readonly bool error_on_one_time_script_changes;
         private bool running_in_a_transaction = false;
-        private const string sql_statement_separator_regex_pattern = @"[GO|;]+[\f\n\r]";
 
         public DefaultDatabaseMigrator(Database database, CryptographicService crypto_provider, bool restoring_database, string restore_path, string custom_restore_options, string output_path, bool error_on_one_time_script_changes)
         {
@@ -165,7 +164,7 @@ namespace roundhouse.migrators
             {
                 Log.bound_to(this).log_an_info_event_containing("Running {0} on {1} - {2}.", script_name, database.server_name, database.database_name);
 
-                var script_regex = new Regex(sql_statement_separator_regex_pattern);
+                var script_regex = new Regex(database.sql_statement_separator_regex_pattern);
                 foreach (var sql_statement in script_regex.Split(sql_to_run))
                 {
                     if (script_has_text_to_run(sql_statement))
@@ -173,7 +172,6 @@ namespace roundhouse.migrators
                         database.run_sql(sql_statement);
                     }
                 }
-
                 record_script_in_scripts_run_table(script_name, sql_to_run, run_this_script_once, version_id);
                 this_sql_ran = true;
             }
