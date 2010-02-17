@@ -17,7 +17,10 @@ namespace roundhouse.databases.oledb
         public string version_table_name { get; set; }
         public string scripts_run_table_name { get; set; }
         public string user_name { get; set; }
-        public string sql_statement_separator_regex_pattern { get; set; }
+        public string sql_statement_separator_regex_pattern
+        {
+            get { return sql_scripts.separator_characters_regex; }
+        }
 
         public const string MASTER_DATABASE_NAME = "Master";
         private string connect_options = "Trusted_Connection";
@@ -82,7 +85,6 @@ namespace roundhouse.databases.oledb
             {
                 sql_scripts = SqlScripts.t_sql_scripts;
             }
-            sql_statement_separator_regex_pattern = @"(GO|;)+[\f\n\r]+";
         }
 
         private static string build_connection_string(string server_name, string database_name, string connection_options)
