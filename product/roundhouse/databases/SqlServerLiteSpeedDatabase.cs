@@ -57,6 +57,12 @@ namespace roundhouse.databases
             set { database.user_name = value; }
         }
 
+        public string sql_statement_separator_regex_pattern
+        {
+            get { return database.sql_statement_separator_regex_pattern; }
+            set { database.sql_statement_separator_regex_pattern = value; }
+        }
+
         public void initialize_connection()
         {
             database.initialize_connection();
