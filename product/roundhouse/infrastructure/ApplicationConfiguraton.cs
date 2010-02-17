@@ -93,17 +93,71 @@ namespace roundhouse.infrastructure
         public static void build_the_container(ConfigurationPropertyHolder configuration_property_holder)
         {
             Container.initialize_with(null);
+            Container.initialize_with(build_items_for_container(configuration_property_holder));
+        }
+
+        private static InversionContainer build_items_for_container(ConfigurationPropertyHolder configuration_property_holder)
+        {
+            configuration_property_holder.DatabaseType = convert_database_type_synonyms(configuration_property_holder.DatabaseType);
+
             IWindsorContainer windsor_container = new WindsorContainer();
 
             windsor_container.AddComponent<FileSystemAccess, WindowsFileSystemAccess>();
+            windsor_container.Kernel.AddComponentInstance<KnownFolders>(set_up_known_folders(windsor_container.Resolve<FileSystemAccess>(), configuration_property_holder));
+            windsor_container.AddComponent<LogFactory, MultipleLoggerLogFactory>();
+            windsor_container.Kernel.AddComponentInstance<Logger>(set_up_loggers(windsor_container.Resolve<FileSystemAccess>(), configuration_property_holder, windsor_container.Resolve<KnownFolders>()));
 
-            Folder change_drop_folder = new DefaultFolder(windsor_container.Resolve<FileSystemAccess>(),
-                                                         combine_items_into_one_path(windsor_container, configuration_property_holder.OutputPath,
-                                                                                     configuration_property_holder.DatabaseName,
-                                                                                     configuration_property_holder.ServerName),
+            windsor_container.Kernel.AddComponentInstance<Database>(set_up_database(windsor_container.Resolve<FileSystemAccess>(), configuration_property_holder));
+            windsor_container.AddComponent<CryptographicService, MD5CryptographicService>();
+
+            DatabaseMigrator database_migrator = new DefaultDatabaseMigrator(windsor_container.Resolve<Database>(), windsor_container.Resolve<CryptographicService>(),
+                                                                             configuration_property_holder.Restore,
+                                                                             configuration_property_holder.RestoreFromPath,
+                                                                             configuration_property_holder.RestoreCustomOptions,
+                                                                             configuration_property_holder.OutputPath,
+                                                                             !configuration_property_holder.WarnOnOneTimeScriptChanges);
+            windsor_container.Kernel.AddComponentInstance<DatabaseMigrator>(database_migrator);
+
+            windsor_container.Kernel.AddComponentInstance<VersionResolver>(set_up_version_resolvers(windsor_container.Resolve<FileSystemAccess>(), configuration_property_holder));
+            windsor_container.Kernel.AddComponentInstance<Environment>(new DefaultEnvironment(configuration_property_holder.EnvironmentName));
+
+            return new containers.custom.WindsorContainer(windsor_container);
+        }
+
+        private static KnownFolders set_up_known_folders(FileSystemAccess file_system, ConfigurationPropertyHolder configuration_property_holder)
+        {
+
+            MigrationsFolder up_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
+                                                                     configuration_property_holder.UpFolderName, true, false);
+            MigrationsFolder down_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
+                                                                       configuration_property_holder.DownFolderName, true, false);
+            MigrationsFolder run_first_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
+                                                                            configuration_property_holder.RunFirstAfterUpFolderName, false, false);
+            MigrationsFolder functions_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
+                                                                            configuration_property_holder.FunctionsFolderName, false, false);
+            MigrationsFolder views_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
+                                                                        configuration_property_holder.ViewsFolderName, false, false);
+            MigrationsFolder sprocs_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
+                                                                         configuration_property_holder.SprocsFolderName, false, false);
+            MigrationsFolder permissions_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
+                                                                              configuration_property_holder.PermissionsFolderName, false, true);
+            Folder change_drop_folder = new DefaultFolder(file_system, combine_items_into_one_path(file_system,
+                                                                    configuration_property_holder.OutputPath,
+                                                                    configuration_property_holder.DatabaseName,
+                                                                    configuration_property_holder.ServerName),
                                                          get_run_date_time_string());
 
-            windsor_container.AddComponent<LogFactory, MultipleLoggerLogFactory>();
+            return new DefaultKnownFolders(up_folder, down_folder, run_first_folder, functions_folder, views_folder, sprocs_folder,
+                                                                 permissions_folder, change_drop_folder);
+        }
+
+        private static string get_run_date_time_string()
+        {
+            return string.Format("{0:yyyyMMdd_HHmmss_ffff}", DateTime.Now);
+        }
+
+        private static Logger set_up_loggers(FileSystemAccess file_system, ConfigurationPropertyHolder configuration_property_holder, KnownFolders known_folders)
+        {
             IList<Logger> loggers = new List<Logger>();
             Logger nant_logger = new NAntLogger(configuration_property_holder.NAntTask);
             loggers.Add(nant_logger);
@@ -118,111 +172,15 @@ namespace roundhouse.infrastructure
             loggers.Add(log4net_logger);
             Logger file_logger = new FileLogger(
                         combine_items_into_one_path(
-                            windsor_container,
-                            change_drop_folder.folder_full_path,
-                            string.Format("{0}_{1}.log", ApplicationParameters.name, change_drop_folder.folder_name)
+                            file_system,
+                            known_folders.change_drop.folder_full_path,
+                            string.Format("{0}_{1}.log", ApplicationParameters.name, known_folders.change_drop.folder_name)
                             ),
-                        windsor_container.Resolve<FileSystemAccess>()
+                        file_system
                     );
             //loggers.Add(file_logger);
-            Logger multi_logger = new MultipleLogger(loggers);
-            windsor_container.Kernel.AddComponentInstance<Logger>(multi_logger);
 
-            var identity_of_runner = string.Empty;
-            var windows_identity = WindowsIdentity.GetCurrent();
-            if (windows_identity != null)
-            {
-                identity_of_runner = windows_identity.Name;
-            }
-
-            configuration_property_holder.DatabaseType = convert_database_type_synonyms(configuration_property_holder.DatabaseType);
-
-            Database database_to_migrate;
-            try
-            {
-                database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type(configuration_property_holder.DatabaseType);
-            }
-            catch (NullReferenceException)
-            {
-                if (Assembly.GetExecutingAssembly().FullName.Contains("rh"))
-                {
-                    string database_type = configuration_property_holder.DatabaseType;
-                    database_type = database_type.Substring(0, database_type.IndexOf(','));
-                    const string console_name = "rh";
-                    database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type(database_type + ", " + console_name);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-
-            if (restore_from_file_ends_with_LiteSpeed_extension(windsor_container, configuration_property_holder.RestoreFromPath))
-            {
-                database_to_migrate = new SqlServerLiteSpeedDatabase(database_to_migrate);
-            }
-            database_to_migrate.server_name = configuration_property_holder.ServerName;
-            database_to_migrate.database_name = configuration_property_holder.DatabaseName;
-            database_to_migrate.connection_string = configuration_property_holder.ConnectionString;
-            database_to_migrate.roundhouse_schema_name = configuration_property_holder.SchemaName;
-            database_to_migrate.version_table_name = configuration_property_holder.VersionTableName;
-            database_to_migrate.scripts_run_table_name = configuration_property_holder.ScriptsRunTableName;
-            database_to_migrate.user_name = identity_of_runner;
-
-            windsor_container.Kernel.AddComponentInstance<Database>(database_to_migrate);
-
-            CryptographicService crypto_provider = new MD5CryptographicService();
-
-            DatabaseMigrator database_migrator = new DefaultDatabaseMigrator(windsor_container.Resolve<Database>(), crypto_provider,
-                                                                             configuration_property_holder.Restore,
-                                                                             configuration_property_holder.RestoreFromPath,
-                                                                             configuration_property_holder.RestoreCustomOptions,
-                                                                             configuration_property_holder.OutputPath,
-                                                                             !configuration_property_holder.WarnOnOneTimeScriptChanges);
-            windsor_container.Kernel.AddComponentInstance<DatabaseMigrator>(database_migrator);
-
-            VersionResolver xml_version_finder = new XmlFileVersionResolver(windsor_container.Resolve<FileSystemAccess>(),
-                                                                            configuration_property_holder.VersionXPath,
-                                                                            configuration_property_holder.VersionFile);
-            VersionResolver dll_version_finder = new DllFileVersionResolver(windsor_container.Resolve<FileSystemAccess>(),
-                                                                            configuration_property_holder.VersionFile);
-            IEnumerable<VersionResolver> resolvers = new List<VersionResolver> { xml_version_finder, dll_version_finder };
-            VersionResolver version_finder = new ComplexVersionResolver(resolvers);
-            windsor_container.Kernel.AddComponentInstance<VersionResolver>(version_finder);
-
-            MigrationsFolder up_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
-                                                                     configuration_property_holder.SqlFilesDirectory,
-                                                                     configuration_property_holder.UpFolderName, true,false);
-            MigrationsFolder down_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
-                                                                       configuration_property_holder.SqlFilesDirectory,
-                                                                       configuration_property_holder.DownFolderName, true, false);
-            MigrationsFolder run_first_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
-                                                                            configuration_property_holder.SqlFilesDirectory,
-                                                                            configuration_property_holder.RunFirstAfterUpFolderName, false, false);
-            MigrationsFolder functions_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
-                                                                            configuration_property_holder.SqlFilesDirectory,
-                                                                            configuration_property_holder.FunctionsFolderName, false, false);
-            MigrationsFolder views_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
-                                                                        configuration_property_holder.SqlFilesDirectory,
-                                                                        configuration_property_holder.ViewsFolderName, false, false);
-            MigrationsFolder sprocs_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
-                                                                         configuration_property_holder.SqlFilesDirectory,
-                                                                         configuration_property_holder.SprocsFolderName, false, false);
-            MigrationsFolder permissions_folder = new DefaultMigrationsFolder(windsor_container.Resolve<FileSystemAccess>(),
-                                                                              configuration_property_holder.SqlFilesDirectory,
-                                                                              configuration_property_holder.PermissionsFolderName, false,true);
-
-
-            KnownFolders known_folders = new DefaultKnownFolders(up_folder, down_folder, run_first_folder, functions_folder, views_folder, sprocs_folder,
-                                                                 permissions_folder, change_drop_folder);
-            windsor_container.Kernel.AddComponentInstance<KnownFolders>(known_folders);
-
-            Environment environment = new DefaultEnvironment(configuration_property_holder.EnvironmentName);
-            windsor_container.Kernel.AddComponentInstance<Environment>(environment);
-
-
-            Container.initialize_with(new containers.custom.WindsorContainer(windsor_container));
+            return new MultipleLogger(loggers);
         }
 
         private static string convert_database_type_synonyms(string database_type)
@@ -268,21 +226,77 @@ namespace roundhouse.infrastructure
             return database_type_full_name;
         }
 
-        private static string combine_items_into_one_path(IWindsorContainer windsor_container, params string[] paths)
+        private static Database set_up_database(FileSystemAccess file_system, ConfigurationPropertyHolder configuration_property_holder)
         {
-            return windsor_container.Resolve<FileSystemAccess>().combine_paths(paths);
+            Database database_to_migrate;
+            try
+            {
+                database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type(configuration_property_holder.DatabaseType);
+            }
+            catch (NullReferenceException)
+            {
+                if (Assembly.GetExecutingAssembly().FullName.Contains("rh"))
+                {
+                    string database_type = configuration_property_holder.DatabaseType;
+                    database_type = database_type.Substring(0, database_type.IndexOf(','));
+                    const string console_name = "rh";
+                    database_to_migrate = (Database)DefaultInstanceCreator.create_object_from_string_type(database_type + ", " + console_name);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            if (restore_from_file_ends_with_LiteSpeed_extension(file_system, configuration_property_holder.RestoreFromPath))
+            {
+                database_to_migrate = new SqlServerLiteSpeedDatabase(database_to_migrate);
+            }
+            database_to_migrate.server_name = configuration_property_holder.ServerName;
+            database_to_migrate.database_name = configuration_property_holder.DatabaseName;
+            database_to_migrate.connection_string = configuration_property_holder.ConnectionString;
+            database_to_migrate.roundhouse_schema_name = configuration_property_holder.SchemaName;
+            database_to_migrate.version_table_name = configuration_property_holder.VersionTableName;
+            database_to_migrate.scripts_run_table_name = configuration_property_holder.ScriptsRunTableName;
+            database_to_migrate.user_name = get_identity_of_person_running_rh();
+
+            return database_to_migrate;
         }
 
-        private static string get_run_date_time_string()
+        private static string get_identity_of_person_running_rh()
         {
-            return string.Format("{0:yyyyMMdd_HHmmss_ffff}", DateTime.Now);
+            string identity_of_runner = string.Empty;
+            WindowsIdentity windows_identity = WindowsIdentity.GetCurrent();
+            if (windows_identity != null)
+            {
+                identity_of_runner = windows_identity.Name;
+            }
+
+            return identity_of_runner;
         }
 
-        private static bool restore_from_file_ends_with_LiteSpeed_extension(IWindsorContainer windsor_container, string restore_path)
+        private static VersionResolver set_up_version_resolvers(FileSystemAccess file_system, ConfigurationPropertyHolder configuration_property_holder)
+        {
+            VersionResolver xml_version_finder = new XmlFileVersionResolver(file_system,
+                                                                           configuration_property_holder.VersionXPath,
+                                                                           configuration_property_holder.VersionFile);
+            VersionResolver dll_version_finder = new DllFileVersionResolver(file_system,
+                                                                            configuration_property_holder.VersionFile);
+            IEnumerable<VersionResolver> resolvers = new List<VersionResolver> { xml_version_finder, dll_version_finder };
+
+            return new ComplexVersionResolver(resolvers);
+        }
+
+        private static string combine_items_into_one_path(FileSystemAccess file_system, params string[] paths)
+        {
+            return file_system.combine_paths(paths);
+        }
+
+        private static bool restore_from_file_ends_with_LiteSpeed_extension(FileSystemAccess file_system, string restore_path)
         {
             if (string.IsNullOrEmpty(restore_path)) return false;
 
-            return windsor_container.Resolve<FileSystemAccess>().get_file_name_without_extension_from(restore_path).ToLower().EndsWith("ls");
+            return file_system.get_file_name_without_extension_from(restore_path).ToLower().EndsWith("ls");
         }
     }
 }

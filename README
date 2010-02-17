@@ -33,6 +33,10 @@ Donations Accepted - If you enjoy using this product or it has saved you time an
 =============
 RELEASE NOTES
 =============
+=0.2.0.112=
+* Fixed issue with running roundhouse twice during MSBuild - see http://code.google.com/p/roundhouse/issues/detail?id=16 for details. (r112)
+* All types of migrations will split sql statements into multiple statements before running - see http://code.google.com/p/roundhouse/issues/detail?id=17 for details. (r110)
+
 =0.2.0.108=
 * Reports version during run - see http://code.google.com/p/roundhouse/issues/detail?id=9 for details. (r108)
 * Logs what type of script it is looking for and where it is looking for them - see http://code.google.com/p/roundhouse/issues/detail?id=14 for details. (r107)
