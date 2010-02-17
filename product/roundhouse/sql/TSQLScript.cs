@@ -4,6 +4,11 @@ namespace roundhouse.sql
 
     public sealed class TSQLScript : SqlScript
     {
+        public string separator_characters_regex
+        {
+            get { return @"GO+[\f\n\r]+"; }
+        }
+
         public string create_database(string database_name)
         {
             return string.Format(
@@ -42,7 +47,7 @@ namespace roundhouse.sql
                         ALTER DATABASE [{0}] SET MULTI_USER;
                         --DBCC SHRINKDATABASE ([{0}]);
                         ",
-                database_name, restore_from_path, 
+                database_name, restore_from_path,
                 custom_restore_options.to_lower().StartsWith(",") ? custom_restore_options : ", " + custom_restore_options
                 );
 

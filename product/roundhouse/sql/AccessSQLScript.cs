@@ -4,6 +4,11 @@ namespace roundhouse.sql
 {
     public class AccessSQLScript : SqlScript
     {
+        public string separator_characters_regex
+        {
+            get { return @";[\f\n\r]+"; }
+        }
+
         public string create_database(string database_name)
         {
             throw new System.NotImplementedException();
