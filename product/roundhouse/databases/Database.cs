@@ -13,6 +13,9 @@ namespace roundhouse.databases
         string scripts_run_table_name { get; set; }
         string user_name { get; set; }
         string sql_statement_separator_regex_pattern { get;}
+        string custom_create_database_script { get; set; }
+        int restore_timeout { get; set; }
+
 
         void initialize_connection();
         void open_connection(bool with_transaction);

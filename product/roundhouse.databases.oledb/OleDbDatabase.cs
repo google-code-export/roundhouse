@@ -21,14 +21,16 @@ namespace roundhouse.databases.oledb
         {
             get { return sql_scripts.separator_characters_regex; }
         }
+        public string custom_create_database_script { get; set; }
+        public int restore_timeout { get; set; }
 
         public const string MASTER_DATABASE_NAME = "Master";
         private string connect_options = "Trusted_Connection";
         private OleDbConnection server_connection;
         private bool running_a_transaction;
         private bool disposing;
-        private const int sixty_seconds = 60;
         private SqlScript sql_scripts;
+        private int command_timeout = 60;
 
         public void initialize_connection()
         {
@@ -116,7 +118,13 @@ namespace roundhouse.databases.oledb
         {
             try
             {
-                run_sql(sql_scripts.create_database(database_name));
+                string create_script = sql_scripts.create_database(database_name);
+                if (!string.IsNullOrEmpty(custom_create_database_script))
+                {
+                    create_script = custom_create_database_script;
+                }
+
+                run_sql(create_script);
             }
             catch (Exception)
             {
@@ -149,7 +157,10 @@ namespace roundhouse.databases.oledb
         {
             try
             {
+                int current_connetion_timeout = command_timeout;
+                command_timeout = restore_timeout;
                 run_sql(sql_scripts.restore_database(database_name, restore_from_path, custom_restore_options));
+                command_timeout = current_connetion_timeout;
             }
             catch (Exception)
             {
@@ -238,7 +249,7 @@ namespace roundhouse.databases.oledb
             {
                 command.CommandText = sql_to_run;
                 command.CommandType = CommandType.Text;
-                command.CommandTimeout = sixty_seconds;
+                command.CommandTimeout = command_timeout;
                 command.ExecuteNonQuery();
                 command.Dispose();
             }
@@ -344,7 +355,7 @@ namespace roundhouse.databases.oledb
             {
                 command.CommandText = sql_to_run;
                 command.CommandType = CommandType.Text;
-                command.CommandTimeout = sixty_seconds;
+                command.CommandTimeout = command_timeout;
                 return_value = command.ExecuteScalar();
                 command.Dispose();
             }
@@ -360,7 +371,7 @@ namespace roundhouse.databases.oledb
             {
                 command.CommandText = sql_to_run;
                 command.CommandType = CommandType.Text;
-                command.CommandTimeout = sixty_seconds;
+                command.CommandTimeout = command_timeout;
                 using (OleDbDataReader data_reader = command.ExecuteReader())
                 {
                     DataTable data_table = new DataTable();

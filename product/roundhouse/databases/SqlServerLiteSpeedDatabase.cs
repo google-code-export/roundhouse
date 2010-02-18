@@ -62,6 +62,17 @@ namespace roundhouse.databases
             get { return database.sql_statement_separator_regex_pattern; }
         }
 
+        public string custom_create_database_script
+        {
+            get { return database.custom_create_database_script; }
+            set { database.custom_create_database_script = value; }
+        }
+        public int restore_timeout
+        {
+            get { return database.restore_timeout; }
+            set { database.restore_timeout = value; }
+        }
+
         public void initialize_connection()
         {
             database.initialize_connection();

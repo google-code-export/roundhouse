@@ -6,7 +6,7 @@ namespace roundhouse.databases.sqlserver2008
     using Microsoft.SqlServer.Management.Common;
     using Microsoft.SqlServer.Management.Smo;
     using sql;
-    using Database=roundhouse.databases.Database;
+    using Database = roundhouse.databases.Database;
 
     public sealed class SqlServerDatabase : Database
     {
@@ -22,6 +22,8 @@ namespace roundhouse.databases.sqlserver2008
         {
             get { return sql_scripts.separator_characters_regex; }
         }
+        public string custom_create_database_script { get; set; }
+        public int restore_timeout { get; set; }
 
         public const string MASTER_DATABASE_NAME = "Master";
         private string connect_options = "Integrated Security";
@@ -59,7 +61,6 @@ namespace roundhouse.databases.sqlserver2008
                         }
                     }
                 }
-               
             }
 
             if (connect_options == "Integrated Security")
@@ -110,7 +111,13 @@ namespace roundhouse.databases.sqlserver2008
         public void create_database_if_it_doesnt_exist()
         {
             use_database(MASTER_DATABASE_NAME);
-            run_sql(sql_scripts.create_database(database_name));
+            string create_script = sql_scripts.create_database(database_name);
+            if (!string.IsNullOrEmpty(custom_create_database_script))
+            {
+                create_script = custom_create_database_script;
+            } 
+
+            run_sql(create_script);
         }
 
         public void set_recovery_mode(bool simple)
@@ -130,7 +137,11 @@ namespace roundhouse.databases.sqlserver2008
         public void restore_database(string restore_from_path, string custom_restore_options)
         {
             use_database(MASTER_DATABASE_NAME);
+
+            int current_connetion_timeout = sql_server.ConnectionContext.StatementTimeout;
+            sql_server.ConnectionContext.StatementTimeout = restore_timeout;
             run_sql(sql_scripts.restore_database(database_name, restore_from_path, custom_restore_options));
+            sql_server.ConnectionContext.StatementTimeout = current_connetion_timeout;
         }
 
         public void delete_database_if_it_exists()
@@ -172,18 +183,18 @@ namespace roundhouse.databases.sqlserver2008
 
         public string get_version(string repository_path)
         {
-            return (string) run_sql_scalar(sql_scripts.get_version(roundhouse_schema_name, version_table_name, repository_path));
+            return (string)run_sql_scalar(sql_scripts.get_version(roundhouse_schema_name, version_table_name, repository_path));
         }
 
         public long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
             run_sql(sql_scripts.insert_version(roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name));
-            return (long) run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path));
+            return (long)run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path));
         }
 
         public string get_current_script_hash(string script_name)
         {
-            return (string) run_sql_scalar(sql_scripts.get_current_script_hash(roundhouse_schema_name, scripts_run_table_name, script_name));
+            return (string)run_sql_scalar(sql_scripts.get_current_script_hash(roundhouse_schema_name, scripts_run_table_name, script_name));
         }
 
         public bool has_run_script_already(string script_name)

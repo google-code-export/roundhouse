@@ -16,6 +16,7 @@
     <DBRestore>false</DBRestore>
     <DBRestorePath>\\tell\me\where\YOURDATABASENAME.bak</DBRestorePath>
     <DBRestoreOptions>INSERTRESTOREOPTIONS</DBRestoreOptions>
+    <DBCreateDatabaseCustomScript></DBCreateDatabaseCustomScript>
     <DBDrop>false</DBDrop>
     <Interactive>true</Interactive>
   </PropertyGroup>
@@ -45,6 +46,8 @@
         Restore="$(DBRestore)"
         RestoreFromPath="$(DBRestorePath)"
         RestoreCustomOptions="$(DBRestoreOptions)"
+        RestoreTimeout="900"
+        CreateDatabaseCustomScript="$(DBCreateDatabaseCustomScript)"
         Drop="$(DBDrop)"
         OutputPath="C:\RoundhousE_runs"
         WarnOnOneTimeScriptChanges="false"
