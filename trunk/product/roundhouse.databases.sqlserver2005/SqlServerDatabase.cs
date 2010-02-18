@@ -6,7 +6,7 @@ namespace roundhouse.databases.sqlserver2005
     using Microsoft.SqlServer.Management.Common;
     using Microsoft.SqlServer.Management.Smo;
     using sql;
-    using Database=roundhouse.databases.Database;
+    using Database = roundhouse.databases.Database;
 
     public sealed class SqlServerDatabase : Database
     {
@@ -22,6 +22,8 @@ namespace roundhouse.databases.sqlserver2005
         {
             get { return sql_scripts.separator_characters_regex; }
         }
+        public string custom_create_database_script { get; set; }
+        public int restore_timeout { get; set; }
 
         public const string MASTER_DATABASE_NAME = "Master";
         private string connect_options = "Integrated Security";
@@ -59,7 +61,6 @@ namespace roundhouse.databases.sqlserver2005
                         }
                     }
                 }
-
             }
 
             if (connect_options == "Integrated Security")
@@ -110,7 +111,13 @@ namespace roundhouse.databases.sqlserver2005
         public void create_database_if_it_doesnt_exist()
         {
             use_database(MASTER_DATABASE_NAME);
-            run_sql(sql_scripts.create_database(database_name));
+            string create_script = sql_scripts.create_database(database_name);
+            if (!string.IsNullOrEmpty(custom_create_database_script))
+            {
+                create_script = custom_create_database_script;
+            }
+
+            run_sql(create_script);
         }
 
         public void set_recovery_mode(bool simple)
@@ -130,7 +137,11 @@ namespace roundhouse.databases.sqlserver2005
         public void restore_database(string restore_from_path, string custom_restore_options)
         {
             use_database(MASTER_DATABASE_NAME);
+
+            int current_connetion_timeout = sql_server.ConnectionContext.StatementTimeout;
+            sql_server.ConnectionContext.StatementTimeout = restore_timeout;
             run_sql(sql_scripts.restore_database(database_name, restore_from_path, custom_restore_options));
+            sql_server.ConnectionContext.StatementTimeout = current_connetion_timeout;
         }
 
         public void delete_database_if_it_exists()

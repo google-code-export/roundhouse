@@ -20,6 +20,7 @@
   <property name="restore.from.path" value="" overwrite="false" />
   <property name="restore.from.path.full" value="${path::get-full-path(restore.from.path)}" if="${restore.from.path!= ''}" />
   <property name="restore.custom.options" value="" overwrite="false" />
+  <property name="create.database.custom.script" value="" overwrite="" />
   <property name="drop" value="false" overwrite="false" />
 
   <target name="go" depends="run_roundhouse" />
@@ -48,6 +49,8 @@
       restore="${restore}"
       restoreFromPath="${restore.from.path.full}"
       restoreCustomOptions="${restore.custom.options}"
+      restoreTimeout="900"
+      createDatabaseCustomScript="${create.database.custom.script}"
       drop="${drop}"
       outputPath="C:\RoundhousE_runs"
       warnOnOneTimeScriptChanges="false"
