@@ -33,8 +33,10 @@ Donations Accepted - If you enjoy using this product or it has saved you time an
 =============
 RELEASE NOTES
 =============
-=0.2.0.113=
-* All types of migrations will have the ability split sql statements into multiple statements before running - see http://code.google.com/p/roundhouse/issues/detail?id=17 for details. (r113)
+=0.2.0.117=
+* Restore timeouts can now be specified (with a default timeout of 900 seconds) - see http://code.google.com/p/roundhouse/issues/detail?id=21 for details. (r117)
+* Custom database create scripts are now possible - see http://code.google.com/p/roundhouse/issues/detail?id=20 for details. (r116)
+* All types of migrations will split sql statements from files that have more than one statement into multiple statements and run each consecutively - see http://code.google.com/p/roundhouse/issues/detail?id=17 for details. (r113)
 * Fixed issue with running roundhouse twice during MSBuild - see http://code.google.com/p/roundhouse/issues/detail?id=16 for details. (r112)
 
 =0.2.0.108=
