@@ -63,7 +63,7 @@ namespace roundhouse.tests.infrastructure.extensions
         [Observation]
         public void should_not_error_out()
         {
-            result.should_be_equal_to(null);
+            result.should_be_equal_to(string.Empty);
         }
     }
 
@@ -109,7 +109,7 @@ namespace roundhouse.tests.infrastructure.extensions
         [Observation]
         public void should_not_error_out()
         {
-            result.should_be_equal_to(null);
+            result.should_be_equal_to(string.Empty);
         }
     }
 

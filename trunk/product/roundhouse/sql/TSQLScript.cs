@@ -32,6 +32,12 @@ namespace roundhouse.sql
 
         public string restore_database(string database_name, string restore_from_path, string custom_restore_options)
         {
+            string restore_options = string.Empty;
+            if (!string.IsNullOrEmpty(custom_restore_options))
+            {
+                restore_options = custom_restore_options.to_lower().StartsWith(",") ? custom_restore_options : ", " + custom_restore_options;
+            }
+
             return string.Format(
                 @"USE Master 
                         ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
@@ -48,9 +54,8 @@ namespace roundhouse.sql
                         --DBCC SHRINKDATABASE ([{0}]);
                         ",
                 database_name, restore_from_path,
-                custom_restore_options.to_lower().StartsWith(",") ? custom_restore_options : ", " + custom_restore_options
+                restore_options
                 );
-
         }
 
         public string delete_database(string database_name)

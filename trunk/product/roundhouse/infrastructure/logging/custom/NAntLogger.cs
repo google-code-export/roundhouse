@@ -14,9 +14,11 @@ namespace roundhouse.infrastructure.logging.custom
 
         private void log_message(Level log_level, string message)
         {
+            if (nant_task == null) return;
+           
             try
             {
-                nant_task.Project.Log(log_level, message);  
+                nant_task.Project.Log(log_level, message);
             }
             catch (Exception)
             {
