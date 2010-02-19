@@ -48,7 +48,16 @@ namespace roundhouse.console
             }
             else
             {
-                run_migrator(args);
+            	try
+            	{
+					run_migrator(args);
+					Environment.Exit(0);
+            	}
+            	catch (Exception ex)
+            	{
+            		_logger.Info(ex.Message);
+            		Environment.Exit(-1);
+            	}                
             }
             
         }
