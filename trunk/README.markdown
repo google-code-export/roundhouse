@@ -1,38 +1,44 @@
 Project RoundhousE - Database Change Management done right
+=======
+![RoundhousE](http://github.com/ferventcoder/roundhouse/raw/master/docs/logo/RoundhousE_Logo.jpg "RoundhousE - Professional Database Management.")
 
-=======
-LICENSE
-=======
+# LICENSE
 Apache 2.0 - see docs\legal (just LEGAL in the zip folder)
 
-=========
-IMPORTANT
-=========
+# IMPORTANT
 NOTE: If you are looking at the source - please run build.bat before opening the solution. It creates the SolutionVersion.cs file that is necessary for a successful build.
 
-====
-INFO
-====
+# INFO
+## Overview
 RoundhousE is an automated database deployment (change management) system that allows you to use your current idioms and gain much more. Currently it only supports Microsoft SQL Server, but there are future plans for other databases. 
 
 It seeks to solve both maintenance concerns and ease of deployment. We follow some of the same idioms as other database management systems (SQL scripts), but we are different in that we think about future maintenance concerns. We want to always apply certain scripts (anything stateless like functions, views, stored procedures, and permissions), so we don’t have to throw everything into our change scripts. This seeks to solves future source control concerns. How sweet is it when you can version the database according to your current source control version? 
 
-============
-REQUIREMENTS
-============
+## Getting started with RoundhousE
+### Downloads
+ You can download RoundhousE from [http://code.google.com/p/roundhouse/downloads/list](http://code.google.com/p/roundhouse/downloads/list)
+
+ You can also obtain a copy from the build server at [http://teamcity.codebetter.com](http://teamcity.codebetter.com).
+
+### Source
+This is the best way to get to the bleeding edge of what we are doing.
+
+1. Clone the source down to your machine. 
+  `git clone git://github.com/chucknorris/roundhouse.git`
+2. Run `build.bat`. NOTE: You must have git on the path (open a regular command line and type git).
+
+ 
+# REQUIREMENTS
 * .NET Framework 3.5 
 * SQL Server 2005/2008 installed (or required DLLS in the GAC for SQL Server 2005/2008)
 * SA access to the sql server (for creation or deletion)
 * change access to the database (for everything else)
 
-======
-DONATE
-======
-Donations Accepted - If you enjoy using this product or it has saved you time and money in some way, please consider making a donation. It helps keep to the product updated, pays for site hosting, etc. https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9831498
+# DONATE
+Donations Accepted - If you enjoy using this product or it has saved you time and money in some way, please consider making a donation.
+It helps keep to the product updated, pays for site hosting, etc. https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9831498
 
-=============
-RELEASE NOTES
-=============
+# RELEASE NOTES
 =0.2.0.117=
 * Restore timeouts can now be specified (with a default timeout of 900 seconds) - see http://code.google.com/p/roundhouse/issues/detail?id=21 for details. (r117)
 * Custom database create scripts are now possible - see http://code.google.com/p/roundhouse/issues/detail?id=20 for details. (r116)
@@ -75,7 +81,5 @@ RELEASE NOTES
 * Fixed an issue with holding connections - see http://code.google.com/p/roundhouse/issues/detail?id=7 for details. (r74)
 * Added the ability to run with transactions
 
-=======
-CREDITS
-=======
+# CREDITS
 UppercuT - Automated Builds (automated build in 10 minutes or less?!) http://projectuppercut.org
