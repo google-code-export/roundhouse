@@ -1,12 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using log4net.Core;
-using log4net.Repository;
-using roundhouse.infrastructure.app.logging;
-using roundhouse.infrastructure.extensions;
-
-namespace roundhouse.console
+﻿namespace roundhouse.console
 {
     using System;
     using consoles;
@@ -19,6 +11,13 @@ namespace roundhouse.console
     using resolvers;
     using runners;
     using infrastructure.commandline.options;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using log4net.Core;
+    using log4net.Repository;
+    using infrastructure.app.logging;
+    using infrastructure.extensions;
 
     internal class Program
     {
@@ -48,25 +47,25 @@ namespace roundhouse.console
             }
             else
             {
-            	try
-            	{
-					run_migrator(args);
-					Environment.Exit(0);
-            	}
-            	catch (Exception ex)
-            	{
-            		_logger.Info(ex.Message);
-            		Environment.Exit(-1);
-            	}                
+                try
+                {
+                    run_migrator(args);
+                    Environment.Exit(0);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Info(ex.Message);
+                    Environment.Exit(1);
+                }
             }
-            
+
         }
 
         public static void report_version()
         {
             string version = infrastructure.Version.get_current_assembly_version();
-            _logger.InfoFormat("{0} - version {1} from http://projectroundhouse.org.",ApplicationParameters.name,version);
-            
+            _logger.InfoFormat("{0} - version {1} from http://projectroundhouse.org.", ApplicationParameters.name, version);
+
         }
 
         public static void run_migrator(string[] args)
