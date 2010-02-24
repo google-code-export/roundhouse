@@ -29,7 +29,7 @@ namespace roundhouse.tests.infrastructure.logging.custom
             [Observation]
             public void should_be_an_instance_of_Logger()
             {
-                sut.should_be_an_instance_of<Logger>();
+                sut.should_be_an_instance_of<SubLogger>();
             }
         }
 
