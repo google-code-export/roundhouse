@@ -88,6 +88,11 @@ namespace roundhouse.sql
                version_table_name, repository_path);
         }
 
+        public string get_version_parameterized(string roundhouse_schema_name, string version_table_name)
+        {
+            throw new NotImplementedException();
+        }
+
         public string insert_version(string roundhouse_schema_name, string version_table_name, string repository_path, string repository_version, string user_name)
         {
             return string.Format(
@@ -113,6 +118,11 @@ namespace roundhouse.sql
                 DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"), DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
         }
 
+        public string insert_version_parameterized(string roundhouse_schema_name, string version_table_name)
+        {
+            throw new NotImplementedException();
+        }
+
         public string get_version_id(string roundhouse_schema_name, string version_table_name, string repository_path)
         {
             return string.Format(
@@ -125,6 +135,11 @@ namespace roundhouse.sql
                     ORDER BY entry_date DESC;
                 ",
               version_table_name, repository_path);
+        }
+
+        public string get_version_id_parameterized(string roundhouse_schema_name, string version_table_name)
+        {
+            throw new NotImplementedException();
         }
 
         public string get_current_script_hash(string roundhouse_schema_name, string scripts_run_table_name, string script_name)
@@ -141,6 +156,11 @@ namespace roundhouse.sql
                );
         }
 
+        public string get_current_script_hash_parameterized(string roundhouse_schema_name, string scripts_run_table_name)
+        {
+            throw new NotImplementedException();
+        }
+
         public string has_script_run(string roundhouse_schema_name, string scripts_run_table_name, string script_name)
         {
             return string.Format(
@@ -152,6 +172,11 @@ namespace roundhouse.sql
                 ",
                 scripts_run_table_name, script_name
                 );
+        }
+
+        public string has_script_run_parameterized(string roundhouse_schema_name, string scripts_run_table_name)
+        {
+            throw new NotImplementedException();
         }
 
         public string insert_script_run(string roundhouse_schema_name, string scripts_run_table_name, long version_id, string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, string user_name)
@@ -184,6 +209,11 @@ namespace roundhouse.sql
                 sql_to_run_hash,
                 run_this_script_once ? 1 : 0, user_name,
                 DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"), DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
+        }
+
+        public string insert_script_run_parameterized(string roundhouse_schema_name, string scripts_run_table_name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

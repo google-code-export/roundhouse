@@ -2,11 +2,14 @@ namespace roundhouse.sql
 {
     using infrastructure.extensions;
 
-    public sealed class TSQLScript : SqlScript
+    public class TSQLScript : SqlScript
     {
         public string separator_characters_regex
         {
-            get { return @"(?<!--[\s\w\`\~\!\@\#\$\%\^\&\*\(\)\-_\+\=\,\.\;\:\'\""\[\]\\\/\?\<\>]*[^\r\n\f]|\w|--)[\s]*GO[\s]*$(?![\s\w\`\~\!\@\#\$\%\^\&\*\(\)\-_\+\=\,\.\;\:\'\""\[\]\\\/\?\<\>\r\n\f]*\*\/)"; }
+            get
+            {
+                return @"(?<!--[\s\w\=\'\.\>\?\<\(\)\[\]\-\*\;]*[^\r\n\f]|\w|--)[\s]*GO[\s]*$(?![\s\w\=\'\.\>\?\<\(\)\[\]\-\*\;\r\n\f]*\*\/)";
+            }
         }
         
         public string create_database(string database_name)
@@ -154,6 +157,19 @@ namespace roundhouse.sql
                 roundhouse_schema_name, version_table_name, repository_path);
         }
 
+        public string get_version_parameterized(string roundhouse_schema_name, string version_table_name)
+        {
+            return string.Format(
+                @"
+                    SELECT TOP 1 version 
+                    FROM [{0}].[{1}]
+                    WHERE 
+                        repository_path = @repository_path 
+                    ORDER BY entry_date Desc
+                ",
+                roundhouse_schema_name, version_table_name);
+        }
+
         public string insert_version(string roundhouse_schema_name, string version_table_name, string repository_path, string repository_version, string user_name)
         {
             return string.Format(
@@ -175,6 +191,26 @@ namespace roundhouse.sql
 
         }
 
+        public string insert_version_parameterized(string roundhouse_schema_name, string version_table_name)
+        {
+            return string.Format(
+                @"
+                    INSERT INTO [{0}].[{1}] 
+                    (
+                        repository_path
+                        ,version
+                        ,entered_by
+                    )
+                    VALUES
+                    (
+                        @repository_path
+                        ,@repository_version
+                        ,@user_name
+                    )
+                ",
+                roundhouse_schema_name, version_table_name);
+        }
+
         public string get_version_id(string roundhouse_schema_name, string version_table_name, string repository_path)
         {
             return string.Format(
@@ -187,6 +223,20 @@ namespace roundhouse.sql
                     ORDER BY entry_date Desc
                 ",
                roundhouse_schema_name, version_table_name, repository_path);
+        }
+
+        public string get_version_id_parameterized(string roundhouse_schema_name, string version_table_name)
+        {
+            return string.Format(
+               @"
+                   
+                    SELECT TOP 1 id 
+                    FROM [{0}].[{1}]
+                    WHERE 
+                        repository_path = @repository_path
+                    ORDER BY entry_date Desc
+                ",
+               roundhouse_schema_name, version_table_name);
         }
 
         public string get_current_script_hash(string roundhouse_schema_name, string scripts_run_table_name, string script_name)
@@ -203,6 +253,20 @@ namespace roundhouse.sql
                 );
         }
 
+        public string get_current_script_hash_parameterized(string roundhouse_schema_name, string scripts_run_table_name)
+        {
+            return string.Format(
+                @"
+                    SELECT TOP 1
+                        text_hash
+                    FROM [{0}].[{1}]
+                    WHERE script_name = @script_name
+                    ORDER BY entry_date Desc
+                ",
+                roundhouse_schema_name, scripts_run_table_name
+                );
+        }
+
         public string has_script_run(string roundhouse_schema_name, string scripts_run_table_name, string script_name)
         {
             return string.Format(
@@ -213,6 +277,19 @@ namespace roundhouse.sql
                     WHERE script_name = '{2}'
                 ",
                 roundhouse_schema_name, scripts_run_table_name, script_name
+                );
+        }
+
+        public string has_script_run_parameterized(string roundhouse_schema_name, string scripts_run_table_name)
+        {
+            return string.Format(
+                @"
+                    SELECT 
+                        script_name
+                    FROM [{0}].[{1}]
+                    WHERE script_name = @script_name
+                ",
+                roundhouse_schema_name, scripts_run_table_name
                 );
         }
 
@@ -243,6 +320,32 @@ namespace roundhouse.sql
                 script_name, sql_to_run.Replace(@"'", @"''"),
                 sql_to_run_hash,
                 run_this_script_once ? 1 : 0, user_name);
+        }
+
+        public string insert_script_run_parameterized(string roundhouse_schema_name, string scripts_run_table_name)
+        {
+            return string.Format(
+                @"
+                    INSERT INTO [{0}].[{1}] 
+                    (
+                        version_id
+                        ,script_name
+                        ,text_of_script
+                        ,text_hash
+                        ,one_time_script
+                        ,entered_by
+                    )
+                    VALUES
+                    (
+                        @version_id
+                        ,@script_name
+                        ,@sql_to_run
+                        ,@sql_to_run_hash
+                        ,@run_this_script_once
+                        ,@user_name
+                    )
+                ",
+                roundhouse_schema_name, scripts_run_table_name);
         }
     }
 }

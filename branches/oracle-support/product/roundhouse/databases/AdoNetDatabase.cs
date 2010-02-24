@@ -1,6 +1,7 @@
-﻿using System.Data.Common;
+﻿using System.Collections.Generic;
+using System.Data.Common;
 
-namespace roundhouse.databases.sqlserver
+namespace roundhouse.databases
 {
     using System.Data;
     using sql;
@@ -26,6 +27,7 @@ namespace roundhouse.databases.sqlserver
         public int command_timeout { get; set; }
         public int restore_timeout { get; set; }
 
+        private DbProviderFactory provider_factory;
         private IDbConnection server_connection;
         private IDbTransaction transaction;
         private bool disposing;
@@ -35,7 +37,8 @@ namespace roundhouse.databases.sqlserver
 
         protected void create_connection()
         {
-            server_connection = DbProviderFactories.GetFactory(provider).CreateConnection();
+            provider_factory = DbProviderFactories.GetFactory(provider);
+            server_connection = provider_factory.CreateConnection();
             server_connection.ConnectionString = connection_string;
         }
 
@@ -124,10 +127,22 @@ namespace roundhouse.databases.sqlserver
 
         public void run_sql(string sql_to_run)
         {
+            run_sql(sql_to_run, null);
+        }
+
+        protected void run_sql(string sql_to_run, IList<IDbDataParameter> parameters)
+        {
             if (string.IsNullOrEmpty(sql_to_run)) return;
 
             using (IDbCommand command = server_connection.CreateCommand())
             {
+                if(parameters != null)
+                {
+                    foreach (IDbDataParameter parameter in parameters)
+                    {
+                        command.Parameters.Add(parameter);
+                    }
+                }
                 command.Transaction = transaction;
                 command.CommandText = sql_to_run;
                 command.CommandType = CommandType.Text;
@@ -139,31 +154,53 @@ namespace roundhouse.databases.sqlserver
 
         public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
-            run_sql(sql_scripts.insert_script_run(roundhouse_schema_name, scripts_run_table_name, version_id, script_name, sql_to_run, sql_to_run_hash,
-                                                  run_this_script_once, user_name));
+            var parameters = new List<IDbDataParameter>
+                                 {
+                                     create_parameter("version_id", DbType.Int64, version_id, null), 
+                                     create_parameter("script_name", DbType.AnsiStringFixedLength, script_name, 255), 
+                                     create_parameter("sql_to_run", DbType.String, sql_to_run, null), 
+                                     create_parameter("sql_to_run_hash", DbType.AnsiStringFixedLength, sql_to_run_hash, 512), 
+                                     create_parameter("run_this_script_once", DbType.Boolean, run_this_script_once, null), 
+                                     create_parameter("user_name", DbType.AnsiStringFixedLength, user_name, 50)
+                                 };
+
+            run_sql(sql_scripts.insert_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
         }
 
         public string get_version(string repository_path)
         {
-            return (string)run_sql_scalar(sql_scripts.get_version(roundhouse_schema_name, version_table_name, repository_path));
+            var parameters = new List<IDbDataParameter> {create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255)};
+            return (string)run_sql_scalar(sql_scripts.get_version_parameterized(roundhouse_schema_name, version_table_name), parameters);
         }
 
         public long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
-            run_sql(sql_scripts.insert_version(roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name));
-            return (long)run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path));
+            var insert_parameters = new List<IDbDataParameter>
+                                 {
+                                     create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255), 
+                                     create_parameter("repository_version", DbType.AnsiStringFixedLength, repository_version, 35), 
+                                     create_parameter("user_name", DbType.AnsiStringFixedLength, user_name, 50)
+                                 };
+            run_sql(sql_scripts.insert_version_parameterized(roundhouse_schema_name, version_table_name), insert_parameters);
+
+            var select_parameters = new List<IDbDataParameter> {create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255)};
+            return (long)run_sql_scalar(sql_scripts.get_version_id_parameterized(roundhouse_schema_name, version_table_name), select_parameters);
         }
 
         public string get_current_script_hash(string script_name)
         {
-            return (string)run_sql_scalar(sql_scripts.get_current_script_hash(roundhouse_schema_name, scripts_run_table_name, script_name));
+            var parameters = new List<IDbDataParameter> {create_parameter("script_name", DbType.AnsiStringFixedLength, script_name, 255)};
+            return (string)run_sql_scalar(sql_scripts.get_current_script_hash_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
         }
 
         public bool has_run_script_already(string script_name)
         {
             bool script_has_run = false;
 
-            DataTable data_table = execute_datatable(sql_scripts.has_script_run(roundhouse_schema_name, scripts_run_table_name, script_name));
+            IList<IDbDataParameter> parameters = new List<IDbDataParameter>();
+            parameters.Add(create_parameter("script_name", DbType.AnsiStringFixedLength, script_name, 255));
+
+            DataTable data_table = execute_datatable(sql_scripts.has_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
             if (data_table.Rows.Count > 0)
             {
                 script_has_run = true;
@@ -174,12 +211,24 @@ namespace roundhouse.databases.sqlserver
 
         public object run_sql_scalar(string sql_to_run)
         {
+            return run_sql_scalar(sql_to_run, null);
+        }
+
+        protected object run_sql_scalar(string sql_to_run, IList<IDbDataParameter> parameters)
+        {
             object return_value = new object();
 
             if (string.IsNullOrEmpty(sql_to_run)) return return_value;
 
             using (IDbCommand command = server_connection.CreateCommand())
             {
+                if (parameters != null)
+                {
+                    foreach (IDbDataParameter parameter in parameters)
+                    {
+                        command.Parameters.Add(parameter);
+                    }
+                }
                 command.Transaction = transaction;
                 command.CommandText = sql_to_run;
                 command.CommandType = CommandType.Text;
@@ -193,10 +242,22 @@ namespace roundhouse.databases.sqlserver
 
         private DataTable execute_datatable(string sql_to_run)
         {
+            return execute_datatable(sql_to_run, null);
+        }
+
+        private DataTable execute_datatable(string sql_to_run, IList<IDbDataParameter> parameters)
+        {
             DataSet result = new DataSet();
 
             using (IDbCommand command = server_connection.CreateCommand())
             {
+                if (parameters != null)
+                {
+                    foreach (IDbDataParameter parameter in parameters)
+                    {
+                        command.Parameters.Add(parameter);
+                    }
+                }
                 command.Transaction = transaction;
                 command.CommandText = sql_to_run;
                 command.CommandType = CommandType.Text;
@@ -214,6 +275,22 @@ namespace roundhouse.databases.sqlserver
             }
 
             return result.Tables.Count == 0 ? null : result.Tables[0];
+        }
+
+        private IDbDataParameter create_parameter(string name, DbType type, object value, int? size)
+        {
+            var parameter = provider_factory.CreateParameter();
+
+            parameter.Direction = ParameterDirection.Input;
+            parameter.ParameterName = name;
+            parameter.DbType = type;
+            parameter.Value = value;
+            if (size != null)
+            {
+                parameter.Size = size.Value;
+            }
+
+            return parameter;
         }
 
         public void Dispose()

@@ -32,7 +32,6 @@ namespace roundhouse.databases
         void create_roundhouse_version_table_if_it_doesnt_exist();
         void create_roundhouse_scripts_run_table_if_it_doesnt_exist();
         void run_sql(string sql_to_run);
-        //void run_sql(string sql_to_run, object[] parameters);
         void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id);
         
         string get_version(string repository_path);

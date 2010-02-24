@@ -1,6 +1,4 @@
 
-using System;
-
 namespace roundhouse.databases.sqlserver
 {
     using infrastructure.extensions;
@@ -12,8 +10,6 @@ namespace roundhouse.databases.sqlserver
 
         public override void initialize_connection()
         {
-            Console.WriteLine("Initialize Connectection ...");
-
             if (!string.IsNullOrEmpty(connection_string))
             {
                 string[] parts = connection_string.Split(';');
