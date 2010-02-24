@@ -359,6 +359,36 @@ GO
                 Assert.IsFalse(script_regex.Match(sql_to_match).Success);
             }
 
+            [Observation, Ignore]
+            public void should_split_on_go_after_comments()
+            {
+                string sql_to_match =
+@"BOB
+GO
+
+/* COMMENT BOB */
+BOB
+GO";
+                Console.WriteLine(sql_to_match);
+                Assert.IsTrue(script_regex.Match(sql_to_match).Success);
+                Assert.AreEqual(script_regex.Match(sql_to_match).Groups.Count, 2);
+            }
+
+			/* A regex that was being worked on, but did not solve all issues
+			
+(?<!
+	^\s*--[.\s\`\~\!\@\#\$\%\^\&\*\(\)\-_\+\=\,\.\;\:\'\""\[\]\\\/\?\<\>]*
+)
+\s*GO\s*$
+|
+(?<!
+	\/\*[\w\n\f\r\s\`\~\!\@\#\$\%\^\&\*\(\)_\+\=\,\.\;\:\'\""\[\]\\\/\?\<\>]*
+)
+\s*GO\s*$
+(?![\s\w\`\~\!\@\#\$\%\^\&\*\(\)_\+\=\,\.\;\:\'\""\[\]\\\/\?\<\>\r\n\f]*\*\/)
+			
+			*/
+			
         }
     }
 }
