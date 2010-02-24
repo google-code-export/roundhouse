@@ -63,7 +63,7 @@ namespace roundhouse.databases
             server_connection.Close();
         }
 
-        public void create_database_if_it_doesnt_exist()
+        public virtual void create_database_if_it_doesnt_exist()
         {
             use_database(master_database_name);
             string create_script = sql_scripts.create_database(database_name);
@@ -71,7 +71,6 @@ namespace roundhouse.databases
             {
                 create_script = custom_create_database_script;
             }
-
             run_sql(create_script);
         }
 
@@ -99,7 +98,7 @@ namespace roundhouse.databases
             command_timeout = current_connetion_timeout;
         }
 
-        public void delete_database_if_it_exists()
+        public virtual void delete_database_if_it_exists()
         {
             use_database(master_database_name);
             run_sql(sql_scripts.delete_database(database_name));
@@ -125,7 +124,7 @@ namespace roundhouse.databases
             run_sql(sql_scripts.create_roundhouse_scripts_run_table(roundhouse_schema_name, version_table_name, scripts_run_table_name));
         }
 
-        public void run_sql(string sql_to_run)
+        public virtual void run_sql(string sql_to_run)
         {
             run_sql(sql_to_run, null);
         }
@@ -152,18 +151,19 @@ namespace roundhouse.databases
             }
         }
 
-        public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
+        public virtual void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
             var parameters = new List<IDbDataParameter>
                                  {
                                      create_parameter("version_id", DbType.Int64, version_id, null), 
                                      create_parameter("script_name", DbType.AnsiStringFixedLength, script_name, 255), 
-                                     create_parameter("sql_to_run", DbType.String, sql_to_run, null), 
+                                     create_parameter("sql_to_run", DbType.AnsiString, sql_to_run, null), 
                                      create_parameter("sql_to_run_hash", DbType.AnsiStringFixedLength, sql_to_run_hash, 512), 
                                      create_parameter("run_this_script_once", DbType.Boolean, run_this_script_once, null), 
                                      create_parameter("user_name", DbType.AnsiStringFixedLength, user_name, 50)
                                  };
-
+            System.Console.Write(
+                sql_scripts.insert_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
             run_sql(sql_scripts.insert_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
         }
 
@@ -173,7 +173,7 @@ namespace roundhouse.databases
             return (string)run_sql_scalar(sql_scripts.get_version_parameterized(roundhouse_schema_name, version_table_name), parameters);
         }
 
-        public long insert_version_and_get_version_id(string repository_path, string repository_version)
+        public virtual long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
             var insert_parameters = new List<IDbDataParameter>
                                  {
@@ -209,7 +209,7 @@ namespace roundhouse.databases
             return script_has_run;
         }
 
-        public object run_sql_scalar(string sql_to_run)
+        public virtual object run_sql_scalar(string sql_to_run)
         {
             return run_sql_scalar(sql_to_run, null);
         }
@@ -277,7 +277,7 @@ namespace roundhouse.databases
             return result.Tables.Count == 0 ? null : result.Tables[0];
         }
 
-        private IDbDataParameter create_parameter(string name, DbType type, object value, int? size)
+        public IDbDataParameter create_parameter(string name, DbType type, object value, int? size)
         {
             var parameter = provider_factory.CreateParameter();
 

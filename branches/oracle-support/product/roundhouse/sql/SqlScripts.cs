@@ -6,6 +6,7 @@ namespace roundhouse.sql
     {
         public static SqlScript t_sql_scripts = new TSQLScript();
         public static SqlScript access_sql_scripts = new AccessSQLScript();
+        public static SqlScript pl_sql_scripts = new PLSQLScript();
         
         public static IDictionary<string, SqlScript> sql_scripts_dictionary = generate_scripts_dictionary();
 
@@ -22,6 +23,7 @@ namespace roundhouse.sql
             scripts_dictionary.Add("Microsoft.SQLSERVER.CE.OLEDB.3.5", t_sql_scripts);
             scripts_dictionary.Add("Microsoft.Jet.OLEDB.4.0", access_sql_scripts);
             scripts_dictionary.Add("Microsoft.ACE.OLEDB.12.0", access_sql_scripts);
+            scripts_dictionary.Add("Oracle", pl_sql_scripts);
             //scripts_dictionary.Add("MySQLProv", mysql_sql_scripts);
             //scripts_dictionary.Add("MyOracleDB", oracle_sql_scripts);
             //scripts_dictionary.Add("msdaora", oracle_sql_scripts);
