@@ -1,5 +1,6 @@
 using System;
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Data;
 using roundhouse.infrastructure.extensions;
 using roundhouse.sql;
 
@@ -94,27 +95,28 @@ namespace roundhouse.databases.oracle
 
         public override long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
-            run_sql(sql_scripts.insert_version(roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name));
-            return Convert.ToInt64((decimal)run_sql_scalar(sql_scripts.get_version_id(roundhouse_schema_name, version_table_name, repository_path)));
+            var insert_parameters = new List<IDbDataParameter>
+                                 {
+                                     create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255), 
+                                     create_parameter("repository_version", DbType.AnsiStringFixedLength, repository_version, 35), 
+                                     create_parameter("user_name", DbType.AnsiStringFixedLength, user_name, 50)
+                                 };
+            run_sql(sql_scripts.insert_version_parameterized(roundhouse_schema_name, version_table_name), insert_parameters);
+
+            var select_parameters = new List<IDbDataParameter> { create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255) };
+            return Convert.ToInt64((decimal)run_sql_scalar(sql_scripts.get_version_id_parameterized(roundhouse_schema_name, version_table_name), select_parameters));
         }
 
         public override void run_sql(string sql_to_run)
         {
-            base.run_sql(RemoveSpacesAndComment(sql_to_run));
+            // http://www.barrydobson.com/2009/02/17/pls-00103-encountered-the-symbol-when-expecting-one-of-the-following/
+            base.run_sql(sql_to_run.Replace("\r\n", "\n"));
         }
 
         public override object run_sql_scalar(string sql_to_run)
         {
-            return base.run_sql_scalar(RemoveSpacesAndComment(sql_to_run));
-        }
-
-        private string RemoveSpacesAndComment(string query)
-        {
-            var regexSpaces = new Regex(@"\s{2,}", RegexOptions.IgnoreCase);
-            var regexComment = new Regex(@"(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(^\s*--.*)");
-
-            string cleanQuery = regexComment.Replace(query, " ");
-            return regexSpaces.Replace(cleanQuery, " ").Trim();
+            // http://www.barrydobson.com/2009/02/17/pls-00103-encountered-the-symbol-when-expecting-one-of-the-following/
+            return base.run_sql_scalar(sql_to_run.Replace("\r\n", "\n"));
         }
     }
 }

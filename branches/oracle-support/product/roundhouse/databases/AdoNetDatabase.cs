@@ -275,7 +275,7 @@ namespace roundhouse.databases
             return result.Tables.Count == 0 ? null : result.Tables[0];
         }
 
-        public IDbDataParameter create_parameter(string name, DbType type, object value, int? size)
+        protected IDbDataParameter create_parameter(string name, DbType type, object value, int? size)
         {
             var parameter = provider_factory.CreateParameter();
 
