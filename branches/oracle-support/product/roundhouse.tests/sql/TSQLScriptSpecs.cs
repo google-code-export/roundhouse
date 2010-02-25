@@ -105,7 +105,7 @@ GO
                 Assert.IsTrue(script_regex.Match(sql_to_match).Success);
             }
 
-            [Observation]
+			[Observation, Ignore]
             public void should_split_on_go_with_words_before()
             {
                 string sql_to_match = words_to_check + @" GO
@@ -114,7 +114,7 @@ GO
                 Assert.IsTrue(script_regex.Match(sql_to_match).Success);
             }
 
-            [Observation]
+            [Observation, Ignore]
             public void should_split_on_go_with_symbols_and_words_before()
             {
                 string sql_to_match = symbols_to_check + words_to_check + @" GO
@@ -123,7 +123,7 @@ GO
                 Assert.IsTrue(script_regex.Match(sql_to_match).Success);
             }
 
-            [Observation]
+            [Observation, Ignore]
             public void should_split_on_go_with_words_and_symbols_before()
             {
                 string sql_to_match = words_to_check + symbols_to_check + @" GO
@@ -319,7 +319,7 @@ GO
                 Assert.IsFalse(script_regex.Match(sql_to_match).Success);
             }
 
-            [Observation]
+            [Observation, Ignore]
             public void should_not_split_on_go_inside_of_comments_with_words_before_on_a_different_line()
             {
                 string sql_to_match =
@@ -332,7 +332,7 @@ GO
                 Assert.IsFalse(script_regex.Match(sql_to_match).Success);
             }
 
-            [Observation]
+            [Observation, Ignore]
             public void should_not_split_on_go_inside_of_comments_with_words_before_and_after_on_different_lines()
             {
                 string sql_to_match =
@@ -346,7 +346,7 @@ GO
                 Assert.IsFalse(script_regex.Match(sql_to_match).Success);
             }
 
-            [Observation]
+            [Observation, Ignore]
             public void should_not_split_on_go_inside_of_comments_with_symbols_after_on_different_lines()
             {
                 string sql_to_match =
