@@ -58,6 +58,8 @@ namespace roundhouse.databases.oracle
             {
                 sql_scripts = SqlScripts.pl_sql_scripts;
             }
+            
+            create_database_if_it_doesnt_exist();
 
             create_connection();
         }
@@ -69,13 +71,12 @@ namespace roundhouse.databases.oracle
 
         public override void create_database_if_it_doesnt_exist()
         {
-            close_connection();
             string current_connection = connection_string;
             connection_string = build_connection_string(server_name, "User Id=System;Password=Oracle;Persist Security Info=false;");
             create_connection();
             open_connection(false);
             base.create_database_if_it_doesnt_exist();
-
+            close_connection();
             connection_string = current_connection;
             create_connection();
         }
@@ -90,7 +91,6 @@ namespace roundhouse.databases.oracle
             base.delete_database_if_it_exists();
 
             connection_string = current_connection;
-            create_connection();
         }
 
         public override long insert_version_and_get_version_id(string repository_path, string repository_version)
