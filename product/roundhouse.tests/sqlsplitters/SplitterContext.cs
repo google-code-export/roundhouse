@@ -56,6 +56,8 @@ INSERT INTO POGO (id,desc) VALUES (1,'GO')
 
 BOB11
 
+  -- TODO: To be good, there should be type column
+
 -- dfgjhdfgdjkgk dfgdfg GO
 BOB12
 ";
@@ -108,6 +110,8 @@ CREATE TABLE POGO
 INSERT INTO POGO (id,desc) VALUES (1,'GO')
 
 BOB11
+
+  -- TODO: To be good, there should be type column
 
 -- dfgjhdfgdjkgk dfgdfg GO
 BOB12
