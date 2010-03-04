@@ -60,6 +60,9 @@ BOB11
 
 -- dfgjhdfgdjkgk dfgdfg GO
 BOB12
+
+UPDATE Timmy SET id = 'something something go'
+UPDATE Timmy SET id = 'something something: go'
 ";
 
             public static string sql_statement_scrubbed = @"
@@ -115,6 +118,9 @@ BOB11
 
 -- dfgjhdfgdjkgk dfgdfg GO
 BOB12
+
+UPDATE Timmy SET id = 'something something go'
+UPDATE Timmy SET id = 'something something: go'
 ";
         }
 
