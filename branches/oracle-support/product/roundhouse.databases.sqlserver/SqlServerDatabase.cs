@@ -40,13 +40,12 @@ namespace roundhouse.databases.sqlserver
                 }
             }
 
-            if (connect_options == "Integrated Security")
+            if (string.IsNullOrEmpty(connection_string))
             {
-                connect_options = "Integrated Security=SSPI;";
-            }
-
-            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name.to_lower()))
-            {
+				if (connect_options == "Integrated Security")
+				{
+					connect_options = "Integrated Security=SSPI;";
+				}
                 connection_string = build_connection_string(server_name, master_database_name, connect_options);
             }
 
