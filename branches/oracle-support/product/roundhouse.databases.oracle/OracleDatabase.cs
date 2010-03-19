@@ -97,13 +97,13 @@ namespace roundhouse.databases.oracle
         {
             var insert_parameters = new List<IDbDataParameter>
                                  {
-                                     create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255), 
-                                     create_parameter("repository_version", DbType.AnsiStringFixedLength, repository_version, 35), 
-                                     create_parameter("user_name", DbType.AnsiStringFixedLength, user_name, 50)
+                                     create_parameter("repository_path", DbType.AnsiString, repository_path, 255), 
+                                     create_parameter("repository_version", DbType.AnsiString, repository_version, 35), 
+                                     create_parameter("user_name", DbType.AnsiString, user_name, 50)
                                  };
             run_sql(sql_scripts.insert_version_parameterized(roundhouse_schema_name, version_table_name), insert_parameters);
 
-            var select_parameters = new List<IDbDataParameter> { create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255) };
+            var select_parameters = new List<IDbDataParameter> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
             return Convert.ToInt64((decimal)run_sql_scalar(sql_scripts.get_version_id_parameterized(roundhouse_schema_name, version_table_name), select_parameters));
         }
 

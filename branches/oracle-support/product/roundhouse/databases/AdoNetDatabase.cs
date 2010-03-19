@@ -163,18 +163,18 @@ namespace roundhouse.databases
             var parameters = new List<IDbDataParameter>
                                  {
                                      create_parameter("version_id", DbType.Int64, version_id, null), 
-                                     create_parameter("script_name", DbType.AnsiStringFixedLength, script_name, 255), 
+                                     create_parameter("script_name", DbType.AnsiString, script_name, 255), 
                                      create_parameter("sql_to_run", DbType.AnsiString, sql_to_run, null), 
-                                     create_parameter("sql_to_run_hash", DbType.AnsiStringFixedLength, sql_to_run_hash, 512), 
+                                     create_parameter("sql_to_run_hash", DbType.AnsiString, sql_to_run_hash, 512), 
                                      create_parameter("run_this_script_once", DbType.Boolean, run_this_script_once, null), 
-                                     create_parameter("user_name", DbType.AnsiStringFixedLength, user_name, 50)
+                                     create_parameter("user_name", DbType.AnsiString, user_name, 50)
                                  };
             run_sql(sql_scripts.insert_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
         }
 
         public string get_version(string repository_path)
         {
-            var parameters = new List<IDbDataParameter> {create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255)};
+            var parameters = new List<IDbDataParameter> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
             return (string)run_sql_scalar(sql_scripts.get_version_parameterized(roundhouse_schema_name, version_table_name), parameters);
         }
 
@@ -182,19 +182,19 @@ namespace roundhouse.databases
         {
             var insert_parameters = new List<IDbDataParameter>
                                  {
-                                     create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255), 
-                                     create_parameter("repository_version", DbType.AnsiStringFixedLength, repository_version, 35), 
-                                     create_parameter("user_name", DbType.AnsiStringFixedLength, user_name, 50)
+                                     create_parameter("repository_path", DbType.AnsiString, repository_path, 255), 
+                                     create_parameter("repository_version", DbType.AnsiString, repository_version, 35), 
+                                     create_parameter("user_name", DbType.AnsiString, user_name, 50)
                                  };
             run_sql(sql_scripts.insert_version_parameterized(roundhouse_schema_name, version_table_name), insert_parameters);
 
-            var select_parameters = new List<IDbDataParameter> {create_parameter("repository_path", DbType.AnsiStringFixedLength, repository_path, 255)};
+            var select_parameters = new List<IDbDataParameter> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
             return (long)run_sql_scalar(sql_scripts.get_version_id_parameterized(roundhouse_schema_name, version_table_name), select_parameters);
         }
 
         public string get_current_script_hash(string script_name)
         {
-            var parameters = new List<IDbDataParameter> {create_parameter("script_name", DbType.AnsiStringFixedLength, script_name, 255)};
+            var parameters = new List<IDbDataParameter> { create_parameter("script_name", DbType.AnsiString, script_name, 255) };
             return (string)run_sql_scalar(sql_scripts.get_current_script_hash_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
         }
 
@@ -203,7 +203,7 @@ namespace roundhouse.databases
             bool script_has_run = false;
 
             IList<IDbDataParameter> parameters = new List<IDbDataParameter>();
-            parameters.Add(create_parameter("script_name", DbType.AnsiStringFixedLength, script_name, 255));
+            parameters.Add(create_parameter("script_name", DbType.AnsiString, script_name, 255));
 
             DataTable data_table = execute_datatable(sql_scripts.has_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
             if (data_table.Rows.Count > 0)
