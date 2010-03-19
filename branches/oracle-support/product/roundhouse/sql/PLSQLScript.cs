@@ -4,7 +4,7 @@ namespace roundhouse.sql
     {
         public string separator_characters_regex
         {
-			get { return @"^[\s]*;[\s\n\r\f]*$"; }
+			get { return @"^[\s]*(?<BATCHSPLITTER>;)[\s\n\r\f]*$"; }			
         }
 
         public string create_database(string database_name)
