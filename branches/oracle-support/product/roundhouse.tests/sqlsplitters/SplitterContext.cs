@@ -122,14 +122,20 @@ BOB12
 UPDATE Timmy SET id = 'something something go'
 UPDATE Timmy SET id = 'something something: go'
 ";
-			
-			public static string plsql_statement = @"
+
+        	public static string plsql_statement =
+				@"
 SQL1;
 ;
 SQL2;
 ;
 tmpSql := 'DROP SEQUENCE mutatieStockID';
 EXECUTE IMMEDIATE tmpSql; 
+;
+BEGIN
+INSERT into Table (columnname) values ("";"");
+UPDATE Table set columnname="";"";
+END;
 ";
 			public static string plsql_statement_scrubbed = @"
 SQL1;
@@ -138,6 +144,11 @@ SQL2;
 " + StatementSplitter.batch_terminator_replacement_string + @"
 tmpSql := 'DROP SEQUENCE mutatieStockID';
 EXECUTE IMMEDIATE tmpSql; 
+" + StatementSplitter.batch_terminator_replacement_string + @"
+BEGIN
+INSERT into Table (columnname) values ("";"");
+UPDATE Table set columnname="";"";
+END;
 ";
         }
     }
