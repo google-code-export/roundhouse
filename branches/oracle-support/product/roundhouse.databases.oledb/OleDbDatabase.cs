@@ -16,6 +16,7 @@ namespace roundhouse.databases.oledb
         public string roundhouse_schema_name { get; set; }
         public string version_table_name { get; set; }
         public string scripts_run_table_name { get; set; }
+        public string scripts_run_errors_table_name { get; set; }
         public string user_name { get; set; }
         public string sql_statement_separator_regex_pattern
         {
@@ -27,8 +28,8 @@ namespace roundhouse.databases.oledb
         private bool split_batches = true;
         public bool split_batch_statements
         {
-            get { return split_batches;  }
-            set { split_batches = value;}
+            get { return split_batches; }
+            set { split_batches = value; }
         }
 
 
@@ -119,6 +120,22 @@ namespace roundhouse.databases.oledb
                 transaction = null;
             }
             server_connection.Close();
+        }
+
+        public void rollback()
+        {
+            if (transaction != null)
+            {
+                //rollback previous transaction
+                transaction.Rollback();
+                transaction = null;
+                server_connection.Close();
+
+                //open a new transaction
+                server_connection.Open();
+                transaction = server_connection.BeginTransaction();
+                use_database(database_name);
+            }            
         }
 
         public void create_database_if_it_doesnt_exist()
@@ -248,6 +265,21 @@ namespace roundhouse.databases.oledb
             }
         }
 
+        public void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist()
+        {
+            try
+            {
+                run_sql(sql_scripts.create_roundhouse_scripts_run_errors_table(roundhouse_schema_name, version_table_name, scripts_run_errors_table_name));
+
+            }
+            catch (Exception)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "Either the scripts run errors table has already been created OR OleDB with provider {0} does not provide a facility for creating roundhouse scripts run errors table at this time.",
+                    provider);
+            }
+        }
+
         public void run_sql(string sql_to_run)
         {
             if (string.IsNullOrEmpty(sql_to_run)) return;
@@ -289,6 +321,22 @@ namespace roundhouse.databases.oledb
                 run_sql(sql_scripts.insert_script_run(roundhouse_schema_name, scripts_run_table_name, version_id,
                                                       script_name,
                                                       sql_to_run, sql_to_run_hash, run_this_script_once, user_name));
+            }
+            catch (Exception ex)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "OleDB with provider {0} does not provide a facility for recording scripts run at this time.",
+                    provider);
+            }
+        }
+
+        public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
+        {
+            try
+            {
+                run_sql(sql_scripts.insert_script_run_error(roundhouse_schema_name, scripts_run_errors_table_name, version_id,
+                                                      script_name,
+                                                      sql_to_run, sql_erroneous_part, error_message, user_name));
             }
             catch (Exception ex)
             {

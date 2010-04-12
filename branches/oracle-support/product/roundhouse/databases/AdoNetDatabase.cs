@@ -16,6 +16,7 @@ namespace roundhouse.databases
         public string roundhouse_schema_name { get; set; }
         public string version_table_name { get; set; }
         public string scripts_run_table_name { get; set; }
+        public string scripts_run_errors_table_name { get; set; }
         public string user_name { get; set; }
         public string master_database_name { get; set; }
 
@@ -68,6 +69,21 @@ namespace roundhouse.databases
             }
 
             server_connection.Close();
+        }
+
+        public void rollback()
+        {
+            if (transaction != null)
+            {
+                //rollback previous transaction
+                transaction.Rollback();
+                server_connection.Close();
+
+                //open a new transaction
+                server_connection.Open();
+                use_database(database_name);
+                transaction = server_connection.BeginTransaction();
+            }
         }
 
         public virtual void create_database_if_it_doesnt_exist()
@@ -131,6 +147,11 @@ namespace roundhouse.databases
             run_sql(sql_scripts.create_roundhouse_scripts_run_table(roundhouse_schema_name, version_table_name, scripts_run_table_name));
         }
 
+		public void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist()
+		{
+			run_sql(sql_scripts.create_roundhouse_scripts_run_errors_table(roundhouse_schema_name, version_table_name, scripts_run_errors_table_name));
+		}
+
         public virtual void run_sql(string sql_to_run)
         {
             run_sql(sql_to_run, null);
@@ -172,7 +193,21 @@ namespace roundhouse.databases
             run_sql(sql_scripts.insert_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
         }
 
-        public string get_version(string repository_path)
+    	public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
+    	{
+			var parameters = new List<IDbDataParameter>
+                                 {
+                                     create_parameter("version_id", DbType.Int64, version_id, null), 
+                                     create_parameter("script_name", DbType.AnsiString, script_name, 255), 
+                                     create_parameter("sql_to_run", DbType.AnsiString, sql_to_run, null), 
+                                     create_parameter("sql_erroneous_part", DbType.AnsiString, sql_erroneous_part, null), 
+                                     create_parameter("error_message", DbType.AnsiString, error_message, 255), 
+                                     create_parameter("user_name", DbType.AnsiString, user_name, 50)
+                                 };
+			run_sql(sql_scripts.insert_script_run_error_parameterized(roundhouse_schema_name, scripts_run_errors_table_name), parameters);
+    	}
+
+    	public string get_version(string repository_path)
         {
             var parameters = new List<IDbDataParameter> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
             return (string)run_sql_scalar(sql_scripts.get_version_parameterized(roundhouse_schema_name, version_table_name), parameters);

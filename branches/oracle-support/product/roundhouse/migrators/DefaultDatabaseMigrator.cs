@@ -104,6 +104,13 @@ namespace roundhouse.migrators
 
         public void verify_or_create_roundhouse_tables()
         {
+            if (running_in_a_transaction)
+            {
+                database.close_connection();
+                database.open_connection(false);
+                transfer_to_database_for_changes();
+            }
+           
             Log.bound_to(this).log_an_info_event_containing("Creating {0} schema if it doesn't exist.", database.roundhouse_schema_name);
             database.create_roundhouse_schema_if_it_doesnt_exist();
             Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,
@@ -112,6 +119,16 @@ namespace roundhouse.migrators
             Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,
                                                             database.scripts_run_table_name);
             database.create_roundhouse_scripts_run_table_if_it_doesnt_exist();
+            Log.bound_to(this).log_an_info_event_containing("Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,
+                                                            database.scripts_run_errors_table_name);
+            database.create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist();
+
+            if (running_in_a_transaction)
+            {
+                database.close_connection();
+                database.open_connection(true);
+                transfer_to_database_for_changes();
+            }          
         }
 
         public string get_current_version(string repository_path)
@@ -173,7 +190,17 @@ namespace roundhouse.migrators
 
                 foreach (var sql_statement in get_statements_to_run(sql_to_run))
                 {
-                    database.run_sql(sql_statement);
+                    try
+                    {
+                        database.run_sql(sql_statement);
+                    }
+                    catch (Exception ex)
+                    {
+                        database.rollback();
+                        record_script_in_scripts_run_errors_table(script_name, sql_to_run, sql_statement, ex.Message, version_id);
+                        database.close_connection();
+                        throw;
+                    }
                 }
                 record_script_in_scripts_run_table(script_name, sql_to_run, run_this_script_once, version_id);
                 this_sql_ran = true;
@@ -196,7 +223,8 @@ namespace roundhouse.migrators
                 {
                     sql_statements.Add(sql_statement);
                 }
-            } else
+            }
+            else
             {
                 sql_statements.Add(sql_to_run);
             }
@@ -208,6 +236,12 @@ namespace roundhouse.migrators
         {
             Log.bound_to(this).log_a_debug_event_containing("Recording {0} script ran on {1} - {2}.", script_name, database.server_name, database.database_name);
             database.insert_script_run(script_name, sql_to_run, create_hash(sql_to_run), run_this_script_once, version_id);
+        }
+
+        public void record_script_in_scripts_run_errors_table(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
+        {
+            Log.bound_to(this).log_a_debug_event_containing("Recording {0} script ran with error on {1} - {2}.", script_name, database.server_name, database.database_name);
+            database.insert_script_run_error(script_name, sql_to_run, sql_erroneous_part, error_message, version_id);
         }
 
         private string create_hash(string sql_to_run)
