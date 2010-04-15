@@ -140,7 +140,7 @@ namespace roundhouse.sql
                 roundhouse_schema_name, scripts_run_table_name, version_table_name);
         }
 
-        public string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string version_table_name, string scriptsRunErrorsTableName)
+        public string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string scriptsRunErrorsTableName)
         {
             return string.Format(
                 @"
@@ -178,7 +178,7 @@ namespace roundhouse.sql
                         END IF;
                     END;
                 ",
-                roundhouse_schema_name, scriptsRunErrorsTableName, version_table_name);
+                roundhouse_schema_name, scriptsRunErrorsTableName);
         }
 
         //functions

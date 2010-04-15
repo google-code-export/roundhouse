@@ -127,6 +127,7 @@
     <Compile Include="sql\PLSQLScript.cs" />
     <Compile Include="sql\SqlScript.cs" />
     <Compile Include="sql\SqlScripts.cs" />
+    <Compile Include="sql\TSQL2000Script.cs" />
     <Compile Include="sql\TSQLScript.cs" />
   </ItemGroup>
   <ItemGroup>

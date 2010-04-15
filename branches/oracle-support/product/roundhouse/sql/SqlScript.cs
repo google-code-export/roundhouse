@@ -12,8 +12,7 @@ namespace roundhouse.sql
         string create_roundhouse_version_table(string roundhouse_schema_name, string version_table_name);
         string create_roundhouse_scripts_run_table(string roundhouse_schema_name, string version_table_name,
                                                    string scripts_run_table_name);
-        string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string version_table_name,
-                                                           string scripts_run_errors_table_name);
+        string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string scripts_run_errors_table_name);
 
         //functions
         string use_database(string database_name);

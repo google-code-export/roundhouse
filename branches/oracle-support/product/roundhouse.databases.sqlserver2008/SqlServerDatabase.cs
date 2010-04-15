@@ -1,5 +1,3 @@
-using System;
-
 namespace roundhouse.databases.sqlserver2008
 {
     using System.Data;
@@ -130,7 +128,7 @@ namespace roundhouse.databases.sqlserver2008
                 sql_server.ConnectionContext.Connect();
                 sql_server.ConnectionContext.BeginTransaction();
                 use_database(database_name);
-            }            
+            }
         }
 
         public void create_database_if_it_doesnt_exist()
@@ -140,7 +138,7 @@ namespace roundhouse.databases.sqlserver2008
             if (!string.IsNullOrEmpty(custom_create_database_script))
             {
                 create_script = custom_create_database_script;
-            } 
+            }
 
             run_sql(create_script);
         }
@@ -194,10 +192,10 @@ namespace roundhouse.databases.sqlserver2008
             run_sql(sql_scripts.create_roundhouse_scripts_run_table(roundhouse_schema_name, version_table_name, scripts_run_table_name));
         }
 
-		public void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist()
-		{
-			run_sql(sql_scripts.create_roundhouse_scripts_run_errors_table(roundhouse_schema_name, version_table_name, scripts_run_errors_table_name));
-		}
+        public void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist()
+        {
+            run_sql(sql_scripts.create_roundhouse_scripts_run_errors_table(roundhouse_schema_name, scripts_run_errors_table_name));
+        }
 
         public void run_sql(string sql_to_run)
         {
@@ -211,13 +209,13 @@ namespace roundhouse.databases.sqlserver2008
                                                   run_this_script_once, user_name));
         }
 
-    	public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
-    	{
+        public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
+        {
             run_sql(sql_scripts.insert_script_run_error(roundhouse_schema_name, scripts_run_errors_table_name, version_id, script_name, sql_to_run, sql_erroneous_part,
-												  error_message, user_name));
-    	}
+                                                  error_message, user_name));
+        }
 
-    	public string get_version(string repository_path)
+        public string get_version(string repository_path)
         {
             return (string)run_sql_scalar(sql_scripts.get_version(roundhouse_schema_name, version_table_name, repository_path));
         }

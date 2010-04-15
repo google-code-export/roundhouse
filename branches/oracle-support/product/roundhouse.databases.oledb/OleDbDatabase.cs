@@ -135,7 +135,7 @@ namespace roundhouse.databases.oledb
                 server_connection.Open();
                 transaction = server_connection.BeginTransaction();
                 use_database(database_name);
-            }            
+            }
         }
 
         public void create_database_if_it_doesnt_exist()
@@ -269,7 +269,7 @@ namespace roundhouse.databases.oledb
         {
             try
             {
-                run_sql(sql_scripts.create_roundhouse_scripts_run_errors_table(roundhouse_schema_name, version_table_name, scripts_run_errors_table_name));
+                run_sql(sql_scripts.create_roundhouse_scripts_run_errors_table(roundhouse_schema_name, scripts_run_errors_table_name));
 
             }
             catch (Exception)

@@ -70,7 +70,7 @@ namespace roundhouse.sql
                 scripts_run_table_name);
         }
 
-        public string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string version_table_name, string scriptsRunErrorsTableName)
+        public string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string scriptsRunErrorsTableName)
         {
             return string.Format(
                 @"
