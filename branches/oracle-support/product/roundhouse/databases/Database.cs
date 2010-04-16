@@ -60,6 +60,9 @@
      // t##K#       i,                                j       
      //      ;i                                           
 
+using System.Collections.Generic;
+using System.Data;
+
 namespace roundhouse.databases
 {
     using System;

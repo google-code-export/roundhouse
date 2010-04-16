@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using roundhouse.infrastructure.extensions;
+using roundhouse.parameters;
 using roundhouse.sql;
 
 namespace roundhouse.databases.oracle
@@ -79,7 +80,7 @@ namespace roundhouse.databases.oracle
 
         public override long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
-            var insert_parameters = new List<IDbDataParameter>
+            var insert_parameters = new List<IParameter<IDbDataParameter>>
                                  {
                                      create_parameter("repository_path", DbType.AnsiString, repository_path, 255), 
                                      create_parameter("repository_version", DbType.AnsiString, repository_version, 35), 
@@ -87,7 +88,7 @@ namespace roundhouse.databases.oracle
                                  };
             run_sql(sql_scripts.insert_version_parameterized(roundhouse_schema_name, version_table_name), insert_parameters);
 
-            var select_parameters = new List<IDbDataParameter> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
+            var select_parameters = new List<IParameter<IDbDataParameter>> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
             return Convert.ToInt64((decimal)run_sql_scalar(sql_scripts.get_version_id_parameterized(roundhouse_schema_name, version_table_name), select_parameters));
         }
 
