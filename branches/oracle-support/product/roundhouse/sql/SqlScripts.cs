@@ -27,6 +27,9 @@ namespace roundhouse.sql
             scripts_dictionary.Add("Oracle", pl_sql_scripts);
             scripts_dictionary.Add("SQLServer2000", t_sql2000_scripts);
             //scripts_dictionary.Add("MySQLProv", mysql_sql_scripts);
+            //scripts_dictionary.Add("MyOracleDB", oracle_sql_scripts);
+            //scripts_dictionary.Add("msdaora", oracle_sql_scripts);
+            //scripts_dictionary.Add("OraOLEDB.Oracle", oracle_sql_scripts);
             //scripts_dictionary.Add("vfpoledb", vfp_sql_scripts);
             //scripts_dictionary.Add("IBMDADB2", db2_sql_scripts);
             //scripts_dictionary.Add("DB2OLEDB", db2_sql_scripts);

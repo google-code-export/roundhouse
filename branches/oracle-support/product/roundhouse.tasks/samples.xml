@@ -134,6 +134,7 @@
       SchemaName="RoundhousE"
       VersionTableName="Version"
       ScriptsRunTableName="ScriptsRun"
+      ScriptsRunErrorsTableName="ScriptsRunErrors"
       EnvironmentName="LOCAL"
       Restore="false"
       RestoreFromPath="\\tell\me\where\YOURDATABASENAME.bak"
