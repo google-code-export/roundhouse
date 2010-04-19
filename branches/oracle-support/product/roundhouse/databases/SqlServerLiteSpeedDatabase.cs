@@ -1,3 +1,5 @@
+using System;
+
 namespace roundhouse.databases
 {
     public sealed class SqlServerLiteSpeedDatabase : Database
@@ -91,6 +93,11 @@ namespace roundhouse.databases
         {
             get { return database.split_batch_statements; }
             set { database.split_batch_statements = value; }
+        }
+
+        public bool supports_ddl_transactions
+        {
+            get { return database.supports_ddl_transactions; }            
         }
 
         public void initialize_connection()

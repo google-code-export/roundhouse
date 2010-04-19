@@ -22,7 +22,7 @@ namespace roundhouse.runners
         private readonly bool interactive;
         private readonly bool dropping_the_database;
         private readonly bool dont_create_the_database;
-        private readonly bool run_in_a_transaction;
+        private bool run_in_a_transaction;
         private readonly bool use_simple_recovery;
         private const string SQL_EXTENSION = "*.sql";
 
@@ -63,7 +63,18 @@ namespace roundhouse.runners
             if (interactive)
             {
                 Log.bound_to(this).log_an_info_event_containing("Please press enter when ready to kick...");
-                Console.ReadLine();
+                Console.ReadLine();                
+            }
+
+            if (run_in_a_transaction && !database_migrator.database.supports_ddl_transactions)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(string.Format("You asked to run in a transaction, but this dabasetype doesn't support DDL transactions."));
+                if (interactive)
+                {
+                    Log.bound_to(this).log_an_info_event_containing("Please press enter to continue without transaction support...");
+                    Console.ReadLine();
+                }
+                run_in_a_transaction = false;
             }
 
             create_change_drop_folder();

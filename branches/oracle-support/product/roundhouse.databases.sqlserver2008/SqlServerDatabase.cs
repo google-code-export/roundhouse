@@ -1,3 +1,5 @@
+using System;
+
 namespace roundhouse.databases.sqlserver2008
 {
     using System.Data;
@@ -32,7 +34,12 @@ namespace roundhouse.databases.sqlserver2008
             get { return split_batches; }
             set { split_batches = value; }
         }
-
+        
+        public bool supports_ddl_transactions
+        {
+            get { return true; }            
+        }
+        
         public const string MASTER_DATABASE_NAME = "Master";
         private string connect_options = "Integrated Security";
         private Server sql_server;

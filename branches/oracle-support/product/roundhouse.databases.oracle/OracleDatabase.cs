@@ -10,6 +10,11 @@ namespace roundhouse.databases.oracle
     public sealed class OracleDatabase : AdoNetDatabase
     {
         private string connect_options = "Integrated Security";
+        
+        public override bool supports_ddl_transactions
+        {
+            get { return false; }            
+        }
 
         public override void initialize_connection()
         {

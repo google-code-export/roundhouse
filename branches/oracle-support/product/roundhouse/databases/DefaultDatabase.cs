@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using roundhouse.connections;
@@ -32,6 +33,11 @@ namespace roundhouse.databases
         {
             get { return split_batches; }
             set { split_batches = value; }
+        }
+        
+        public virtual bool supports_ddl_transactions
+        {
+            get { return true; }            
         }
 
         protected IConnection<DBCONNECTION> server_connection;

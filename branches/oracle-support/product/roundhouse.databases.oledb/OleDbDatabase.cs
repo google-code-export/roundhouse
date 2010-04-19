@@ -31,7 +31,11 @@ namespace roundhouse.databases.oledb
             get { return split_batches; }
             set { split_batches = value; }
         }
-
+        
+        public bool supports_ddl_transactions
+        {
+            get { return true; }            
+        }
 
         public const string MASTER_DATABASE_NAME = "Master";
         private string connect_options = "Trusted_Connection";

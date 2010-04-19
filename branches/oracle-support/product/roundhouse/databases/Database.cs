@@ -83,6 +83,7 @@ namespace roundhouse.databases
         int command_timeout { get; set; }
         int restore_timeout { get; set; }
         bool split_batch_statements { get; set; }
+        bool supports_ddl_transactions { get; }
 
         void initialize_connection();
         void open_connection(bool with_transaction);
