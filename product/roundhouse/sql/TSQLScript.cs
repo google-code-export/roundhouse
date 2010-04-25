@@ -138,7 +138,7 @@ namespace roundhouse.sql
 
         public string use_database(string database_name)
         {
-            return string.Format("USE {0}", database_name);
+            return string.Format("USE [{0}]", database_name);
         }
 
         public string get_version(string roundhouse_schema_name, string version_table_name, string repository_path)
