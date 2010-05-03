@@ -396,7 +396,7 @@ namespace roundhouse.sql
                 roundhouse_schema_name, scripts_run_errors_table_name, version_id,
                 script_name, sql_to_run.Replace(@"'", @"''"),
                 sql_erroneous_part.Replace(@"'", @"''"),
-                error_message, user_name);
+                error_message, user_name.Replace(@"'", @"''"));
         }
 
         public string insert_script_run_error_parameterized(string roundhouse_schema_name, string scripts_run_errors_table_name)

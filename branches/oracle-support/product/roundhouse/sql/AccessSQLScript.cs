@@ -261,7 +261,7 @@ namespace roundhouse.sql
                 scripts_run_errors_table_name, version_id,
                 script_name,
                 error_message,
-                user_name,
+                user_name.Replace(@"'", @"''"),
                 DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"), DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss"));
         }
 

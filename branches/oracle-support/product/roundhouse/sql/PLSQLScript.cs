@@ -235,7 +235,7 @@ namespace roundhouse.sql
                         ,'{4}'
                     )
                 ",
-                roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name);
+                roundhouse_schema_name, version_table_name, repository_path, repository_version, user_name.Replace(@"'", @"''"));
         }
 
         public string insert_version_parameterized(string roundhouse_schema_name, string version_table_name)
@@ -372,7 +372,7 @@ namespace roundhouse.sql
                 roundhouse_schema_name, scripts_run_table_name, version_id,
                 script_name, sql_to_run.Replace(@"'", @"''"),
                 sql_to_run_hash,
-                run_this_script_once ? 1 : 0, user_name);
+                run_this_script_once ? 1 : 0, user_name.Replace(@"'", @"''"));
         }
 
         public string insert_script_run_parameterized(string roundhouse_schema_name, string scripts_run_table_name)
@@ -431,7 +431,7 @@ namespace roundhouse.sql
                 roundhouse_schema_name, scripts_run_errors_table_name, version_id,
                 script_name, sql_to_run.Replace(@"'", @"''"),
                 sql_erroneous_part.Replace(@"'", @"''"),
-                error_message, user_name);
+                error_message, user_name.Replace(@"'", @"''"));
         }
 
         public string insert_script_run_error_parameterized(string roundhouse_schema_name, string scripts_run_errors_table_name)
