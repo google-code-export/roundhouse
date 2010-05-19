@@ -40,26 +40,21 @@ namespace roundhouse.databases.sqlserver
                 }
             }
 
-            if (string.IsNullOrEmpty(connection_string))
+            master_database_name = "Master";
+            if (connect_options == "Integrated Security")
             {
-				if (connect_options == "Integrated Security")
-				{
-					connect_options = "Integrated Security=SSPI;";
-				}
+                connect_options = "Integrated Security=SSPI;";
+            }
+
+            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name.to_lower()))
+            {
                 connection_string = build_connection_string(server_name, master_database_name, connect_options);
             }
 
-            provider = "System.Data.SqlClient";
-            master_database_name = "Master";
-            SqlScripts.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
-            if (sql_scripts == null)
-            {
-                sql_scripts = SqlScripts.t_sql_scripts;
-            }
-
+            set_provider_and_sql_scripts();
             create_connection();
         }
-
+       
         private static string build_connection_string(string server_name, string database_name, string connection_options)
         {
             return string.Format("Server={0};initial catalog={1};{2}", server_name, database_name, connection_options);

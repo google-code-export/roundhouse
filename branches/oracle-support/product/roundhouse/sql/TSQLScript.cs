@@ -14,6 +14,11 @@ namespace roundhouse.sql
             get { return true; }
         }
 
+        public bool has_master_database
+        {
+            get { return true; }
+        }
+
         public string create_database(string database_name)
         {
             return string.Format(
@@ -139,7 +144,7 @@ namespace roundhouse.sql
 
         }
 
-        public string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string scriptsRunErrorsTableName)
+        public string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string scripts_run_errors_table_name)
         {
             return string.Format(
                 @"
@@ -160,7 +165,7 @@ namespace roundhouse.sql
                         )                                                
                       END
                 ",
-                roundhouse_schema_name, scriptsRunErrorsTableName);
+                roundhouse_schema_name, scripts_run_errors_table_name);
 
         }
 

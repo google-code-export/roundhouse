@@ -58,29 +58,23 @@ namespace roundhouse.databases.oracle
 				connection_string = build_connection_string(server_name, connect_options);
             }
 
+            set_provider_and_sql_scripts();
+            create_connection();
+        }
+
+        public override void set_provider_and_sql_scripts()
+        {
             provider = "System.Data.OracleClient";
             SqlScripts.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
             if (sql_scripts == null)
             {
                 sql_scripts = SqlScripts.pl_sql_scripts;
             }
-            
-            create_connection();
         }
 
         private static string build_connection_string(string server_name, string connection_options)
         {
             return string.Format("Data Source={0};{1}", server_name, connection_options);
-        }
-
-        public override void create_database_if_it_doesnt_exist()
-        {
-        	throw new NotSupportedException("Has to be tested when an Oracle environment with Integrated Security is available.");            
-        }
-
-        public override void delete_database_if_it_exists()
-        {
-			throw new NotSupportedException("Has to be tested when an Oracle environment with Integrated Security is available.");            
         }
 
         public override long insert_version_and_get_version_id(string repository_path, string repository_version)

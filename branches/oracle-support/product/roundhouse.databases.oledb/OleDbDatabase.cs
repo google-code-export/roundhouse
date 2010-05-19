@@ -7,44 +7,13 @@ using roundhouse.sql;
 
 namespace roundhouse.databases.oledb
 {
-    public class OleDbDatabase : Database
+    using connections;
+
+    public class OleDbDatabase : AdoNetDatabase
     {
-        public string server_name { get; set; }
-        public string database_name { get; set; }
-        public string provider { get; set; }
-        public string connection_string { get; set; }
-        public string roundhouse_schema_name { get; set; }
-        public string version_table_name { get; set; }
-        public string scripts_run_table_name { get; set; }
-        public string scripts_run_errors_table_name { get; set; }
-        public string user_name { get; set; }
-        public string sql_statement_separator_regex_pattern
-        {
-            get { return sql_scripts.separator_characters_regex; }
-        }
-        public string custom_create_database_script { get; set; }
-        public int command_timeout { get; set; }
-        public int restore_timeout { get; set; }
-        private bool split_batches = true;
-        public bool split_batch_statements
-        {
-            get { return split_batches; }
-            set { split_batches = value; }
-        }
-        
-        public bool supports_ddl_transactions
-        {
-            get { return true; }            
-        }
-
-        public const string MASTER_DATABASE_NAME = "Master";
         private string connect_options = "Trusted_Connection";
-        private IDbConnection server_connection;
-        private IDbTransaction transaction;
-        private bool disposing;
-        private SqlScript sql_scripts;
 
-        public void initialize_connection()
+        public override void initialize_connection()
         {
             if (!string.IsNullOrEmpty(connection_string))
             {
@@ -76,6 +45,7 @@ namespace roundhouse.databases.oledb
                 }
             }
 
+            master_database_name = "Master";
             if (connect_options == "Trusted_Connection")
             {
                 connect_options = "Trusted_Connection=yes;";
@@ -88,12 +58,17 @@ namespace roundhouse.databases.oledb
 
             if (connection_string.to_lower().Contains("sqlserver") || connection_string.to_lower().Contains("sqlncli"))
             {
-                connection_string = build_connection_string(server_name, MASTER_DATABASE_NAME, connect_options);
+                connection_string = build_connection_string(server_name, master_database_name, connect_options);
             }
 
-            server_connection = new OleDbConnection(connection_string);
-            provider = ((OleDbConnection)server_connection).Provider;
+            server_connection = new AdoNetConnection(new OleDbConnection(connection_string));
 
+            set_provider_and_sql_scripts();
+        }
+
+        public override void set_provider_and_sql_scripts()
+        {
+            provider = ((OleDbConnection)server_connection.underlying_type()).Provider;
             SqlScripts.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
             if (sql_scripts == null)
             {
@@ -106,189 +81,11 @@ namespace roundhouse.databases.oledb
             return string.Format("Provider=SQLNCLI;Server={0};Database={1};{2}", server_name, database_name, connection_options);
         }
 
-        public void open_connection(bool with_transaction)
-        {
-            server_connection.Open();
-
-            if (with_transaction)
-            {
-                transaction = server_connection.BeginTransaction();
-            }
-        }
-
-        public void close_connection()
-        {
-            if (transaction != null)
-            {
-                transaction.Commit();
-                transaction = null;
-            }
-            server_connection.Close();
-        }
-
-        public void rollback()
-        {
-            if (transaction != null)
-            {
-                //rollback previous transaction
-                transaction.Rollback();
-                transaction = null;
-                server_connection.Close();
-
-                //open a new transaction
-                server_connection.Open();
-                transaction = server_connection.BeginTransaction();
-                use_database(database_name);
-            }
-        }
-
-        public void create_database_if_it_doesnt_exist()
-        {
-            try
-            {
-                string create_script = sql_scripts.create_database(database_name);
-                if (!string.IsNullOrEmpty(custom_create_database_script))
-                {
-                    create_script = custom_create_database_script;
-                }
-
-                run_sql(create_script);
-            }
-            catch (Exception)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "OleDB with provider {0} does not provide a facility for creating a database at this time.",
-                    provider);
-            }
-        }
-
-        public void set_recovery_mode(bool simple)
-        {
-            try
-            {
-                run_sql(sql_scripts.set_recovery_mode(database_name, simple));
-            }
-            catch (Exception)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "OleDB with provider {0} does not provide a facility for setting recovery mode to simple at this time.",
-                    provider);
-            }
-        }
-
-        public void backup_database(string output_path_minus_database)
-        {
-            //Log.bound_to(this).log_a_warning_event_containing("OleDB with provider {0} does not provide a facility for backing up a database at this time.", provider);
-        }
-
-        public void restore_database(string restore_from_path, string custom_restore_options)
-        {
-            try
-            {
-                int current_timeout = command_timeout;
-                command_timeout = restore_timeout;
-                run_sql(sql_scripts.restore_database(database_name, restore_from_path, custom_restore_options));
-                command_timeout = current_timeout;
-            }
-            catch (Exception)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "OleDB with provider {0} does not provide a facility for restoring a database at this time.",
-                    provider);
-            }
-        }
-
-        public void delete_database_if_it_exists()
-        {
-            try
-            {
-                run_sql(sql_scripts.delete_database(database_name));
-            }
-            catch (Exception)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "OleDB with provider {0} does not provide a facility for deleting a database at this time.",
-                    provider);
-            }
-        }
-
-        public void use_database(string database_name)
-        {
-            try
-            {
-                run_sql(sql_scripts.use_database(database_name));
-            }
-            catch (Exception)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "OleDB with provider {0} does not provide a facility for transfering to a database name at this time.",
-                    provider);
-            }
-        }
-
-        public void create_roundhouse_schema_if_it_doesnt_exist()
-        {
-            try
-            {
-                run_sql(sql_scripts.create_roundhouse_schema(roundhouse_schema_name));
-            }
-            catch (Exception)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "Either the schema has already been created OR OleDB with provider {0} does not provide a facility for creating roundhouse schema at this time.",
-                    provider);
-            }
-        }
-
-        public void create_roundhouse_version_table_if_it_doesnt_exist()
-        {
-            try
-            {
-                run_sql(sql_scripts.create_roundhouse_version_table(roundhouse_schema_name, version_table_name));
-            }
-            catch (Exception)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "Either the version table has already been created OR OleDB with provider {0} does not provide a facility for creating roundhouse version table at this time.",
-                    provider);
-            }
-        }
-
-        public void create_roundhouse_scripts_run_table_if_it_doesnt_exist()
-        {
-            try
-            {
-                run_sql(sql_scripts.create_roundhouse_scripts_run_table(roundhouse_schema_name, version_table_name,
-                                                                        scripts_run_table_name));
-            }
-            catch (Exception)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "Either the scripts run table has already been created OR OleDB with provider {0} does not provide a facility for creating roundhouse scripts run table at this time.",
-                    provider);
-            }
-        }
-
-        public void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist()
-        {
-            try
-            {
-                run_sql(sql_scripts.create_roundhouse_scripts_run_errors_table(roundhouse_schema_name, scripts_run_errors_table_name));
-
-            }
-            catch (Exception)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "Either the scripts run errors table has already been created OR OleDB with provider {0} does not provide a facility for creating roundhouse scripts run errors table at this time.",
-                    provider);
-            }
-        }
-
-        public void run_sql(string sql_to_run)
+        public override void run_sql(string sql_to_run)
         {
             if (string.IsNullOrEmpty(sql_to_run)) return;
 
-            using (IDbCommand command = server_connection.CreateCommand())
+            using (IDbCommand command = server_connection.underlying_type().CreateCommand())
             {
                 command.Transaction = transaction;
                 command.CommandText = sql_to_run;
@@ -299,26 +96,26 @@ namespace roundhouse.databases.oledb
             }
         }
 
-        public void run_sql(string sql_to_run, object[] parameters)
-        {
-            if (string.IsNullOrEmpty(sql_to_run)) return;
+        //public void run_sql(string sql_to_run, object[] parameters)
+        //{
+        //    if (string.IsNullOrEmpty(sql_to_run)) return;
 
-            using (IDbCommand command = server_connection.CreateCommand())
-            {
-                command.Transaction = transaction;
-                command.CommandText = sql_to_run;
-                command.CommandType = CommandType.Text;
-                command.CommandTimeout = command_timeout;
-                foreach (var parameter in parameters)
-                {
-                    command.Parameters.Add(parameter);
-                }
-                command.ExecuteNonQuery();
-                command.Dispose();
-            }
-        }
+        //    using (IDbCommand command = server_connection.underlying_type().CreateCommand())
+        //    {
+        //        command.Transaction = transaction;
+        //        command.CommandText = sql_to_run;
+        //        command.CommandType = CommandType.Text;
+        //        command.CommandTimeout = command_timeout;
+        //        foreach (var parameter in parameters)
+        //        {
+        //            command.Parameters.Add(parameter);
+        //        }
+        //        command.ExecuteNonQuery();
+        //        command.Dispose();
+        //    }
+        //}
 
-        public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
+        public override void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
             try
             {
@@ -326,7 +123,7 @@ namespace roundhouse.databases.oledb
                                                       script_name,
                                                       sql_to_run, sql_to_run_hash, run_this_script_once, user_name));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Log.bound_to(this).log_a_warning_event_containing(
                     "OleDB with provider {0} does not provide a facility for recording scripts run at this time.",
@@ -334,7 +131,7 @@ namespace roundhouse.databases.oledb
             }
         }
 
-        public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
+        public override void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
         {
             try
             {
@@ -342,15 +139,15 @@ namespace roundhouse.databases.oledb
                                                       script_name,
                                                       sql_to_run, sql_erroneous_part, error_message, user_name));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Log.bound_to(this).log_a_warning_event_containing(
-                    "OleDB with provider {0} does not provide a facility for recording scripts run at this time.",
+                    "OleDB with provider {0} does not provide a facility for recording scripts run errors at this time.",
                     provider);
             }
         }
 
-        public string get_version(string repository_path)
+        public override string get_version(string repository_path)
         {
             try
             {
@@ -365,7 +162,7 @@ namespace roundhouse.databases.oledb
             }
         }
 
-        public long insert_version_and_get_version_id(string repository_path, string repository_version)
+        public override long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
             long version_id = 0;
             try
@@ -375,7 +172,7 @@ namespace roundhouse.databases.oledb
 
                 long.TryParse(version_id_temp, out version_id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Log.bound_to(this).log_a_warning_event_containing(
                     "OleDB with provider {0} does not provide a facility for inserting versions at this time.", provider);
@@ -384,7 +181,7 @@ namespace roundhouse.databases.oledb
             return version_id;
         }
 
-        public bool has_run_script_already(string script_name)
+        public override bool has_run_script_already(string script_name)
         {
             try
             {
@@ -409,7 +206,7 @@ namespace roundhouse.databases.oledb
             }
         }
 
-        public string get_current_script_hash(string script_name)
+        public override string get_current_script_hash(string script_name)
         {
             try
             {
@@ -424,13 +221,13 @@ namespace roundhouse.databases.oledb
             }
         }
 
-        public object run_sql_scalar(string sql_to_run)
+        public override object run_sql_scalar(string sql_to_run)
         {
             object return_value = new object();
 
             if (string.IsNullOrEmpty(sql_to_run)) return return_value;
 
-            using (IDbCommand command = server_connection.CreateCommand())
+            using (IDbCommand command = server_connection.underlying_type().CreateCommand())
             {
                 command.Transaction = transaction;
                 command.CommandText = sql_to_run;
@@ -447,7 +244,7 @@ namespace roundhouse.databases.oledb
         {
             DataSet result = new DataSet();
 
-            using (IDbCommand command = server_connection.CreateCommand())
+            using (IDbCommand command = server_connection.underlying_type().CreateCommand())
             {
                 command.Transaction = transaction;
                 command.CommandText = sql_to_run;
@@ -468,13 +265,5 @@ namespace roundhouse.databases.oledb
             return result.Tables.Count == 0 ? null : result.Tables[0];
         }
 
-        public void Dispose()
-        {
-            if (!disposing)
-            {
-                server_connection.Dispose();
-                disposing = true;
-            }
-        }
     }
 }

@@ -14,21 +14,27 @@ namespace roundhouse.sql
             get { return true; }
         }
 
+        public bool has_master_database
+        {
+            get { return false; }
+        }
+
         public string create_database(string database_name)
         {
-            return string.Format(
-                @"
-                    DECLARE
-                        v_exists Integer := 0;
-                    BEGIN
-                        SELECT COUNT(*) INTO v_exists FROM dba_users WHERE username = '{0}';
-                        IF v_exists = 0 THEN
-                            EXECUTE IMMEDIATE 'CREATE USER {0} IDENTIFIED BY {0}';
-                            EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO {0}';
-                            EXECUTE IMMEDIATE 'GRANT RESOURCE TO {0}';                            
-                        END IF;
-                    END;                        
-                    ", database_name);
+            throw new NotSupportedException("Has to be tested when an Oracle environment with Integrated Security is available.");
+//            return string.Format(
+//                @"
+//                    DECLARE
+//                        v_exists Integer := 0;
+//                    BEGIN
+//                        SELECT COUNT(*) INTO v_exists FROM dba_users WHERE username = '{0}';
+//                        IF v_exists = 0 THEN
+//                            EXECUTE IMMEDIATE 'CREATE USER {0} IDENTIFIED BY {0}';
+//                            EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO {0}';
+//                            EXECUTE IMMEDIATE 'GRANT RESOURCE TO {0}';                            
+//                        END IF;
+//                    END;                        
+//                    ", database_name);
         }
 
         public string set_recovery_mode(string database_name, bool simple)
@@ -43,17 +49,18 @@ namespace roundhouse.sql
 
         public string delete_database(string database_name)
         {
-            return string.Format(
-                @" 
-                    DECLARE
-                        v_exists Integer := 0;
-                    BEGIN
-                        SELECT COUNT(*) INTO v_exists FROM dba_users WHERE username = '{0}';
-                        IF v_exists > 0 THEN
-                            EXECUTE IMMEDIATE 'DROP USER {0} CASCADE';
-                        END IF;
-                    END;",
-                database_name);
+            throw new NotSupportedException("Has to be tested when an Oracle environment with Integrated Security is available.");
+//            return string.Format(
+//                @" 
+//                    DECLARE
+//                        v_exists Integer := 0;
+//                    BEGIN
+//                        SELECT COUNT(*) INTO v_exists FROM dba_users WHERE username = '{0}';
+//                        IF v_exists > 0 THEN
+//                            EXECUTE IMMEDIATE 'DROP USER {0} CASCADE';
+//                        END IF;
+//                    END;",
+//                database_name);
         }
 
         //roundhouse specific 
@@ -145,7 +152,7 @@ namespace roundhouse.sql
                 roundhouse_schema_name, scripts_run_table_name, version_table_name);
         }
 
-        public string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string scriptsRunErrorsTableName)
+        public string create_roundhouse_scripts_run_errors_table(string roundhouse_schema_name, string scripts_run_errors_table_name)
         {
             return string.Format(
                 @"
@@ -183,7 +190,7 @@ namespace roundhouse.sql
                         END IF;
                     END;
                 ",
-                roundhouse_schema_name, scriptsRunErrorsTableName);
+                roundhouse_schema_name, scripts_run_errors_table_name);
         }
 
         //functions

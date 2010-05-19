@@ -40,24 +40,29 @@ namespace roundhouse.databases.sqlserver2000
                 }
             }
 
-            if (string.IsNullOrEmpty(connection_string))
+            master_database_name = "Master";
+            if (connect_options == "Integrated Security")
             {
-                if (connect_options == "Integrated Security")
-                {
-                    connect_options = "Integrated Security=SSPI;";
-                }
+                connect_options = "Integrated Security=SSPI;";
+            }
+
+            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name.to_lower()))
+            {
                 connection_string = build_connection_string(server_name, master_database_name, connect_options);
             }
 
-            provider = "System.Data.SqlClient";
-            master_database_name = "Master";
+            set_provider_and_sql_scripts();
+            create_connection();
+        }
+
+        public override void set_provider_and_sql_scripts()
+        {
+             provider = "System.Data.SqlClient";
             SqlScripts.sql_scripts_dictionary.TryGetValue("SQLServer2000", out sql_scripts);
             if (sql_scripts == null)
             {
                 sql_scripts = SqlScripts.t_sql2000_scripts;
             }
-
-            create_connection();
         }
 
         private static string build_connection_string(string server_name, string database_name, string connection_options)

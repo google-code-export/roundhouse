@@ -14,6 +14,11 @@ namespace roundhouse.sql
             get { return true; }
         }
 
+        public bool has_master_database
+        {
+            get { return true; }
+        }
+
         public string create_database(string database_name)
         {
             return string.Format(

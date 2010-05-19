@@ -8,7 +8,7 @@ namespace roundhouse.databases
     using System.Data;
     using sql;
 
-    public abstract class AdoNetDatabase : DefaultDatabase<IDbConnection, IDbDataParameter>
+    public abstract class AdoNetDatabase : DefaultDatabase<IDbConnection>
     {
         private bool split_batches_in_ado = true;
         public override bool split_batch_statements
@@ -16,7 +16,7 @@ namespace roundhouse.databases
             get { return split_batches_in_ado; }
             set { split_batches_in_ado = value; }
         }
-        private IDbTransaction transaction;
+        protected IDbTransaction transaction;
 
         private DbProviderFactory provider_factory;
 
@@ -26,6 +26,16 @@ namespace roundhouse.databases
             IDbConnection connection = provider_factory.CreateConnection();
             connection.ConnectionString = connection_string;
             server_connection = new AdoNetConnection(connection);
+        }
+
+        public override void set_provider_and_sql_scripts()
+        {
+            provider = "System.Data.SqlClient";
+            SqlScripts.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
+            if (sql_scripts == null)
+            {
+                sql_scripts = SqlScripts.t_sql_scripts;
+            }
         }
 
         public override void open_connection(bool with_transaction)
