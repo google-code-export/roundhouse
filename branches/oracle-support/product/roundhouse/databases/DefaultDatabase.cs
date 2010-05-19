@@ -135,6 +135,7 @@ namespace roundhouse.databases
                                      create_parameter("run_this_script_once", DbType.Boolean, run_this_script_once, null), 
                                      create_parameter("user_name", DbType.AnsiString, user_name, 50)
                                  };
+
             run_sql(sql_scripts.insert_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
         }
 

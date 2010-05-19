@@ -118,7 +118,7 @@ namespace roundhouse.databases
             {
                 foreach (IParameter<IDbDataParameter> parameter in parameters)
                 {
-                    command.Parameters.Add(parameter.underlying_type());
+                    command.Parameters.Add(parameter.underlying_type);
                 }
             }
             command.Transaction = transaction;

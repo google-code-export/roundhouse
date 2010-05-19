@@ -9,6 +9,11 @@ namespace roundhouse.sql
             get { return @"(?<KEEP1>^(?:.)*(?:-{2}).*$)|(?<KEEP1>/{1}\*{1}[\S\s]*?\*{1}/{1})|(?<KEEP1>'{1}(?:[^']|\n[^'])*?'{1})|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>\s)|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>$)"; }
         }
 
+        public bool can_support_parameters
+        {
+            get { return false; }
+        }
+
         public string create_database(string database_name)
         {
             throw new System.NotImplementedException();

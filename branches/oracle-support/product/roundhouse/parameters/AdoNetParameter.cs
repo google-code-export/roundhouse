@@ -1,8 +1,8 @@
-using System.Data;
-
 namespace roundhouse.parameters
 {
-    class AdoNetParameter : IParameter<IDbDataParameter>
+    using System.Data;
+
+    internal class AdoNetParameter : IParameter<IDbDataParameter>
     {
         private readonly IDbDataParameter parameter;
 
@@ -11,9 +11,19 @@ namespace roundhouse.parameters
             this.parameter = parameter;
         }
 
-        public IDbDataParameter underlying_type()
+        public IDbDataParameter underlying_type
         {
-            return parameter;
+            get { return parameter; }
+        }
+
+        public string name
+        {
+            get { return parameter != null ? parameter.ParameterName : string.Empty; }
+        }
+
+        public object value
+        {
+            get { return parameter != null ? parameter.Value : string.Empty; }
         }
     }
 }
