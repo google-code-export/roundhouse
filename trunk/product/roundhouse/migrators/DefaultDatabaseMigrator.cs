@@ -49,24 +49,15 @@ namespace roundhouse.migrators
         {
             Log.bound_to(this).log_an_info_event_containing("Creating {0} database on {1} server if it doesn't exist.",
                                                             database.database_name, database.server_name);
-
-            if (running_in_a_transaction)
-            {
-                database.close_connection();
-                database.open_connection(false);
-            }
+            database.initialize_connection();
+            database.open_admin_connection();
             database.create_database_if_it_doesnt_exist();
 
             if (restoring_database)
             {
                 restore_database(restore_path, custom_restore_options);
             }
-
-            if (running_in_a_transaction)
-            {
-                database.close_connection();
-                database.open_connection(true);
-            }
+            database.close_admin_connection();
         }
 
         public void backup_database_if_it_exists()
@@ -83,18 +74,9 @@ namespace roundhouse.migrators
 
         public void set_recovery_mode(bool simple)
         {
-            if (running_in_a_transaction)
-            {
-                database.close_connection();
-                database.open_connection(false);
-            }
+            database.open_connection(false);
             database.set_recovery_mode(simple);
-
-            if (running_in_a_transaction)
-            {
-                database.close_connection();
-                database.open_connection(true);
-            }
+            database.close_connection();
         }
 
         public void transfer_to_database_for_changes()
@@ -109,8 +91,8 @@ namespace roundhouse.migrators
                 database.close_connection();
                 database.open_connection(false);
                 transfer_to_database_for_changes();
-            }
-
+            } 
+            
             Log.bound_to(this).log_an_info_event_containing(" Creating {0} schema if it doesn't exist.", database.roundhouse_schema_name);
             database.create_roundhouse_schema_if_it_doesnt_exist();
             Log.bound_to(this).log_an_info_event_containing(" Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,
@@ -128,7 +110,7 @@ namespace roundhouse.migrators
                 database.close_connection();
                 database.open_connection(true);
                 transfer_to_database_for_changes();
-            }          
+            }   
         }
 
         public string get_current_version(string repository_path)
@@ -146,20 +128,10 @@ namespace roundhouse.migrators
         public void delete_database()
         {
             Log.bound_to(this).log_an_info_event_containing("Deleting {0} database on {1} server if it exists.", database.database_name, database.server_name);
-
-            if (running_in_a_transaction)
-            {
-                database.close_connection();
-                database.open_connection(false);
-            }
-
+            database.initialize_connection();
+            database.open_admin_connection();
             database.delete_database_if_it_exists();
-
-            if (running_in_a_transaction)
-            {
-                database.close_connection();
-                database.open_connection(true);
-            }
+            database.close_admin_connection();
         }
 
         public long version_the_database(string repository_path, string repository_version)
