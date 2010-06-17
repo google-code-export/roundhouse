@@ -34,8 +34,7 @@
 
         private static void create_the_database(string roundhouse_exe, string db_name)
         {
-            CommandRunner.run(roundhouse_exe,
-                              String.Format(" /db={0} /f={1} /silent ", db_name, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)), true);
+            CommandRunner.run(roundhouse_exe, String.Format("/db={0} /f={1} /silent /simple", db_name, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)), true);
         }
 
 
@@ -47,15 +46,14 @@
         private static void build_schema(Configuration cfg)
         {
             SchemaExport s = new SchemaExport(cfg);
-            s.SetOutputFile(PATH_TO_SCRIPTS + "\\Up\\0001_CreateTables_NH.sql");
+            s.SetOutputFile(Path.Combine(PATH_TO_SCRIPTS, "Up\\0001_CreateTables_NH.sql"));
             s.Create(true, false);
         }
 
-
         private static void run_roundhouse_drop_create(string roundhouse_exe, string db_name, string path_to_scripts)
         {
-            CommandRunner.run(roundhouse_exe, String.Format(" /db={0} /f={1} /silent /drop", db_name, path_to_scripts), true);
-            CommandRunner.run(roundhouse_exe, String.Format(" /db={0} /f={1} /silent ", db_name, path_to_scripts), true);
+            CommandRunner.run(roundhouse_exe, String.Format("/db={0} /f={1} /silent /drop", db_name, path_to_scripts), true);
+            CommandRunner.run(roundhouse_exe, String.Format("/db={0} /f={1} /silent /simple", db_name, path_to_scripts), true);
         }
     }
 }
