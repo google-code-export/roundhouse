@@ -142,7 +142,7 @@ namespace roundhouse.migrators
             return database.insert_version_and_get_version_id(repository_path, repository_version);
         }
 
-        public bool run_sql(string sql_to_run, string script_name, bool run_this_script_once, bool run_this_script_every_time, long version_id, Environment environment)
+        public bool run_sql(string sql_to_run, string script_name, bool run_this_script_once, bool run_this_script_every_time, long version_id, Environment environment, string repository_version, string repository_path)
         {
             bool this_sql_ran = false;
 
@@ -151,7 +151,7 @@ namespace roundhouse.migrators
                 if (error_on_one_time_script_changes)
                 {
                     string error_message =string.Format("{0} has changed since the last time it was run. By default this is not allowed - scripts that run once should never change. To change this behavior to a warning, please set warnOnOneTimeScriptChanges to true and run again. Stopping execution.",script_name);
-                    record_script_in_scripts_run_errors_table(script_name, sql_to_run, sql_to_run, error_message, version_id);
+                    record_script_in_scripts_run_errors_table(script_name, sql_to_run, sql_to_run, error_message, repository_version, repository_path);
                     throw new Exception(error_message);
                 }
                 Log.bound_to(this).log_a_warning_event_containing("{0} is a one time script that has changed since it was run.", script_name);
@@ -171,7 +171,7 @@ namespace roundhouse.migrators
                     catch (Exception ex)
                     {
                         database.rollback();
-                        record_script_in_scripts_run_errors_table(script_name, sql_to_run, sql_statement, ex.Message, version_id);
+                        record_script_in_scripts_run_errors_table(script_name, sql_to_run, sql_statement, ex.Message, repository_version, repository_path);
                         database.close_connection();
                         throw;
                     }
@@ -212,10 +212,10 @@ namespace roundhouse.migrators
             database.insert_script_run(script_name, sql_to_run, create_hash(sql_to_run), run_this_script_once, version_id);
         }
 
-        public void record_script_in_scripts_run_errors_table(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
+        public void record_script_in_scripts_run_errors_table(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string repository_version, string repository_path)
         {
             Log.bound_to(this).log_a_debug_event_containing("Recording {0} script ran with error on {1} - {2}.", script_name, database.server_name, database.database_name);
-            database.insert_script_run_error(script_name, sql_to_run, sql_erroneous_part, error_message, version_id);
+            database.insert_script_run_error(script_name, sql_to_run, sql_erroneous_part, error_message, repository_version, repository_path);
         }
 
         private string create_hash(string sql_to_run)

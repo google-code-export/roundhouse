@@ -147,9 +147,9 @@ namespace roundhouse.databases.sqlserver2005
                                                   run_this_script_once, user_name));
         }
 
-        public override void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
+        public override void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string repository_version, string repository_path)
         {
-            run_sql(sql_scripts.insert_script_run_error(roundhouse_schema_name, scripts_run_errors_table_name, version_id, script_name, sql_to_run,
+            run_sql(sql_scripts.insert_script_run_error(roundhouse_schema_name, scripts_run_errors_table_name, repository_version, repository_path, script_name, sql_to_run,
                                                         sql_erroneous_part, error_message, user_name));
         }
 

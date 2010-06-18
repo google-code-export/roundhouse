@@ -153,7 +153,8 @@ namespace roundhouse.sql
                         CREATE TABLE [{0}].[{1}]
                         (
                             id                          BigInt			NOT NULL	IDENTITY(1,1)
-                            ,version_id                 BigInt			NULL
+                            ,repository_path			VarChar(255)	NULL
+                            ,version			        VarChar(35)	    NULL
                             ,script_name                VarChar(255)	NULL
                             ,text_of_script             Text        	NULL
                             ,erroneous_part_of_script   Text			NULL
@@ -380,13 +381,14 @@ namespace roundhouse.sql
                 roundhouse_schema_name, scripts_run_table_name);
         }
 
-        public string insert_script_run_error(string roundhouse_schema_name, string scripts_run_errors_table_name, long version_id, string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string user_name)
+        public string insert_script_run_error(string roundhouse_schema_name, string scripts_run_errors_table_name, string repository_version, string repository_path, string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string user_name)
         {
             return string.Format(
                 @"
                     INSERT INTO [{0}].[{1}] 
                     (
-                        version_id
+                        version
+                        ,repository_path
                         ,script_name
                         ,text_of_script
                         ,erroneous_part_of_script
@@ -395,15 +397,16 @@ namespace roundhouse.sql
                     )
                     VALUES
                     (
-                        {2}
+                        '{2}'
                         ,'{3}'
                         ,'{4}'
                         ,'{5}'
                         ,'{6}'
                         ,'{7}'
+                        ,'{8}'
                     )
                 ",
-                roundhouse_schema_name, scripts_run_errors_table_name, version_id,
+                roundhouse_schema_name, scripts_run_errors_table_name, repository_version, repository_path,
                 script_name, sql_to_run.Replace(@"'", @"''"),
                 sql_erroneous_part.Replace(@"'", @"''"),
                 error_message, user_name.Replace(@"'", @"''"));
@@ -415,7 +418,8 @@ namespace roundhouse.sql
                 @"
                     INSERT INTO [{0}].[{1}] 
                     (
-                        version_id
+                        version
+                        ,repository_path
                         ,script_name
                         ,text_of_script
                         ,erroneous_part_of_script
@@ -424,7 +428,8 @@ namespace roundhouse.sql
                     )
                     VALUES
                     (
-                        @version_id
+                        @repository_version
+                        ,@repository_path
                         ,@script_name
                         ,@sql_to_run
                         ,@sql_erroneous_part

@@ -29,7 +29,7 @@ namespace roundhouse.sql
         string has_script_run_parameterized(string roundhouse_schema_name, string scripts_run_table_name);
         string insert_script_run(string roundhouse_schema_name, string scripts_run_table_name, long version_id, string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, string user_name);
         string insert_script_run_parameterized(string roundhouse_schema_name, string scripts_run_table_name);
-        string insert_script_run_error(string roundhouse_schema_name, string scripts_run_errors_table_name, long version_id, string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string user_name);
+        string insert_script_run_error(string roundhouse_schema_name, string scripts_run_errors_table_name, string repository_version, string repository_path, string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string user_name);
         string insert_script_run_error_parameterized(string roundhouse_schema_name, string scripts_run_errors_table_name);
     }
 }
