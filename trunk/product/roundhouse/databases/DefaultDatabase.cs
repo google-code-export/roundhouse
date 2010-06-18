@@ -236,11 +236,12 @@ namespace roundhouse.databases
             }
         }
 
-        public virtual void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
+        public virtual void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string repository_version, string repository_path)
         {
             var parameters = new List<IParameter<IDbDataParameter>>
                                  {
-                                     create_parameter("version_id", DbType.Int64, version_id, null), 
+                                     create_parameter("repository_path", DbType.AnsiString, repository_path ?? string.Empty, 255), 
+                                     create_parameter("repository_version", DbType.AnsiString, repository_version ?? string.Empty, 35), 
                                      create_parameter("script_name", DbType.AnsiString, script_name, 255), 
                                      create_parameter("sql_to_run", DbType.AnsiString, sql_to_run, null), 
                                      create_parameter("sql_erroneous_part", DbType.AnsiString, sql_erroneous_part, null), 

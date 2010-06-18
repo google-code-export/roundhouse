@@ -217,9 +217,9 @@ namespace roundhouse.databases
             database.insert_script_run(script_name, sql_to_run, sql_to_run_hash, run_this_script_once, version_id);
         }
 
-        public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, long version_id)
+        public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string repository_version, string repository_path)
         {
-            database.insert_script_run_error(script_name, sql_to_run, sql_erroneous_part, error_message, version_id);
+            database.insert_script_run_error(script_name, sql_to_run, sql_erroneous_part, error_message, repository_version, repository_path);
         }
 
         public string get_version(string repository_path)
