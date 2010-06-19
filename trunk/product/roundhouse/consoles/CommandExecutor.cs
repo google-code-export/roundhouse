@@ -1,22 +1,21 @@
-namespace BuildDatabase
+namespace roundhouse.consoles
 {
-    using System;
     using System.Diagnostics;
     using System.IO;
     using System.Reflection;
 
-    public class CommandRunner
+    public class CommandExecutor
     {
-        public static int run(string process, string arguments, bool wait_for_exit)
+        public static int execute(string process, string arguments, bool wait_for_exit)
         {
             int exit_code = -1;
             ProcessStartInfo psi = new ProcessStartInfo(Path.GetFullPath(process), arguments)
-                                       {
-                                           WorkingDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                                           UseShellExecute = false,
-                                           RedirectStandardOutput = false,
-                                           CreateNoWindow = false
-                                       };
+            {
+                WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                UseShellExecute = false,
+                RedirectStandardOutput = false,
+                CreateNoWindow = false
+            };
 
             using (Process p = new Process())
             {

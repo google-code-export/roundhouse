@@ -154,7 +154,7 @@ namespace roundhouse.databases
             int current_timeout = command_timeout;
             command_timeout = restore_timeout;
             run_sql(string.Format(
-                                 @"USE Master 
+                                 @"USE master 
                         ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
                         ALTER DATABASE [{0}] SET MULTI_USER;
 

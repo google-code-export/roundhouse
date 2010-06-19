@@ -46,7 +46,7 @@ namespace roundhouse.databases.oledb
                 }
             }
 
-            master_database_name = "Master";
+            master_database_name = "master";
             if (connect_options == "Trusted_Connection")
             {
                 connect_options = "Trusted_Connection=yes;";
@@ -62,7 +62,7 @@ namespace roundhouse.databases.oledb
                 connection_string = build_connection_string(server_name, master_database_name, connect_options);
             }
 
-            admin_connection_string = Regex.Replace(connection_string, "Database=.*?;", "Database=Master;");            
+            admin_connection_string = Regex.Replace(connection_string, "Database=.*?;", "Database=master;");            
 
             set_provider_and_sql_scripts();
         }

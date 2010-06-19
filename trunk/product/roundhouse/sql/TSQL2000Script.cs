@@ -22,7 +22,7 @@ namespace roundhouse.sql
         public string create_database(string database_name)
         {
             return string.Format(
-                @"USE Master 
+                @"USE master 
                         IF NOT EXISTS(SELECT * FROM sysdatabases WHERE [name] = '{0}') 
                          BEGIN 
                             CREATE DATABASE [{0}] 
@@ -34,7 +34,7 @@ namespace roundhouse.sql
         public string set_recovery_mode(string database_name, bool simple)
         {
             return string.Format(
-                @"USE Master 
+                @"USE master 
                    ALTER DATABASE [{0}] SET RECOVERY {1}
                     ",
                 database_name, simple ? "SIMPLE" : "FULL");
@@ -48,7 +48,7 @@ namespace roundhouse.sql
         public string delete_database(string database_name)
         {
             return string.Format(
-                @"USE Master 
+                @"USE master 
                         IF EXISTS(SELECT * FROM sysdatabases WHERE [name] = '{0}') 
                         BEGIN 
                             ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE                            
