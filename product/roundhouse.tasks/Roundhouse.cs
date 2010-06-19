@@ -187,9 +187,9 @@ namespace roundhouse.tasks
         [StringValidator(AllowEmpty = false)]
         public bool WarnOnOneTimeScriptChanges { get; set; }
 
-        [TaskAttribute("nonInteractive", Required = false)]
+        [TaskAttribute("silent", Required = false)]
         [StringValidator(AllowEmpty = false)]
-        public bool NonInteractive { get; set; }
+        public bool Silent { get; set; }
 
         [TaskAttribute("databaseType", Required = false)]
         [StringValidator(AllowEmpty = false)]
@@ -228,7 +228,7 @@ namespace roundhouse.tasks
                 Container.get_an_instance_of<FileSystemAccess>(),
                 Container.get_an_instance_of<DatabaseMigrator>(),
                 Container.get_an_instance_of<VersionResolver>(),
-                !NonInteractive,
+                Silent,
                 Drop,
                 DoNotCreateDatabase,
                 WithTransaction,

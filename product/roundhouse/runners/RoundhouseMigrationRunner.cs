@@ -17,10 +17,10 @@ namespace roundhouse.runners
         private readonly Environment environment;
         private readonly KnownFolders known_folders;
         private readonly FileSystemAccess file_system;
-        private readonly DatabaseMigrator database_migrator;
+        public DatabaseMigrator database_migrator { get; private set; }
         private readonly VersionResolver version_resolver;
-        private readonly bool interactive;
-        private readonly bool dropping_the_database;
+        public bool silent {get;set;}
+        public bool dropping_the_database{get;set;}
         private readonly bool dont_create_the_database;
         private bool run_in_a_transaction;
         private readonly bool use_simple_recovery;
@@ -33,7 +33,7 @@ namespace roundhouse.runners
                 FileSystemAccess file_system,
                 DatabaseMigrator database_migrator,
                 VersionResolver version_resolver,
-                bool interactive,
+                bool silent,
                 bool dropping_the_database,
                 bool dont_create_the_database,
                 bool run_in_a_transaction,
@@ -45,7 +45,7 @@ namespace roundhouse.runners
             this.file_system = file_system;
             this.database_migrator = database_migrator;
             this.version_resolver = version_resolver;
-            this.interactive = interactive;
+            this.silent = silent;
             this.dropping_the_database = dropping_the_database;
             this.dont_create_the_database = dont_create_the_database;
             this.run_in_a_transaction = run_in_a_transaction;
@@ -60,7 +60,7 @@ namespace roundhouse.runners
                     database_migrator.database.server_name,
                     database_migrator.database.database_name,
                     known_folders.up.folder_path);
-            if (interactive)
+            if (!silent)
             {
                 Log.bound_to(this).log_an_info_event_containing("Please press enter when ready to kick...");
                 Console.ReadLine();                
@@ -69,7 +69,7 @@ namespace roundhouse.runners
             if (run_in_a_transaction && !database_migrator.database.supports_ddl_transactions)
             {
                 Log.bound_to(this).log_a_warning_event_containing("You asked to run in a transaction, but this dabasetype doesn't support DDL transactions.");
-                if (interactive)
+                if (!silent)
                 {
                     Log.bound_to(this).log_an_info_event_containing("Please press enter to continue without transaction support...");
                     Console.ReadLine();

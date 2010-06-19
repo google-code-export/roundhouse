@@ -49,7 +49,7 @@ namespace roundhouse.consoles
         public string CreateDatabaseCustomScript { get; set; }
         public string OutputPath { get; set; }
         public bool WarnOnOneTimeScriptChanges { get; set; }
-        public bool NonInteractive { get; set; }
+        public bool Silent { get; set; }
         public string DatabaseType {get; set;}
         public bool Drop { get; set; }
 		public bool DoNotCreateDatabase { get; set; }
