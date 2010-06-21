@@ -31,7 +31,7 @@ namespace roundhouse.sql
                         EXECUTE IMMEDIATE 'GRANT RESOURCE TO {0}';                            
                     END IF;
                 END;                        
-                ", database_name);
+                ", database_name.ToUpper());
         }
 
         public string set_recovery_mode(string database_name, bool simple)
@@ -56,7 +56,7 @@ namespace roundhouse.sql
                         EXECUTE IMMEDIATE 'DROP USER {0} CASCADE';
                     END IF;
                 END;",
-            database_name);
+            database_name.ToUpper());
         }
 
         //roundhouse specific 
