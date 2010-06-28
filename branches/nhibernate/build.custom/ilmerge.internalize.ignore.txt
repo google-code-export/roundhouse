@@ -1,3 +1,4 @@
-roundhouse.sql.Database
+roundhouse.databases.Database
+roundhouse.sql.SqlScript
 roundhouse.*
 StructureMap.InstanceBuilder

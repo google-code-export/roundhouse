@@ -20,6 +20,8 @@ namespace roundhouse.infrastructure.app
 
     public static class ApplicationConfiguraton
     {
+        //TODO: Need to have a session factory built AFTER we've built the container
+
         public static void set_defaults_if_properties_are_not_set(ConfigurationPropertyHolder configuration_property_holder)
         {
             if (string.IsNullOrEmpty(configuration_property_holder.ServerName))
@@ -96,6 +98,15 @@ namespace roundhouse.infrastructure.app
             }
         }
 
+        public static void set_up_current_mappings(ConfigurationPropertyHolder configuration_property_holder)
+        {
+            ApplicationParameters.CurrentMappings.roundhouse_schema_name = configuration_property_holder.SchemaName;
+            ApplicationParameters.CurrentMappings.version_table_name = configuration_property_holder.VersionTableName;
+            ApplicationParameters.CurrentMappings.scripts_run_table_name = configuration_property_holder.ScriptsRunTableName;
+            ApplicationParameters.CurrentMappings.scripts_run_errors_table_name = configuration_property_holder.ScriptsRunErrorsTableName;
+            ApplicationParameters.CurrentMappings.database_type = configuration_property_holder.DatabaseType;
+        }
+
         public static void build_the_container(ConfigurationPropertyHolder configuration_property_holder)
         {
             Container.initialize_with(null);
@@ -106,6 +117,8 @@ namespace roundhouse.infrastructure.app
         {
             //this becomes a scan
             configuration_property_holder.DatabaseType = convert_database_type_synonyms(configuration_property_holder.DatabaseType);
+
+            set_up_current_mappings(configuration_property_holder);
 
             ObjectFactory.Configure(cfg =>
                                         {
@@ -124,7 +137,7 @@ namespace roundhouse.infrastructure.app
                                                 context => VersionResolverBuilder.build(context.GetInstance<FileSystemAccess>(), configuration_property_holder));
                                             cfg.For<Environment>().Use(new DefaultEnvironment(configuration_property_holder));
                                         });
-
+            
             return new StructureMapContainer(ObjectFactory.Container);
         }
 
@@ -137,27 +150,21 @@ namespace roundhouse.infrastructure.app
                 case "2008":
                 case "sql2008":
                 case "sqlserver2008":
-                    database_type_full_name =
-                        "roundhouse.databases.sqlserver2008.SqlServerDatabase, roundhouse.databases.sqlserver2008";
-                    break;
                 case "2005":
                 case "sql2005":
                 case "sqlserver2005":
-                    database_type_full_name =
-                        "roundhouse.databases.sqlserver2005.SqlServerDatabase, roundhouse.databases.sqlserver2005";
-                    break;
-                case "2000":
-                case "sql2000":
-                case "sqlserver2000":
-                    database_type_full_name =
-                        "roundhouse.databases.sqlserver2000.SqlServerDatabase, roundhouse.databases.sqlserver2000";
-                    break;
                 case "sql":
                 case "sql.net":
                 case "sqlserver":
                 case "sqlado.net":
                     database_type_full_name =
                         "roundhouse.databases.sqlserver.SqlServerDatabase, roundhouse.databases.sqlserver";
+                    break;
+                case "2000":
+                case "sql2000":
+                case "sqlserver2000":
+                    database_type_full_name =
+                        "roundhouse.databases.sqlserver2000.SqlServerDatabase, roundhouse.databases.sqlserver2000";
                     break;
                 case "mysql":
                     database_type_full_name =

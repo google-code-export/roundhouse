@@ -6,9 +6,9 @@ namespace roundhouse.tests.databases
     using developwithpassion.bdd.mbunit.standard;
     using developwithpassion.bdd.mbunit.standard.observations;
     using roundhouse.databases;
-    using roundhouse.databases.sqlserver2008;
+    using roundhouse.databases.sqlserver;
 
-    public class SqlServer2008DatabaseSpecs
+    public class SqlServerDatabaseSpecs
     {
         public abstract class concern_for_SqlServerDatabase : observations_for_a_sut_with_a_contract<Database, SqlServerDatabase>
         {
