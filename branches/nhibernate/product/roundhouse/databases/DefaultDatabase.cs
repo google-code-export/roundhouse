@@ -60,7 +60,6 @@ namespace roundhouse.databases
 
         public virtual void create_database_if_it_doesnt_exist()
         {
-            if (sql_scripts.has_master_database) use_database(master_database_name);
             try
             {
                 string create_script = sql_scripts.create_database(database_name);
@@ -80,8 +79,6 @@ namespace roundhouse.databases
 
         public void set_recovery_mode(bool simple)
         {
-            if (sql_scripts.has_master_database) use_database(master_database_name);
-
             try
             {
                 run_sql(sql_scripts.set_recovery_mode(database_name, simple));
@@ -105,8 +102,6 @@ namespace roundhouse.databases
 
         public void restore_database(string restore_from_path, string custom_restore_options)
         {
-            if (sql_scripts.has_master_database) use_database(master_database_name);
-
             try
             {
                 int current_connection_timeout = command_timeout;
@@ -132,20 +127,6 @@ namespace roundhouse.databases
             {
                 Log.bound_to(this).log_a_warning_event_containing(
                     "{0} with provider {1} does not provide a facility for deleting a database at this time.{2}{3}",
-                    GetType(), provider, Environment.NewLine, ex.Message);
-            }
-        }
-
-        public void use_database(string database_name)
-        {
-            try
-            {
-                run_sql(sql_scripts.use_database(database_name));
-            }
-            catch (Exception ex)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "{0} with provider {1} does not provide a facility for transfering to a database name at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
             }
         }

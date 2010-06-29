@@ -81,7 +81,7 @@ namespace roundhouse.databases
 
                 //open a new transaction
                 server_connection.open();
-                use_database(database_name);
+                //use_database(database_name);
                 transaction = server_connection.underlying_type().BeginTransaction();
             }
         }
