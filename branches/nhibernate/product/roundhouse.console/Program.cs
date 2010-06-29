@@ -111,6 +111,9 @@
                 .Add("c=|cs=|connstring=|connectionstring=",
                     string.Format("As an alternative to ServerName and Database - You can provide an entire connection string instead."),
                     option => configuration.ConnectionString = option)
+                .Add("csa=|connstringadmin=|connectionstringadministration=",
+                    string.Format("This is used for connecting to master when you may have a different uid and password than normal."),
+                    option => configuration.ConnectionStringAdmin = option)
                 //database type
                 .Add("dt=|dbt=|databasetype=",
                     string.Format("DatabaseType - Tells RH what type of database it is running on. This is a plugin model. This is the fully qualified name of a class that implements the interface roundhouse.sql.Database, roundhouse. If you have your own assembly, just set it next to rh.exe and set this value appropriately. Defaults to \"{0}\" which can also run against SQL Server 2005.",
@@ -248,6 +251,7 @@
                     "[" +
                     "/s[ervername] VALUE " +
                     "/c[onnection]s[tring] VALUE " +
+                    "/c[onnection]s[tring]a[dministration] VALUE " +
                     "/r[epositorypath] VALUE /v[ersion]f[ile] VALUE /v[ersion]x[path] VALUE " +
                     "/u[pfoldername] VALUE /do[wnfoldername] VALUE " +
                     "/r[un]f[irstafterupdatefoldername] VALUE /fu[nctionsfoldername] VALUE /v[ie]w[sfoldername] VALUE " +

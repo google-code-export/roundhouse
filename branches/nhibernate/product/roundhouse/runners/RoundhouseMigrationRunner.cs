@@ -89,15 +89,18 @@ namespace roundhouse.runners
                 //database_migrator.backup_database_if_it_exists();
                 remove_share_from_change_drop_folder();
 
+                database_migrator.initialize_connections();
+
                 if (!dropping_the_database)
                 {                    
                     if (!dont_create_the_database)
                     {
+                        database_migrator.open_admin_connection();
                         database_migrator.create_or_restore_database();
                         database_migrator.set_recovery_mode(use_simple_recovery);
+                        database_migrator.close_admin_connection();
                     }
-                    database_migrator.connect(run_in_a_transaction);
-                    database_migrator.transfer_to_database_for_changes();
+                    database_migrator.open_connection(run_in_a_transaction);
                     Log.bound_to(this).log_an_info_event_containing("{0}", "=".PadRight(50, '='));
                     Log.bound_to(this).log_an_info_event_containing("RoundhousE Structure");
                     Log.bound_to(this).log_an_info_event_containing("{0}", "=".PadRight(50, '='));
@@ -149,11 +152,13 @@ namespace roundhouse.runners
                                                 database_migrator.database.database_name,
                                                 new_version,
                                                 known_folders.change_drop.folder_full_path);
-                    database_migrator.disconnect();
+                    database_migrator.close_connection();
                 }
                 else
                 {
+                    database_migrator.open_admin_connection();
                     database_migrator.delete_database();
+                    database_migrator.close_admin_connection();
                     Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} has removed database ({2}). All changes and backups can be found at \"{3}\".",
                                                 System.Environment.NewLine,
                                                 ApplicationParameters.name,

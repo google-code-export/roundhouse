@@ -17,7 +17,7 @@ namespace roundhouse.databases.oracle
             get { return false; }
         }
 
-        public override void initialize_connection()
+        public override void initialize_connections()
         {
             if (!string.IsNullOrEmpty(connection_string))
             {
@@ -49,10 +49,18 @@ namespace roundhouse.databases.oracle
                 }
             }
 
-            
+
             set_provider_and_sql_scripts();
 
-            configure_admin_connection_string();            
+            admin_connection_string = configure_admin_connection_string();
+        }
+
+        private string configure_admin_connection_string()
+        {
+            string admin_string = Regex.Replace(connection_string, "User Id=.*?;", "User Id=System;");
+            admin_string = Regex.Replace(admin_string, "Password=.*?;", "Password=QAORACLE;");
+
+            return admin_string;
         }
 
         public override void set_provider_and_sql_scripts()
@@ -65,12 +73,7 @@ namespace roundhouse.databases.oracle
             }
         }
 
-        private void configure_admin_connection_string()
-        {
-            string admin_string = Regex.Replace(connection_string, "User Id=.*?;", "User Id=System;");
-            admin_string = Regex.Replace(admin_string, "Password=.*?;", "Password=QAORACLE;");
-            admin_connection_string = admin_string;
-        }
+
 
         public override long insert_version_and_get_version_id(string repository_path, string repository_version)
         {

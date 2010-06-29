@@ -83,7 +83,7 @@ namespace roundhouse.databases
         bool split_batch_statements { get; set; }
         bool supports_ddl_transactions { get; }
 
-        void initialize_connection();
+        void initialize_connections();
         void open_connection(bool with_transaction);
         void close_connection();
         void open_admin_connection();

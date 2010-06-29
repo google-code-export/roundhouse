@@ -48,21 +48,22 @@ namespace roundhouse.tests.integration.infrastructure.persistence
 
             private static void build_schema(Configuration cfg)
             {
-                string sql_script_file = Path.Combine(".\\",  "insert.sql");
+                string sql_script_file = Path.Combine(".\\", "insert.sql");
                 //if (!UPDATING)
                 //{
-                    SchemaExport s = new SchemaExport(cfg);
-                    s.SetOutputFile(sql_script_file);
-                    s.Create(true, false);
+                SchemaExport s = new SchemaExport(cfg);
+                s.SetOutputFile(sql_script_file);
+                s.Create(true, false);
                 //}
                 //else
                 //{
-                    sql_script_file = Path.Combine(".\\", "update.sql");
-                    SchemaUpdate update = new SchemaUpdate(cfg);
-                    StringBuilder sb = new StringBuilder();
-                    update.Execute(schema => sb.AppendLine(schema), false);
+                sql_script_file = Path.Combine(".\\", "update.sql");
+                SchemaUpdate update = new SchemaUpdate(cfg);
+                StringBuilder sb = new StringBuilder();
+                //update.Execute(false, true);
+                update.Execute(schema => sb.AppendLine(schema), false);
 
-                    File.WriteAllText(sql_script_file, sb.ToString());
+                File.WriteAllText(sql_script_file, sb.ToString());
                 //}
             }
         }

@@ -23,13 +23,19 @@ namespace roundhouse.tests.databases
                                         sut.connection_string = "";
                                         sut.database_name = "bob";
                                         sut.server_name = "(local)";
-                                        sut.initialize_connection();
+                                        sut.initialize_connections();
                                     };
 
             [Observation]
-            public void should_have_master_as_the_database_to_connect_to()
+            public void should_have_the_original_database_as_the_database_to_connect_to()
             {
-                sut.connection_string.should_contain("master");
+                sut.connection_string.should_contain("bob");
+            }
+
+            [Observation]
+            public void should_have_master_as_the_admin_database_to_connect_to()
+            {
+                sut.admin_connection_string.should_contain("master");
             }
 
             [Observation]
@@ -53,13 +59,19 @@ namespace roundhouse.tests.databases
                                         sut.connection_string = "Server=(local);initial catalog=bob;uid=dude;pwd=123";
                                         sut.database_name = "bob";
                                         sut.server_name = "(local)";
-                                        sut.initialize_connection();
+                                        sut.initialize_connections();
                                     };
 
             [Observation]
-            public void should_have_master_as_the_database_to_connect_to()
+            public void should_have_the_original_database_as_the_database_to_connect_to()
             {
-                sut.connection_string.should_contain("master");
+                sut.connection_string.should_contain("bob");
+            }
+            
+            [Observation]
+            public void should_have_master_as_the_admin_database_to_connect_to()
+            {
+                sut.admin_connection_string.should_contain("master");
             }
 
             [Observation]
@@ -82,16 +94,28 @@ namespace roundhouse.tests.databases
         {
             private because b = () =>
                                     {
-                                        sut.connection_string = "Server=(local);initial catalog=boB;uid=dude;pwd=123";
+                                        sut.connection_string = "Server=(local);initial catalog=[boB ad];uid=dude;pwd=123";
                                         sut.database_name = "Bob";
                                         sut.server_name = "(local)";
-                                        sut.initialize_connection();
+                                        sut.initialize_connections();
                                     };
 
             [Observation]
-            public void should_have_master_as_the_database_to_connect_to()
+            public void should_have_the_original_database_as_the_database_to_connect_to()
             {
-                sut.connection_string.should_contain("master");
+                sut.connection_string.should_contain("boB ad");
+            }
+
+            [Observation]
+            public void should_have_master_as_the_admin_database_to_connect_to()
+            {
+                sut.admin_connection_string.should_contain("master");
+            }
+
+            [Observation]
+            public void should_have_local_as_the_server_to_connect_to()
+            {
+                sut.connection_string.should_contain("(local)");
             }
         }
     }

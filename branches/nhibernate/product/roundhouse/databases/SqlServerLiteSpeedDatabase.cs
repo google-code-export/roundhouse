@@ -63,7 +63,6 @@ namespace roundhouse.databases
             set { database.scripts_run_errors_table_name = value; }
         }
 
-
         public string user_name
         {
             get { return database.user_name; }
@@ -101,30 +100,29 @@ namespace roundhouse.databases
 
         public bool supports_ddl_transactions
         {
-            get { return database.supports_ddl_transactions; }            
+            get { return database.supports_ddl_transactions; }
         }
 
-        public void initialize_connection()
+        public void initialize_connections()
         {
-            database.initialize_connection();
+            database.initialize_connections();
         }
 
+        public void open_admin_connection()
+        {
+            database.open_admin_connection();
+        }
+
+        public void close_admin_connection()
+        {
+            database.close_admin_connection();
+        }
         public void open_connection(bool with_transaction)
         {
             database.open_connection(with_transaction);
         }
 
         public void close_connection()
-        {
-            database.close_connection();
-        }
-
-        public void open_admin_connection()
-        {
-            database.open_connection(false);
-        }
-
-        public void close_admin_connection()
         {
             database.close_connection();
         }

@@ -49,7 +49,7 @@ namespace roundhouse.databases
         protected SqlScript sql_scripts;
 
         //this method must set the provider
-        public abstract void initialize_connection();
+        public abstract void initialize_connections();
         public abstract void set_provider_and_sql_scripts();
         public abstract void open_connection(bool with_transaction);
         public abstract void close_connection();

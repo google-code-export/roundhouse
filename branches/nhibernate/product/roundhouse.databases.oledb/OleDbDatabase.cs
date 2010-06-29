@@ -14,7 +14,7 @@ namespace roundhouse.databases.oledb
     {
         private string connect_options = "Trusted_Connection";
 
-        public override void initialize_connection()
+        public override void initialize_connections()
         {
             if (!string.IsNullOrEmpty(connection_string))
             {
@@ -46,25 +46,30 @@ namespace roundhouse.databases.oledb
                 }
             }
 
-            master_database_name = "master";
             if (connect_options == "Trusted_Connection")
             {
                 connect_options = "Trusted_Connection=yes;";
             }
 
-            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name.to_lower()))
+            if (string.IsNullOrEmpty(connection_string))
             {
                 connection_string = build_connection_string(server_name, database_name, connect_options);
             }
 
             if (connection_string.to_lower().Contains("sqlserver") || connection_string.to_lower().Contains("sqlncli"))
             {
-                connection_string = build_connection_string(server_name, master_database_name, connect_options);
+                connection_string = build_connection_string(server_name, database_name, connect_options);
             }
 
-            admin_connection_string = Regex.Replace(connection_string, "Database=.*?;", "Database=master;");            
+            admin_connection_string = Regex.Replace(connection_string, "Database=.*?;", "Database=master;");
 
             set_provider_and_sql_scripts();
+        }
+
+        public override void open_admin_connection()
+        {
+            server_connection = new AdoNetConnection(new OleDbConnection(admin_connection_string));
+            server_connection.open();
         }
 
         public override void open_connection(bool with_transaction)
@@ -76,12 +81,6 @@ namespace roundhouse.databases.oledb
             {
                 transaction = server_connection.underlying_type().BeginTransaction();
             }
-        }
-
-        public override void open_admin_connection()
-        {
-            server_connection = new AdoNetConnection(new OleDbConnection(admin_connection_string));
-            server_connection.open();
         }
 
         public override void set_provider_and_sql_scripts()

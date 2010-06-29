@@ -8,7 +8,7 @@ namespace roundhouse.databases.sqlserver
     {
         private string connect_options = "Integrated Security";
 
-        public override void initialize_connection()
+        public override void initialize_connections()
         {
             if (!string.IsNullOrEmpty(connection_string))
             {
@@ -40,18 +40,18 @@ namespace roundhouse.databases.sqlserver
                 }
             }
 
-            master_database_name = "master";
             if (connect_options == "Integrated Security")
             {
                 connect_options = "Integrated Security=SSPI;";
             }
 
-            if (string.IsNullOrEmpty(connection_string) || connection_string.to_lower().Contains(database_name.to_lower()))
+            if (string.IsNullOrEmpty(connection_string))
             {
-                connection_string = build_connection_string(server_name, master_database_name, connect_options);
+                connection_string = build_connection_string(server_name, database_name, connect_options);
             }
 
             set_provider_and_sql_scripts();
+
             admin_connection_string = Regex.Replace(connection_string, "initial catalog=.*?;", "initial catalog=master;");                        
         }
 

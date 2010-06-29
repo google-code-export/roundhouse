@@ -33,31 +33,42 @@ namespace roundhouse.migrators
             error_on_one_time_script_changes = !configuration.WarnOnOneTimeScriptChanges;
         }
 
-        public void connect(bool with_transaction)
+        public void initialize_connections()
+        {
+            database.initialize_connections();
+        }
+
+        public void open_admin_connection()
+        {
+            database.open_admin_connection();
+        }
+
+        public void close_admin_connection()
+        {
+            database.close_admin_connection();
+        }
+
+        public void open_connection(bool with_transaction)
         {
             running_in_a_transaction = with_transaction;
-            database.initialize_connection();
             database.open_connection(with_transaction);
         }
 
-        public void disconnect()
+        public void close_connection()
         {
             database.close_connection();
         }
 
         public void create_or_restore_database()
         {
-            Log.bound_to(this).log_an_info_event_containing("Creating {0} database on {1} server if it doesn't exist.",
-                                                            database.database_name, database.server_name);
-            database.initialize_connection();
-            database.open_admin_connection();
+            Log.bound_to(this).log_an_info_event_containing("Creating {0} database on {1} server if it doesn't exist.", database.database_name, database.server_name);
+           
             database.create_database_if_it_doesnt_exist();
 
             if (restoring_database)
             {
                 restore_database(restore_path, custom_restore_options);
             }
-            database.close_admin_connection();
         }
 
         public void backup_database_if_it_exists()
@@ -79,10 +90,10 @@ namespace roundhouse.migrators
             database.close_connection();
         }
 
-        public void transfer_to_database_for_changes()
-        {
-            database.use_database(database.database_name);
-        }
+        //public void transfer_to_database_for_changes()
+        //{
+        //    database.use_database(database.database_name);
+        //}
 
         public void verify_or_create_roundhouse_tables()
         {
@@ -90,9 +101,9 @@ namespace roundhouse.migrators
             {
                 database.close_connection();
                 database.open_connection(false);
-                transfer_to_database_for_changes();
-            } 
-            
+                //transfer_to_database_for_changes();
+            }
+
             Log.bound_to(this).log_an_info_event_containing(" Creating {0} schema if it doesn't exist.", database.roundhouse_schema_name);
             database.create_roundhouse_schema_if_it_doesnt_exist();
             Log.bound_to(this).log_an_info_event_containing(" Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,
@@ -109,8 +120,8 @@ namespace roundhouse.migrators
             {
                 database.close_connection();
                 database.open_connection(true);
-                transfer_to_database_for_changes();
-            }   
+                //transfer_to_database_for_changes();
+            }
         }
 
         public string get_current_version(string repository_path)
@@ -128,17 +139,12 @@ namespace roundhouse.migrators
         public void delete_database()
         {
             Log.bound_to(this).log_an_info_event_containing("Deleting {0} database on {1} server if it exists.", database.database_name, database.server_name);
-            database.initialize_connection();
-            database.open_admin_connection();
             database.delete_database_if_it_exists();
-            database.close_admin_connection();
         }
 
         public long version_the_database(string repository_path, string repository_version)
         {
-            Log.bound_to(this).log_an_info_event_containing(" Versioning {0} database with version {1} based on {2}.",
-                                                            database.database_name,
-                                                            repository_version, repository_path);
+            Log.bound_to(this).log_an_info_event_containing(" Versioning {0} database with version {1} based on {2}.", database.database_name, repository_version, repository_path);
             return database.insert_version_and_get_version_id(repository_path, repository_version);
         }
 
@@ -150,7 +156,7 @@ namespace roundhouse.migrators
             {
                 if (error_on_one_time_script_changes)
                 {
-                    string error_message =string.Format("{0} has changed since the last time it was run. By default this is not allowed - scripts that run once should never change. To change this behavior to a warning, please set warnOnOneTimeScriptChanges to true and run again. Stopping execution.",script_name);
+                    string error_message = string.Format("{0} has changed since the last time it was run. By default this is not allowed - scripts that run once should never change. To change this behavior to a warning, please set warnOnOneTimeScriptChanges to true and run again. Stopping execution.", script_name);
                     record_script_in_scripts_run_errors_table(script_name, sql_to_run, sql_to_run, error_message, repository_version, repository_path);
                     throw new Exception(error_message);
                 }
