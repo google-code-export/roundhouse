@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace roundhouse.infrastructure
 {
-    public class Version
+    public class VersionInformation
     {
         public static string get_current_assembly_version()
         {

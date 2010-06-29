@@ -70,7 +70,7 @@
 
         public static void report_version()
         {
-            string version = infrastructure.Version.get_current_assembly_version();
+            string version = infrastructure.VersionInformation.get_current_assembly_version();
             the_logger.InfoFormat("{0} - version {1} from http://projectroundhouse.org.", ApplicationParameters.name, version);
 
         }

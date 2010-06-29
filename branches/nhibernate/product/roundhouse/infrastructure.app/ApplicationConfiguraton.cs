@@ -98,7 +98,7 @@ namespace roundhouse.infrastructure.app
             }
         }
 
-        public static void set_up_current_mappings(ConfigurationPropertyHolder configuration_property_holder)
+        private static void set_up_current_mappings(ConfigurationPropertyHolder configuration_property_holder)
         {
             ApplicationParameters.CurrentMappings.roundhouse_schema_name = configuration_property_holder.SchemaName;
             ApplicationParameters.CurrentMappings.version_table_name = configuration_property_holder.VersionTableName;
