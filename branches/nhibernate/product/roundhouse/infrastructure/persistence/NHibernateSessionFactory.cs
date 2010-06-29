@@ -6,11 +6,12 @@ namespace roundhouse.infrastructure.persistence
     using app;
     using FluentNHibernate.Cfg;
     using FluentNHibernate.Cfg.Db;
+    using loaders;
     using logging;
     using NHibernate;
     using NHibernate.Cfg;
     using NHibernate.Event;
-    
+
     public class NHibernateSessionFactory
     {
         private readonly ConfigurationPropertyHolder configuration_holder;
@@ -29,12 +30,13 @@ namespace roundhouse.infrastructure.persistence
 
         public ISessionFactory build_session_factory()
         {
-            return build_session_factory(func_dictionary[configuration_holder.DatabaseType](), Assembly.Load(configuration_holder.DatabaseType), no_operation);
+            return build_session_factory(no_operation);
         }
 
         public ISessionFactory build_session_factory(Action<Configuration> additional_function)
         {
-            return build_session_factory(func_dictionary[configuration_holder.DatabaseType](), Assembly.Load(configuration_holder.DatabaseType),additional_function);
+            string assembly_name = configuration_holder.DatabaseType.Substring(configuration_holder.DatabaseType.IndexOf(',') + 1);
+            return build_session_factory(func_dictionary[configuration_holder.DatabaseType](), DefaultAssemblyLoader.load_assembly(assembly_name), additional_function);
         }
 
         public ISessionFactory build_session_factory(IPersistenceConfigurer db_configuration, Assembly assembly, Action<Configuration> additional_function)
@@ -42,15 +44,16 @@ namespace roundhouse.infrastructure.persistence
             Log.bound_to(this).log_a_debug_event_containing("Building Session Factory");
             return Fluently.Configure()
                 .Database(db_configuration)
-                .Mappings(m => {
-                                   m.FluentMappings.AddFromAssembly(assembly)
-                                       .Conventions.AddAssembly(assembly);
-                                   m.HbmMappings.AddFromAssembly(assembly); 
-                        })
+                .Mappings(m =>
+                {
+                    m.FluentMappings.AddFromAssembly(assembly)
+                        .Conventions.AddAssembly(assembly);
+                    m.HbmMappings.AddFromAssembly(assembly);
+                })
                 .ExposeConfiguration(cfg =>
                     {
-                    cfg.SetListener(ListenerType.PreInsert, new AuditEventListener());
-                    cfg.SetListener(ListenerType.PreUpdate, new AuditEventListener());
+                        cfg.SetListener(ListenerType.PreInsert, new AuditEventListener());
+                        cfg.SetListener(ListenerType.PreUpdate, new AuditEventListener());
                     })
                 .ExposeConfiguration(additional_function)
                 .BuildSessionFactory();

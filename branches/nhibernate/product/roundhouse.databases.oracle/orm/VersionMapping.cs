@@ -1,14 +1,13 @@
-namespace roundhouse.databases.oracle.orm
+﻿namespace roundhouse.databases.oracle.orm
 {
     using System;
     using FluentNHibernate.Mapping;
     using roundhouse.infrastructure;
-    using roundhouse.model;
 
     [CLSCompliant(false)]
-    public class ScriptsRunMapping : ClassMap<ScriptsRun>
+    public class VersionMapping : ClassMap<roundhouse.model.Version>
     {
-        public ScriptsRunMapping()
+        public VersionMapping()
         {
             //HibernateMapping.Schema(ApplicationParameters.CurrentMappings.roundhouse_schema_name);
             Table(ApplicationParameters.CurrentMappings.roundhouse_schema_name + "_" + ApplicationParameters.CurrentMappings.scripts_run_errors_table_name);
@@ -16,13 +15,11 @@ namespace roundhouse.databases.oracle.orm
             HibernateMapping.DefaultAccess.Property();
             HibernateMapping.DefaultCascade.SaveUpdate();
 
-            Id(x => x.id).Column("Id").GeneratedBy.Identity().UnsavedValue(0);
-            Map(x => x.version_id);
-            Map(x => x.script_name);
-            Map(x => x.text_of_script).CustomSqlType("Clob");
-            Map(x => x.text_hash).Length(512);
-            Map(x => x.one_time_script);
-
+            Id(x => x.id).Column("Id").GeneratedBy.Sequence(ApplicationParameters.CurrentMappings.roundhouse_schema_name + "_" +
+                                                            ApplicationParameters.CurrentMappings.scripts_run_errors_table_name + "id").UnsavedValue(0);
+            Map(x => x.repository_path);
+            Map(x => x.version).Length(50);
+           
             //audit
             Map(x => x.entry_date);
             Map(x => x.modified_date);

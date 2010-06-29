@@ -62,8 +62,9 @@
       <Link>SolutionVersion.cs</Link>
     </Compile>
     <Compile Include="OracleDatabase.cs" />
+    <Compile Include="orm\ScriptsRunErrorMapping.cs" />
     <Compile Include="orm\ScriptsRunMapping.cs" />
-    <Compile Include="PLSQLScript.cs" />
+    <Compile Include="orm\VersionMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

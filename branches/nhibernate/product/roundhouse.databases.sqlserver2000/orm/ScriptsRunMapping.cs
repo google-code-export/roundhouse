@@ -1,4 +1,4 @@
-namespace roundhouse.databases.oracle.orm
+namespace roundhouse.databases.sqlserver2000.orm
 {
     using System;
     using FluentNHibernate.Mapping;
@@ -19,7 +19,7 @@ namespace roundhouse.databases.oracle.orm
             Id(x => x.id).Column("Id").GeneratedBy.Identity().UnsavedValue(0);
             Map(x => x.version_id);
             Map(x => x.script_name);
-            Map(x => x.text_of_script).CustomSqlType("Clob");
+            Map(x => x.text_of_script).CustomSqlType("text");
             Map(x => x.text_hash).Length(512);
             Map(x => x.one_time_script);
 
