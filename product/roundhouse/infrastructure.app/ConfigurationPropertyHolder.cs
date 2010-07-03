@@ -43,5 +43,8 @@ namespace roundhouse.infrastructure.app
         bool WithTransaction { get; set; }
         bool RecoveryModeSimple { get; set; }
         bool Debug { get; set; }
+        bool DryRun { get; set; }
+        bool Baseline { get; set; }
+        bool RunAllAnyTimeScripts { get; set; }
     }
 }

@@ -4,6 +4,7 @@ namespace roundhouse.sql
     {
         string separator_characters_regex { get; }
         bool can_support_parameters { get; }
+        bool can_support_ddl_transactions { get; }
         bool has_master_database { get; }
         string create_database(string database_name);
         string set_recovery_mode(string database_name, bool simple);

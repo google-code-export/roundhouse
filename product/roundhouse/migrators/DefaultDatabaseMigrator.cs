@@ -21,6 +21,7 @@ namespace roundhouse.migrators
         private readonly string output_path;
         private readonly bool error_on_one_time_script_changes;
         private bool running_in_a_transaction;
+        private bool is_running_all_any_time_scripts;
 
         public DefaultDatabaseMigrator(Database database, CryptographicService crypto_provider, ConfigurationPropertyHolder configuration)
         {
@@ -31,6 +32,7 @@ namespace roundhouse.migrators
             custom_restore_options = configuration.RestoreCustomOptions;
             output_path = configuration.OutputPath;
             error_on_one_time_script_changes = !configuration.WarnOnOneTimeScriptChanges;
+            is_running_all_any_time_scripts = configuration.RunAllAnyTimeScripts;
         }
 
         public void connect(bool with_transaction)
@@ -91,8 +93,8 @@ namespace roundhouse.migrators
                 database.close_connection();
                 database.open_connection(false);
                 transfer_to_database_for_changes();
-            } 
-            
+            }
+
             Log.bound_to(this).log_an_info_event_containing(" Creating {0} schema if it doesn't exist.", database.roundhouse_schema_name);
             database.create_roundhouse_schema_if_it_doesnt_exist();
             Log.bound_to(this).log_an_info_event_containing(" Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,
@@ -110,7 +112,7 @@ namespace roundhouse.migrators
                 database.close_connection();
                 database.open_connection(true);
                 transfer_to_database_for_changes();
-            }   
+            }
         }
 
         public string get_current_version(string repository_path)
@@ -150,7 +152,7 @@ namespace roundhouse.migrators
             {
                 if (error_on_one_time_script_changes)
                 {
-                    string error_message =string.Format("{0} has changed since the last time it was run. By default this is not allowed - scripts that run once should never change. To change this behavior to a warning, please set warnOnOneTimeScriptChanges to true and run again. Stopping execution.",script_name);
+                    string error_message = string.Format("{0} has changed since the last time it was run. By default this is not allowed - scripts that run once should never change. To change this behavior to a warning, please set warnOnOneTimeScriptChanges to true and run again. Stopping execution.", script_name);
                     record_script_in_scripts_run_errors_table(script_name, sql_to_run, sql_to_run, error_message, repository_version, repository_path);
                     throw new Exception(error_message);
                 }
@@ -244,7 +246,7 @@ namespace roundhouse.migrators
             }
             catch (Exception)
             {
-                Log.bound_to(this).log_an_info_event_containing("{0} - I didn't find this script executed before.", script_name);
+                Log.bound_to(this).log_a_warning_event_containing("{0} - I didn't find this script executed before.", script_name);
             }
 
             if (string.IsNullOrEmpty(old_text_hash)) return true;
@@ -269,6 +271,11 @@ namespace roundhouse.migrators
             if (this_script_has_run_already(script_name) && run_this_script_once)
             {
                 return false;
+            }
+
+            if (is_running_all_any_time_scripts && !run_this_script_once)
+            {
+                return true;
             }
 
             return this_script_has_changed_since_last_run(script_name, sql_to_run);

@@ -229,6 +229,17 @@
                 .Add("debug",
                     "Debug - This instructs RH to write out all messages.",
                     option => configuration.Debug = option != null)
+                //force all anytime scripts
+                .Add("runallanytimescripts|forceanytimescripts",
+                    "RunAllAnyTimeScripts - This instructs RH to run any time scripts every time it is run.",
+                    option => configuration.RunAllAnyTimeScripts = option != null)
+                //recorders
+                .Add("baseline",
+                    "Baseline - This instructs RH to create an insert for its recording tables, but not to actually run anything against the database. Use this option if you already have scripts that have been run through other means (and BEFORE you start the new ones).",
+                    option => configuration.Baseline = option != null)
+                .Add("dryrun",
+                    "DryRun - This instructs RH to log what would have run, but not to actually run anything against the database. Use this option if you are trying to figure out what RH is going to do.",
+                    option => configuration.DryRun = option != null)
                ;
 
             try
@@ -266,6 +277,9 @@
                     "/t[ransaction] " +
                     "/simple " +
                     "/debug " +
+                    "/runallanytimescripts " +
+                    "/baseline " +
+                    "/dryrun " +
                     "]";
                 show_help(usage_message, option_set);
             }
@@ -310,7 +324,7 @@
         private static void run_diff_utility(ConfigurationPropertyHolder configuration)
         {
             bool silent = configuration.Silent;
-            
+
             RoundhouseRedGateCompareRunner diff_runner = get_diff_runner(configuration, get_migration_runner(configuration));
             diff_runner.run();
 
@@ -342,8 +356,8 @@
             return new RoundhouseRedGateCompareRunner(
                   Container.get_an_instance_of<KnownFolders>(),
                   Container.get_an_instance_of<FileSystemAccess>(),
-                  configuration,migration_runner);
+                  configuration, migration_runner);
         }
-      
+
     }
 }
