@@ -1,6 +1,6 @@
 namespace roundhouse.sql
 {
-    public interface SqlScript
+    public interface DatabaseTypeSpecific
     {
         string separator_characters_regex { get; }
         bool can_support_parameters { get; }

@@ -46,7 +46,7 @@ namespace roundhouse.databases
         protected IConnection<DBCONNECTION> server_connection;
 
         private bool disposing;
-        protected SqlScript sql_scripts;
+        protected DatabaseTypeSpecific sql_scripts;
 
         //this method must set the provider
         public abstract void initialize_connections();

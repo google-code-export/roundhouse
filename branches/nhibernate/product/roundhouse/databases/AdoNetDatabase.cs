@@ -31,10 +31,10 @@ namespace roundhouse.databases
         public override void set_provider_and_sql_scripts()
         {
             provider = "System.Data.SqlClient";
-            SqlScripts.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
+            DatabaseTypeSpecifics.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
             if (sql_scripts == null)
             {
-                sql_scripts = SqlScripts.t_sql_scripts;
+                sql_scripts = DatabaseTypeSpecifics.t_sql_specific;
             }
         }
 

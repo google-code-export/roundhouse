@@ -2,7 +2,7 @@ using System;
 
 namespace roundhouse.sql
 {
-    public class AccessSQLScript : SqlScript
+    public class AccessSQLSpecific : DatabaseTypeSpecific
     {
         public string separator_characters_regex
         {

@@ -61,10 +61,10 @@ namespace roundhouse.databases.oracle
         public override void set_provider_and_sql_scripts()
         {
             provider = "System.Data.OracleClient";
-            SqlScripts.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
+            DatabaseTypeSpecifics.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
             if (sql_scripts == null)
             {
-                sql_scripts = SqlScripts.pl_sql_scripts;
+                sql_scripts = DatabaseTypeSpecifics.pl_sql_specific;
             }
         }
 

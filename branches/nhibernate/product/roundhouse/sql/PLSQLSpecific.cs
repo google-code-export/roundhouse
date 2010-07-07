@@ -1,6 +1,6 @@
 namespace roundhouse.sql
 {
-    public sealed class PLSQLScript : SqlScript
+    public sealed class PLSQLSpecific : DatabaseTypeSpecific
     {
         public string separator_characters_regex
         {

@@ -2,7 +2,7 @@ namespace roundhouse.sql
 {
     using infrastructure.extensions;
 
-    public class TSQLScript : SqlScript
+    public class TSQLTypeSpecific : DatabaseTypeSpecific
     {
         public string separator_characters_regex
         {

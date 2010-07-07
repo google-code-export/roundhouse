@@ -61,10 +61,10 @@ namespace roundhouse.databases.sqlserver2000
         public override void set_provider_and_sql_scripts()
         {
             provider = "System.Data.SqlClient";
-            SqlScripts.sql_scripts_dictionary.TryGetValue("SQLServer2000", out sql_scripts);
+            DatabaseTypeSpecifics.sql_scripts_dictionary.TryGetValue("SQLServer2000", out sql_scripts);
             if (sql_scripts == null)
             {
-                sql_scripts = SqlScripts.t_sql2000_scripts;
+                sql_scripts = DatabaseTypeSpecifics.t_sql2000_specific;
             }
         }
 
