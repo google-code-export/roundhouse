@@ -71,6 +71,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\references\NHibernate\NHibernate.ByteCode.Castle.dll</HintPath>
     </Reference>
+    <Reference Include="NHibernate.JetDriver, Version=2.0.0.1001, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\references\NHibernate\NHibernate.JetDriver.dll</HintPath>
+    </Reference>
     <Reference Include="NHibernate.Linq, Version=1.0.0.4000, Culture=neutral, PublicKeyToken=444cf6a87fdab271, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\references\NHibernate\NHibernate.Linq.dll</HintPath>
@@ -100,6 +104,7 @@
     <Compile Include="connections\IConnection.cs" />
     <Compile Include="consoles\CommandExecutor.cs" />
     <Compile Include="databases\DefaultDatabase.cs" />
+    <Compile Include="databases\MockDatabase.cs" />
     <Compile Include="infrastructure.app\builders\LogBuilder.cs" />
     <Compile Include="infrastructure.app\builders\VersionResolverBuilder.cs" />
     <Compile Include="infrastructure\persistence\AuditEventListener.cs" />

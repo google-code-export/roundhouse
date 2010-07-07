@@ -21,6 +21,7 @@ namespace roundhouse.migrators
         private readonly string output_path;
         private readonly bool error_on_one_time_script_changes;
         private bool running_in_a_transaction;
+        private readonly bool is_running_all_any_time_scripts;
 
         public DefaultDatabaseMigrator(Database database, CryptographicService crypto_provider, ConfigurationPropertyHolder configuration)
         {
@@ -31,6 +32,7 @@ namespace roundhouse.migrators
             custom_restore_options = configuration.RestoreCustomOptions;
             output_path = configuration.OutputPath;
             error_on_one_time_script_changes = !configuration.WarnOnOneTimeScriptChanges;
+            is_running_all_any_time_scripts = configuration.RunAllAnyTimeScripts;
         }
 
         public void initialize_connections()
@@ -250,7 +252,7 @@ namespace roundhouse.migrators
             }
             catch (Exception)
             {
-                Log.bound_to(this).log_an_info_event_containing("{0} - I didn't find this script executed before.", script_name);
+                Log.bound_to(this).log_a_warning_event_containing("{0} - I didn't find this script executed before.", script_name);
             }
 
             if (string.IsNullOrEmpty(old_text_hash)) return true;
@@ -275,6 +277,11 @@ namespace roundhouse.migrators
             if (this_script_has_run_already(script_name) && run_this_script_once)
             {
                 return false;
+            }
+
+            if (is_running_all_any_time_scripts && !run_this_script_once)
+            {
+                return true;
             }
 
             return this_script_has_changed_since_last_run(script_name, sql_to_run);

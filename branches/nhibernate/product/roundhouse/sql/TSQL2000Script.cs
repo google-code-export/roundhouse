@@ -14,6 +14,11 @@ namespace roundhouse.sql
             get { return true; }
         }
 
+        public bool can_support_ddl_transactions
+        {
+            get { return true; }
+        }
+
         public bool has_master_database
         {
             get { return true; }

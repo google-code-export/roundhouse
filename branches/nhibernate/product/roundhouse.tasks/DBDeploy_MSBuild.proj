@@ -57,6 +57,7 @@
         DatabaseType="roundhouse.databases.sqlserver.SqlServerDatabase, roundhouse.databases.sqlserver"
         WithTransaction="false"
         RecoveryModeSimple="false"
+        RunAllAnyTimeScripts="false"
         />
   </Target>
 

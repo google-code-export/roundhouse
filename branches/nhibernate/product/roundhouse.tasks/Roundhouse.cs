@@ -210,6 +210,18 @@ namespace roundhouse.tasks
         [TaskAttribute("debug", Required = false)]
         [StringValidator(AllowEmpty = false)]
         public bool Debug { get; set; }
+        
+        [TaskAttribute("dryRun", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool DryRun { get; set; }  
+        
+        [TaskAttribute("baseline", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool Baseline { get; set; }
+        
+        [TaskAttribute("runAllAnyTimeScripts", Required = false)]
+        [StringValidator(AllowEmpty = false)]
+        public bool RunAllAnyTimeScripts { get; set; }
 
         #endregion
 
@@ -223,6 +235,7 @@ namespace roundhouse.tasks
                 throw new Exception(
                     "If you set Restore to true, you must specify a location for the database to be restored from. That property is RestoreFromPath in MSBuild and restoreFromPath in NAnt.");
             }
+
             ApplicationConfiguraton.build_the_container(this);
 
             IRunner roundhouse_runner = new RoundhouseMigrationRunner(

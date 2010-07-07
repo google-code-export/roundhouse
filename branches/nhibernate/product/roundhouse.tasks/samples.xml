@@ -71,6 +71,7 @@
       databaseType="roundhouse.databases.sqlserver.SqlServerDatabase, roundhouse.databases.sqlserver"
       withTransaction="false"
       recoveryModeSimple="false"
+      runAllAnyTimeScripts="false"
       />
 
   </nant>
@@ -149,6 +150,7 @@
       DatabaseType="roundhouse.databases.sqlserver.SqlServerDatabase, roundhouse.databases.sqlserver"
       WithTransaction="false"
       RecoveryModeSimple="false"
+      RunAllAnyTimeScripts="false"
       />
 
   </msbuild>

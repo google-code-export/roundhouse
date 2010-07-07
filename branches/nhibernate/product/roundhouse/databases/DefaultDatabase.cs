@@ -38,9 +38,9 @@ namespace roundhouse.databases
             set { split_batches = value; }
         }
 
-        public virtual bool supports_ddl_transactions
+        public bool supports_ddl_transactions
         {
-            get { return true; }
+            get { return sql_scripts.can_support_ddl_transactions; }
         }
 
         protected IConnection<DBCONNECTION> server_connection;

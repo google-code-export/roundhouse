@@ -61,9 +61,9 @@ namespace roundhouse.runners
             decimal highest_number = 0;
             foreach (string file_number in file_numbers)
             {
-                decimal test_number;
-                decimal.TryParse(file_number,out test_number);
-                if (test_number !=null)
+                decimal test_number = 0;
+                decimal.TryParse(file_number, out test_number);
+                if (test_number != 0)
                 {
                     if (test_number > highest_number)
                     {
