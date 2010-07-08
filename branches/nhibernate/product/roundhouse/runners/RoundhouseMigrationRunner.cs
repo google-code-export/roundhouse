@@ -65,6 +65,8 @@ namespace roundhouse.runners
                 Log.bound_to(this).log_an_info_event_containing("Please press enter when ready to kick...");
                 Console.ReadLine();                
             }
+            
+            database_migrator.database.initialize_connection();
 
             if (run_in_a_transaction && !database_migrator.database.supports_ddl_transactions)
             {

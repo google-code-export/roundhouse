@@ -125,9 +125,10 @@ namespace roundhouse.databases
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_a_warning_event_containing(
+                Log.bound_to(this).log_an_error_event_containing(
                     "{0} with provider {1} does not provide a facility for deleting a database at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
+                throw;
             }
         }
 
@@ -211,9 +212,10 @@ namespace roundhouse.databases
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_a_warning_event_containing(
+                Log.bound_to(this).log_an_error_event_containing(
                     "{0} with provider {1} does not provide a facility for recording scripts run at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
+                throw; 
             }
         }
 
@@ -236,9 +238,10 @@ namespace roundhouse.databases
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_a_warning_event_containing(
+                Log.bound_to(this).log_an_error_event_containing(
                     "{0} with provider {1} does not provide a facility for recording scripts run errors at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
+                throw;
             }
         }
 
@@ -280,9 +283,10 @@ namespace roundhouse.databases
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_a_warning_event_containing(
+                Log.bound_to(this).log_an_error_event_containing(
                     "{0} with provider {1} does not provide a facility for inserting versions at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
+                throw;
             }
 
             return version_id;
@@ -297,10 +301,10 @@ namespace roundhouse.databases
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_a_warning_event_containing(
+                Log.bound_to(this).log_an_error_event_containing(
                     "{0} with provider {1} does not provide a facility for hashing (through recording scripts run) at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
-                return string.Empty;
+                throw;
             }
         }
 
@@ -325,10 +329,10 @@ namespace roundhouse.databases
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_a_warning_event_containing(
+                Log.bound_to(this).log_an_error_event_containing(
                     "{0} with provider {1} does not provide a facility for determining if a script has run at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
-                return false;
+                throw;
             }
         }
 
