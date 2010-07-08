@@ -66,7 +66,7 @@ namespace roundhouse.runners
                 Console.ReadLine();                
             }
             
-            database_migrator.database.initialize_connection();
+            database_migrator.database.initialize_connections();
 
             if (run_in_a_transaction && !database_migrator.database.supports_ddl_transactions)
             {
