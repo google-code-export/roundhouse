@@ -108,7 +108,7 @@ namespace roundhouse.sql
                             ,CONSTRAINT [PK_{0}_{1}_id] PRIMARY KEY CLUSTERED (id) 
                         )
                         
-                        ALTER TABLE [{0}_{1}] WITH CHECK ADD CONSTRAINT [FK_.{0}_{1}_{2}_version_id] FOREIGN KEY(version_id) REFERENCES [{0}_{1}] (id)
+                        ALTER TABLE [{0}_{1}] WITH CHECK ADD CONSTRAINT [FK_.{0}_{1}_{2}_version_id] FOREIGN KEY(version_id) REFERENCES [{0}_{2}] (id)
 
                       END
                 ",
