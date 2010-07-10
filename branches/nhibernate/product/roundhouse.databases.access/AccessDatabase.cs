@@ -14,6 +14,11 @@ namespace roundhouse.databases.access
     {
         private string connect_options = "Trusted_Connection";
 
+        public override bool supports_ddl_transactions
+        {
+            get { return false; }
+        }
+
         public override void initialize_connections()
         {
             if (!string.IsNullOrEmpty(connection_string))
@@ -96,6 +101,11 @@ namespace roundhouse.databases.access
         private static string build_connection_string(string server_name, string database_name, string connection_options)
         {
             return string.Format("Provider=SQLNCLI;Server={0};Database={1};{2}", server_name, database_name, connection_options);
+        }
+
+        public override void run_database_specific_tasks()
+        {
+            //TODO: Anything for Access?
         }
 
         public override void run_sql(string sql_to_run)

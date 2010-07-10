@@ -97,7 +97,7 @@ namespace roundhouse.migrators
         //    database.use_database(database.database_name);
         //}
 
-        public void verify_or_create_roundhouse_tables()
+        public void run_roundhouse_support_tasks()
         {
             if (running_in_a_transaction)
             {
@@ -106,16 +106,17 @@ namespace roundhouse.migrators
                 //transfer_to_database_for_changes();
             }
 
+            Log.bound_to(this).log_an_info_event_containing(" Running database type specific tasks.");
+            database.run_database_specific_tasks();
+
+
             Log.bound_to(this).log_an_info_event_containing(" Creating {0} schema if it doesn't exist.", database.roundhouse_schema_name);
             database.create_roundhouse_schema_if_it_doesnt_exist();
-            Log.bound_to(this).log_an_info_event_containing(" Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,
-                                                            database.version_table_name);
+            Log.bound_to(this).log_an_info_event_containing(" Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,database.version_table_name);
             database.create_roundhouse_version_table_if_it_doesnt_exist();
-            Log.bound_to(this).log_an_info_event_containing(" Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,
-                                                            database.scripts_run_table_name);
+            Log.bound_to(this).log_an_info_event_containing(" Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,database.scripts_run_table_name);
             database.create_roundhouse_scripts_run_table_if_it_doesnt_exist();
-            Log.bound_to(this).log_an_info_event_containing(" Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,
-                                                            database.scripts_run_errors_table_name);
+            Log.bound_to(this).log_an_info_event_containing(" Creating [{0}].[{1}] table if it doesn't exist.", database.roundhouse_schema_name,database.scripts_run_errors_table_name);
             database.create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist();
 
             if (running_in_a_transaction)

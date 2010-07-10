@@ -65,8 +65,8 @@ namespace roundhouse.runners
                 Log.bound_to(this).log_an_info_event_containing("Please press enter when ready to kick...");
                 Console.ReadLine();                
             }
-            
-            database_migrator.database.initialize_connections();
+
+            database_migrator.initialize_connections();
 
             if (run_in_a_transaction && !database_migrator.database.supports_ddl_transactions)
             {
@@ -91,8 +91,6 @@ namespace roundhouse.runners
                 //database_migrator.backup_database_if_it_exists();
                 remove_share_from_change_drop_folder();
 
-                database_migrator.initialize_connections();
-
                 if (!dropping_the_database)
                 {                    
                     if (!dont_create_the_database)
@@ -106,7 +104,7 @@ namespace roundhouse.runners
                     Log.bound_to(this).log_an_info_event_containing("{0}", "=".PadRight(50, '='));
                     Log.bound_to(this).log_an_info_event_containing("RoundhousE Structure");
                     Log.bound_to(this).log_an_info_event_containing("{0}", "=".PadRight(50, '='));
-                    database_migrator.verify_or_create_roundhouse_tables();
+                    database_migrator.run_roundhouse_support_tasks();
 
                     Log.bound_to(this).log_an_info_event_containing("{0}", "=".PadRight(50, '='));
                     Log.bound_to(this).log_an_info_event_containing("Versioning");

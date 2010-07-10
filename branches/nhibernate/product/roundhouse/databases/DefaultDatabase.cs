@@ -38,9 +38,9 @@ namespace roundhouse.databases
             set { split_batches = value; }
         }
 
-        public bool supports_ddl_transactions
+        public virtual bool supports_ddl_transactions
         {
-            get { return sql_scripts.can_support_ddl_transactions; }
+            get { return true; }
         }
 
         protected IConnection<DBCONNECTION> server_connection;
@@ -131,6 +131,8 @@ namespace roundhouse.databases
                 throw;
             }
         }
+
+        public abstract void run_database_specific_tasks();
 
         public void create_roundhouse_schema_if_it_doesnt_exist()
         {

@@ -20,7 +20,7 @@ namespace roundhouse.tests.sqlsplitters
 
             private context c = () =>
                                     {
-                                        DatabaseTypeSpecific script = new TSQLTypeSpecific();
+                                        DatabaseTypeSpecific script = new TSQLSpecific();
                                         tsql_separator_regex_string = script.separator_characters_regex;
                                         script = new AccessSQLSpecific();
                                         access_sql_separator_regex_string = script.separator_characters_regex;

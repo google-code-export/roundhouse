@@ -180,6 +180,11 @@ namespace roundhouse.databases
             database.delete_database_if_it_exists();
         }
 
+        public void run_database_specific_tasks()
+        {
+            database.run_database_specific_tasks();
+        }
+
         public void create_roundhouse_schema_if_it_doesnt_exist()
         {
             database.create_roundhouse_schema_if_it_doesnt_exist();

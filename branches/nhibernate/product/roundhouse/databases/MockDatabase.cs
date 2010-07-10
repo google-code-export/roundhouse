@@ -174,6 +174,15 @@ namespace roundhouse.databases
             //database.delete_database_if_it_exists();
         }
 
+        public void run_database_specific_tasks()
+        {
+            if (!database_exists)
+            {
+                //TODO: figure out whether we do this or not
+                //database.run_database_specific_tasks();
+            }
+        }
+
         public void create_roundhouse_schema_if_it_doesnt_exist()
         {
             if (database_exists)

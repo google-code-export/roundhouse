@@ -2,7 +2,7 @@ namespace roundhouse.sql
 {
     using infrastructure.extensions;
 
-    public class TSQLTypeSpecific : DatabaseTypeSpecific
+    public class TSQLSpecific : DatabaseTypeSpecific
     {
         public string separator_characters_regex
         {
@@ -10,11 +10,6 @@ namespace roundhouse.sql
         }
 
         public bool can_support_parameters
-        {
-            get { return true; }
-        }
-
-        public bool can_support_ddl_transactions
         {
             get { return true; }
         }

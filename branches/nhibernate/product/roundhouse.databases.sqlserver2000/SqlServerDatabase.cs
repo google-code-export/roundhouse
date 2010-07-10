@@ -72,5 +72,10 @@ namespace roundhouse.databases.sqlserver2000
         {
             return string.Format("Server={0};initial catalog={1};{2}", server_name, database_name, connection_options);
         }
+
+        public override void run_database_specific_tasks()
+        {
+            //TODO: Create user
+        }
     }
 }

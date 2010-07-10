@@ -179,7 +179,7 @@
     <Compile Include="sql\DatabaseTypeSpecific.cs" />
     <Compile Include="sql\DatabaseTypeSpecifics.cs" />
     <Compile Include="sql\TSQL2000Specific.cs" />
-    <Compile Include="sql\TSQLTypeSpecific.cs" />
+    <Compile Include="sql\TSQLSpecific.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="infrastructure.app\logging\log4net.config.xml" />

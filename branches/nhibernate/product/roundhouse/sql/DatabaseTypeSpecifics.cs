@@ -4,7 +4,7 @@ namespace roundhouse.sql
 {
     public static class DatabaseTypeSpecifics
     {
-        public static DatabaseTypeSpecific t_sql_specific = new TSQLTypeSpecific();
+        public static DatabaseTypeSpecific t_sql_specific = new TSQLSpecific();
         public static DatabaseTypeSpecific t_sql2000_specific = new TSQL2000Specific();
         public static DatabaseTypeSpecific access_sql_specific = new AccessSQLSpecific();
         public static DatabaseTypeSpecific pl_sql_specific = new PLSQLSpecific();

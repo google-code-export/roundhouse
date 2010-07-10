@@ -12,6 +12,11 @@ namespace roundhouse.databases.oracle
     {
         private string connect_options = "Integrated Security";
 
+        public override bool supports_ddl_transactions
+        {
+            get { return false; }
+        }
+
         public override void initialize_connections()
         {
             if (!string.IsNullOrEmpty(connection_string))
@@ -68,7 +73,10 @@ namespace roundhouse.databases.oracle
             }
         }
 
-
+        public override void run_database_specific_tasks()
+        {
+            //TODO: Create sequences
+        }
 
         public override long insert_version_and_get_version_id(string repository_path, string repository_version)
         {

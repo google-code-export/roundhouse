@@ -28,16 +28,6 @@ namespace roundhouse.databases
             return new AdoNetConnection(connection);
         }
 
-        public override void set_provider_and_sql_scripts()
-        {
-            provider = "System.Data.SqlClient";
-            DatabaseTypeSpecifics.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
-            if (sql_scripts == null)
-            {
-                sql_scripts = DatabaseTypeSpecifics.t_sql_specific;
-            }
-        }
-
         public override void open_connection(bool with_transaction)
         {
             server_connection = GetAdoNetConnection(connection_string);
