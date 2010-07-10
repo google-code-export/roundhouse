@@ -75,6 +75,7 @@ namespace roundhouse.databases.sqlserver2000
 
         public override void run_database_specific_tasks()
         {
+            //this.roundhouse_schema_name;
             //TODO: Create user
         }
     }

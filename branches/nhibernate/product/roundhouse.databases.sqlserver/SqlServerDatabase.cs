@@ -77,7 +77,7 @@ namespace roundhouse.databases.sqlserver
             //todo: Schema creation is a database specific task that applies only to sql 2005/2008 
             //deprecate it away from everyone else
             //also take away the option to specify? NO
-            // run_sql(sql_scripts.create_roundhouse_schema());
+            // run_sql(sql_scripts.create_roundhouse_schema(roundhouse_schema_name));
         }
 
 
