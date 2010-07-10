@@ -185,11 +185,6 @@ namespace roundhouse.databases
             database.run_database_specific_tasks();
         }
 
-        public void create_roundhouse_schema_if_it_doesnt_exist()
-        {
-            database.create_roundhouse_schema_if_it_doesnt_exist();
-        }
-
         public void create_roundhouse_version_table_if_it_doesnt_exist()
         {
             database.create_roundhouse_version_table_if_it_doesnt_exist();

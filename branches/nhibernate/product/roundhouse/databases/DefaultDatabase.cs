@@ -134,20 +134,6 @@ namespace roundhouse.databases
 
         public abstract void run_database_specific_tasks();
 
-        public void create_roundhouse_schema_if_it_doesnt_exist()
-        {
-            try
-            {
-                run_sql(sql_scripts.create_roundhouse_schema(roundhouse_schema_name));
-            }
-            catch (Exception ex)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "Either the schema has already been created OR {0} with provider {1} does not provide a facility for creating roundhouse schema at this time.{2}{3}",
-                    GetType(), provider, Environment.NewLine, ex.Message);
-            }
-        }
-
         public void create_roundhouse_version_table_if_it_doesnt_exist()
         {
             try

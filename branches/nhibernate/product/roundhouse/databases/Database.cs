@@ -96,7 +96,6 @@ namespace roundhouse.databases
         void restore_database(string restore_from_path, string custom_restore_options);
         void delete_database_if_it_exists();
         void run_database_specific_tasks();
-        void create_roundhouse_schema_if_it_doesnt_exist();
         void create_roundhouse_version_table_if_it_doesnt_exist();
         void create_roundhouse_scripts_run_table_if_it_doesnt_exist();
         void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist();

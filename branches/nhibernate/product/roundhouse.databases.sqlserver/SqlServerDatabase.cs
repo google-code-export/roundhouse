@@ -2,7 +2,9 @@ using System.Text.RegularExpressions;
 
 namespace roundhouse.databases.sqlserver
 {
+    using System;
     using infrastructure.extensions;
+    using infrastructure.logging;
     using sql;
 
     public class SqlServerDatabase : AdoNetDatabase
@@ -73,11 +75,25 @@ namespace roundhouse.databases.sqlserver
 
         public override void run_database_specific_tasks()
         {
+            Log.bound_to(this).log_an_info_event_containing(" Creating {0} schema if it doesn't exist.", roundhouse_schema_name);
+            create_roundhouse_schema_if_it_doesnt_exist();
+
+
             //TODO: Delete RoundhousE user if it exists (i.e. migration from SQL2000 to 2005)
-            //todo: Schema creation is a database specific task that applies only to sql 2005/2008 
-            //deprecate it away from everyone else
-            //also take away the option to specify? NO
-            // run_sql(sql_scripts.create_roundhouse_schema(roundhouse_schema_name));
+        }
+
+        public void create_roundhouse_schema_if_it_doesnt_exist()
+        {
+            try
+            {
+                run_sql(sql_scripts.create_roundhouse_schema(roundhouse_schema_name));
+            }
+            catch (Exception ex)
+            {
+                Log.bound_to(this).log_a_warning_event_containing(
+                    "Either the schema has already been created OR {0} with provider {1} does not provide a facility for creating roundhouse schema at this time.{2}{3}",
+                    GetType(), provider, Environment.NewLine, ex.Message);
+            }
         }
 
 
