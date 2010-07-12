@@ -1,8 +1,8 @@
-using System.Text.RegularExpressions;
-
 namespace roundhouse.databases.sqlserver
 {
     using System;
+    using System.Text.RegularExpressions;
+    using infrastructure.app;
     using infrastructure.extensions;
     using infrastructure.logging;
     using sql;
@@ -11,7 +11,12 @@ namespace roundhouse.databases.sqlserver
     {
         private string connect_options = "Integrated Security";
 
-        public override void initialize_connections()
+        public override string sql_statement_separator_regex_pattern
+        {
+            get { return @"(?<KEEP1>^(?:.)*(?:-{2}).*$)|(?<KEEP1>/{1}\*{1}[\S\s]*?\*{1}/{1})|(?<KEEP1>'{1}(?:[^']|\n[^'])*?'{1})|(?<KEEP1>\s)(?<BATCHSPLITTER>GO)(?<KEEP2>\s)|(?<KEEP1>\s)(?<BATCHSPLITTER>GO)(?<KEEP2>$)"; }
+        }
+
+        public override void initialize_connections(ConfigurationPropertyHolder configuration_property_holder)
         {
             if (!string.IsNullOrEmpty(connection_string))
             {
@@ -52,13 +57,14 @@ namespace roundhouse.databases.sqlserver
             {
                 connection_string = build_connection_string(server_name, database_name, connect_options);
             }
+            configuration_property_holder.ConnectionString = connection_string;
 
-            set_provider_and_sql_scripts();
-
+            set_provider();
             admin_connection_string = Regex.Replace(connection_string, "initial catalog=.*?;", "initial catalog=master;");
+            //set_repository(configuration_property_holder);
         }
 
-        public override void set_provider_and_sql_scripts()
+        public override void set_provider()
         {
             provider = "System.Data.SqlClient";
             DatabaseTypeSpecifics.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
@@ -95,8 +101,5 @@ namespace roundhouse.databases.sqlserver
                     GetType(), provider, Environment.NewLine, ex.Message);
             }
         }
-
-
-
     }
 }

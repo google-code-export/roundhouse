@@ -8,16 +8,24 @@ using roundhouse.sql;
 
 namespace roundhouse.databases.oracle
 {
+    using infrastructure.app;
+    using infrastructure.persistence;
+
     public sealed class OracleDatabase : AdoNetDatabase
     {
         private string connect_options = "Integrated Security";
+
+        public override string sql_statement_separator_regex_pattern
+        {
+            get { return @"(?<KEEP1>^(?:.)*(?:-{2}).*$)|(?<KEEP1>/{1}\*{1}[\S\s]*?\*{1}/{1})|(?<KEEP1>\s)(?<BATCHSPLITTER>;)(?<KEEP2>\s)|(?<KEEP1>\s)(?<BATCHSPLITTER>;)(?<KEEP2>$)"; }
+        }
 
         public override bool supports_ddl_transactions
         {
             get { return false; }
         }
 
-        public override void initialize_connections()
+        public override void initialize_connections(ConfigurationPropertyHolder configuration_property_holder)
         {
             if (!string.IsNullOrEmpty(connection_string))
             {
@@ -48,11 +56,11 @@ namespace roundhouse.databases.oracle
                     }
                 }
             }
+            configuration_property_holder.ConnectionString = connection_string;
 
-
-            set_provider_and_sql_scripts();
-
+            set_provider();
             admin_connection_string = configure_admin_connection_string();
+            //set_repository(configuration_property_holder);
         }
 
         private string configure_admin_connection_string()
@@ -63,7 +71,7 @@ namespace roundhouse.databases.oracle
             return admin_string;
         }
 
-        public override void set_provider_and_sql_scripts()
+        public override void set_provider()
         {
             provider = "System.Data.OracleClient";
             DatabaseTypeSpecifics.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
@@ -98,10 +106,41 @@ namespace roundhouse.databases.oracle
             base.run_sql(sql_to_run.Replace("\r\n", "\n"));
         }
 
-        public override object run_sql_scalar(string sql_to_run)
+        protected object run_sql_scalar(string sql_to_run, IList<IParameter<IDbDataParameter>> parameters)
         {
-            // http://www.barrydobson.com/2009/02/17/pls-00103-encountered-the-symbol-when-expecting-one-of-the-following/
-            return base.run_sql_scalar(sql_to_run.Replace("\r\n", "\n"));
+            //http://www.barrydobson.com/2009/02/17/pls-00103-encountered-the-symbol-when-expecting-one-of-the-following/
+            sql_to_run = sql_to_run.Replace("\r\n", "\n");
+            object return_value = new object();
+
+            if (string.IsNullOrEmpty(sql_to_run)) return return_value;
+
+            using (IDbCommand command = setup_database_command(sql_to_run, parameters))
+            {
+                return_value = command.ExecuteScalar();
+                command.Dispose();
+            }
+
+            return return_value;
         }
+
+
+        protected IParameter<IDbDataParameter> create_parameter(string name, DbType type, object value, int? size)
+        {
+            IDbCommand command = server_connection.underlying_type().CreateCommand();
+            var parameter = command.CreateParameter();
+            command.Dispose();
+
+            parameter.Direction = ParameterDirection.Input;
+            parameter.ParameterName = name;
+            parameter.DbType = type;
+            parameter.Value = value;
+            if (size != null)
+            {
+                parameter.Size = size.Value;
+            }
+
+            return new AdoNetParameter(parameter);
+        }
+
     }
 }

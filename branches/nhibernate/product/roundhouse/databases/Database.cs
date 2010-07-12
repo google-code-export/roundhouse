@@ -63,9 +63,12 @@
 namespace roundhouse.databases
 {
     using System;
+    using infrastructure.app;
+    using infrastructure.persistence;
 
     public interface Database : IDisposable
     {
+        ConfigurationPropertyHolder configuration { get; set; }
         string server_name { get; set; }
         string database_name { get; set; }
         string provider { get; set; }
@@ -83,7 +86,7 @@ namespace roundhouse.databases
         bool split_batch_statements { get; set; }
         bool supports_ddl_transactions { get; }
 
-        void initialize_connections();
+        void initialize_connections(ConfigurationPropertyHolder configuration_property_holder);
         void open_connection(bool with_transaction);
         void close_connection();
         void open_admin_connection();
@@ -107,6 +110,6 @@ namespace roundhouse.databases
         long insert_version_and_get_version_id(string repository_path, string repository_version);
         bool has_run_script_already(string script_name);
         string get_current_script_hash(string script_name);
-        object run_sql_scalar(string sql_to_run);
+        //object run_sql_scalar(string sql_to_run);
     }
 }

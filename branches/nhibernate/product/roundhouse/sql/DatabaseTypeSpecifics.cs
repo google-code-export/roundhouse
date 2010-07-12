@@ -8,7 +8,7 @@ namespace roundhouse.sql
         public static DatabaseTypeSpecific t_sql2000_specific = new TSQL2000Specific();
         public static DatabaseTypeSpecific access_sql_specific = new AccessSQLSpecific();
         public static DatabaseTypeSpecific pl_sql_specific = new PLSQLSpecific();
-        
+
         public static IDictionary<string, DatabaseTypeSpecific> sql_scripts_dictionary = generate_scripts_dictionary();
 
         private static IDictionary<string, DatabaseTypeSpecific> generate_scripts_dictionary()

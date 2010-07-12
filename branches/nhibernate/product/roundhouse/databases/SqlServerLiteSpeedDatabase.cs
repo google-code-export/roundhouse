@@ -1,5 +1,9 @@
 namespace roundhouse.databases
 {
+    using System;
+    using infrastructure.app;
+    using infrastructure.persistence;
+
     public sealed class SqlServerLiteSpeedDatabase : Database
     {
         private readonly Database database;
@@ -7,6 +11,12 @@ namespace roundhouse.databases
         public SqlServerLiteSpeedDatabase(Database database)
         {
             this.database = database;
+        }
+
+        public ConfigurationPropertyHolder configuration
+        {
+            get { return database.configuration; }
+            set { database.configuration = value; }
         }
 
         public string connection_string
@@ -103,9 +113,15 @@ namespace roundhouse.databases
             get { return database.supports_ddl_transactions; }
         }
 
-        public void initialize_connections()
+        //public IRepository repository
+        //{
+        //    get { return database.repository; }
+        //    set { database.repository = value; }
+        //}
+
+        public void initialize_connections(ConfigurationPropertyHolder configuration_property_holder)
         {
-            database.initialize_connections();
+            database.initialize_connections(configuration_property_holder);
         }
 
         public void open_admin_connection()
@@ -233,11 +249,6 @@ namespace roundhouse.databases
         public string get_current_script_hash(string script_name)
         {
             return database.get_current_script_hash(script_name);
-        }
-
-        public object run_sql_scalar(string sql_to_run)
-        {
-            return database.run_sql_scalar(sql_to_run);
         }
 
         private bool disposing = false;

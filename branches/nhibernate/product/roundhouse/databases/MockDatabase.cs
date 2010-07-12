@@ -1,7 +1,9 @@
 namespace roundhouse.databases
 {
     using System;
+    using infrastructure.app;
     using infrastructure.logging;
+    using infrastructure.persistence;
     using sql;
 
     public class MockDatabase : Database
@@ -13,6 +15,12 @@ namespace roundhouse.databases
         public MockDatabase(Database database)
         {
             this.database = database;
+        }
+
+        public ConfigurationPropertyHolder configuration
+        {
+            get { return database.configuration; }
+            set { database.configuration = value; }
         }
 
         public string connection_string
@@ -109,9 +117,15 @@ namespace roundhouse.databases
             get { return database.supports_ddl_transactions; }
         }
 
-        public void initialize_connections()
+        //public IRepository repository
+        //{
+        //    get { return database.repository; }
+        //    set { database.repository = value; }
+        //}
+
+        public void initialize_connections(ConfigurationPropertyHolder configuration_property_holder)
         {
-            database.initialize_connections();
+            database.initialize_connections(configuration_property_holder);
         }
 
         public void open_connection(bool with_transaction)
@@ -268,11 +282,6 @@ namespace roundhouse.databases
             }
 
             return string.Empty;
-        }
-
-        public object run_sql_scalar(string sql_to_run)
-        {
-            return database.run_sql_scalar(sql_to_run);
         }
 
         private bool disposing = false;

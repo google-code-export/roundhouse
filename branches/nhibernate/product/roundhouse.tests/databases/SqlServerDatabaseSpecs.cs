@@ -1,18 +1,23 @@
 namespace roundhouse.tests.databases
 {
     using bdddoc.core;
+    using consoles;
     using developwithpassion.bdd.contexts;
     using developwithpassion.bdd.mbunit;
     using developwithpassion.bdd.mbunit.standard;
     using developwithpassion.bdd.mbunit.standard.observations;
+    using log4net;
     using roundhouse.databases;
     using roundhouse.databases.sqlserver;
+    using roundhouse.infrastructure.app;
 
     public class SqlServerDatabaseSpecs
     {
         public abstract class concern_for_SqlServerDatabase : observations_for_a_sut_with_a_contract<Database, SqlServerDatabase>
         {
-            private context c = () => { };
+            protected static ConfigurationPropertyHolder configuration_property_holder;
+
+            private context c = () => { configuration_property_holder = new ConsoleConfiguration(LogManager.GetLogger(typeof(SqlServerDatabaseSpecs))); };
         }
 
         [Concern(typeof (SqlServerDatabase))]
@@ -23,7 +28,7 @@ namespace roundhouse.tests.databases
                                         sut.connection_string = "";
                                         sut.database_name = "bob";
                                         sut.server_name = "(local)";
-                                        sut.initialize_connections();
+                                        sut.initialize_connections(configuration_property_holder);
                                     };
 
             [Observation]
@@ -59,7 +64,7 @@ namespace roundhouse.tests.databases
                                         sut.connection_string = "Server=(local);initial catalog=bob;uid=dude;pwd=123";
                                         sut.database_name = "bob";
                                         sut.server_name = "(local)";
-                                        sut.initialize_connections();
+                                        sut.initialize_connections(configuration_property_holder);
                                     };
 
             [Observation]
@@ -97,7 +102,7 @@ namespace roundhouse.tests.databases
                                         sut.connection_string = "Server=(local);initial catalog=[boB ad];uid=dude;pwd=123";
                                         sut.database_name = "Bob";
                                         sut.server_name = "(local)";
-                                        sut.initialize_connections();
+                                        sut.initialize_connections(configuration_property_holder);
                                     };
 
             [Observation]

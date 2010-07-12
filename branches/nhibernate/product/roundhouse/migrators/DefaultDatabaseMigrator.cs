@@ -15,6 +15,7 @@ namespace roundhouse.migrators
     {
         public Database database { get; set; }
         private readonly CryptographicService crypto_provider;
+        private readonly ConfigurationPropertyHolder configuration;
         private readonly bool restoring_database;
         private readonly string restore_path;
         private readonly string custom_restore_options;
@@ -27,6 +28,7 @@ namespace roundhouse.migrators
         {
             this.database = database;
             this.crypto_provider = crypto_provider;
+            this.configuration = configuration;
             restoring_database = configuration.Restore;
             restore_path = configuration.RestoreFromPath;
             custom_restore_options = configuration.RestoreCustomOptions;
@@ -37,7 +39,7 @@ namespace roundhouse.migrators
 
         public void initialize_connections()
         {
-            database.initialize_connections();
+            database.initialize_connections(configuration);
         }
 
         public void open_admin_connection()

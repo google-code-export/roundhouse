@@ -7,6 +7,10 @@ namespace roundhouse.tests.sqlsplitters
     using developwithpassion.bdd.mbunit.standard;
     using developwithpassion.bdd.mbunit.standard.observations;
     using MbUnit.Framework;
+    using roundhouse.databases;
+    using roundhouse.databases.access;
+    using roundhouse.databases.oracle;
+    using roundhouse.databases.sqlserver;
     using sql;
     using roundhouse.sqlsplitters;
 
@@ -20,12 +24,12 @@ namespace roundhouse.tests.sqlsplitters
 
             private context c = () =>
                                     {
-                                        DatabaseTypeSpecific script = new TSQLSpecific();
-                                        tsql_separator_regex_string = script.separator_characters_regex;
-                                        script = new AccessSQLSpecific();
-                                        access_sql_separator_regex_string = script.separator_characters_regex;
-                                    	script = new PLSQLSpecific();
-                                    	plsql_separator_regex_string = script.separator_characters_regex;
+                                        Database database = new SqlServerDatabase();
+                                        tsql_separator_regex_string = database.sql_statement_separator_regex_pattern;
+                                        database = new AccessDatabase();
+                                        access_sql_separator_regex_string = database.sql_statement_separator_regex_pattern;
+                                        database = new OracleDatabase();
+                                        plsql_separator_regex_string = database.sql_statement_separator_regex_pattern;
                                     };
         }
 

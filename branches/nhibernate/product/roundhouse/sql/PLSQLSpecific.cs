@@ -2,21 +2,6 @@ namespace roundhouse.sql
 {
     public sealed class PLSQLSpecific : DatabaseTypeSpecific
     {
-        public string separator_characters_regex
-        {
-            get { return @"(?<KEEP1>^(?:.)*(?:-{2}).*$)|(?<KEEP1>/{1}\*{1}[\S\s]*?\*{1}/{1})|(?<KEEP1>\s)(?<BATCHSPLITTER>;)(?<KEEP2>\s)|(?<KEEP1>\s)(?<BATCHSPLITTER>;)(?<KEEP2>$)"; }
-        }
-
-        public bool can_support_parameters
-        {
-            get { return true; }
-        }
-
-        public bool has_master_database
-        {
-            get { return false; }
-        }
-
         public string create_database(string database_name)
         {
             return string.Format(

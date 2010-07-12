@@ -122,7 +122,6 @@
     <Compile Include="consoles\ConsoleConfiguration.cs" />
     <Compile Include="cryptography\CryptographicService.cs" />
     <Compile Include="cryptography\MD5CryptographicService.cs" />
-    <Compile Include="databases\DatabaseExtension.cs" />
     <Compile Include="databases\AdoNetDatabase.cs" />
     <Compile Include="environments\DefaultEnvironment.cs" />
     <Compile Include="environments\Environment.cs" />

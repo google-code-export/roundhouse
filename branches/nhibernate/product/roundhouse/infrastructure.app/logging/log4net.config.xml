@@ -71,6 +71,15 @@
     <appender-ref ref="ColoredConsoleAppender"/>
   </root>
 
+  <!--Standard NHibernate Logging Settings-->
+  <logger name="NHibernate">
+    <level value="ERROR"/>
+  </logger>
+
+  <logger name="NHibernate.SQL">
+    <level value="ERROR"/>
+  </logger>
+  
   <logger name="roundhouse">
     <level value="INFO"/>
     <appender-ref ref="RollingLogFileAppender"/>

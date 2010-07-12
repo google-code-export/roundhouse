@@ -7,10 +7,16 @@ using roundhouse.sql;
 
 namespace roundhouse.databases
 {
+    using System.Collections;
+    using infrastructure.app;
     using infrastructure.logging;
+    using infrastructure.persistence;
+    using model;
+    using NHibernate.Criterion;
 
     public abstract class DefaultDatabase<DBCONNECTION> : Database
     {
+        public ConfigurationPropertyHolder configuration { get; set; }
         public string server_name { get; set; }
         public string database_name { get; set; }
         public string provider { get; set; }
@@ -22,10 +28,11 @@ namespace roundhouse.databases
         public string scripts_run_errors_table_name { get; set; }
         public string user_name { get; set; }
         public string master_database_name { get; set; }
+        public IRepository repository { get; set; }
 
-        public string sql_statement_separator_regex_pattern
+        public virtual string sql_statement_separator_regex_pattern
         {
-            get { return sql_scripts.separator_characters_regex; }
+            get { return @"(?<KEEP1>^(?:.)*(?:-{2}).*$)|(?<KEEP1>/{1}\*{1}[\S\s]*?\*{1}/{1})|(?<KEEP1>'{1}(?:[^']|\n[^'])*?'{1})|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>\s)|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>$)"; }
         }
 
         public string custom_create_database_script { get; set; }
@@ -49,8 +56,15 @@ namespace roundhouse.databases
         protected DatabaseTypeSpecific sql_scripts;
 
         //this method must set the provider
-        public abstract void initialize_connections();
-        public abstract void set_provider_and_sql_scripts();
+        public abstract void initialize_connections(ConfigurationPropertyHolder configuration_property_holder);
+        public abstract void set_provider();
+
+        public void set_repository(ConfigurationPropertyHolder configuration)
+        {
+            NHibernateSessionFactory session_factory = new NHibernateSessionFactory(configuration);
+            repository = new Repository(session_factory.build_session_factory());
+        }
+
         public abstract void open_connection(bool with_transaction);
         public abstract void close_connection();
         public abstract void open_admin_connection();
@@ -58,7 +72,7 @@ namespace roundhouse.databases
 
         public abstract void rollback();
 
-        public virtual void create_database_if_it_doesnt_exist()
+        public void create_database_if_it_doesnt_exist()
         {
             try
             {
@@ -183,46 +197,45 @@ namespace roundhouse.databases
 
         protected abstract void run_sql(string sql_to_run, IList<IParameter<IDbDataParameter>> parameters);
 
-        public virtual void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
+        public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
-            var parameters = new List<IParameter<IDbDataParameter>>
-                                 {
-                                     create_parameter("version_id", DbType.Int64, version_id, null), 
-                                     create_parameter("script_name", DbType.AnsiString, script_name, 255), 
-                                     create_parameter("sql_to_run", DbType.AnsiString, sql_to_run, null), 
-                                     create_parameter("sql_to_run_hash", DbType.AnsiString, sql_to_run_hash, 512), 
-                                     create_parameter("run_this_script_once", DbType.Boolean, run_this_script_once, null), 
-                                     create_parameter("user_name", DbType.AnsiString, user_name ?? string.Empty, 50)
-                                 };
+            ScriptsRun script_run = new ScriptsRun
+                                        {
+                                            version_id = version_id,
+                                            script_name = script_name,
+                                            text_of_script = sql_to_run,
+                                            text_hash = sql_to_run_hash,
+                                            one_time_script = run_this_script_once
+                                        };
+
             try
             {
-                run_sql(sql_scripts.insert_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
+                repository.save_or_update(script_run);
             }
             catch (Exception ex)
             {
                 Log.bound_to(this).log_an_error_event_containing(
                     "{0} with provider {1} does not provide a facility for recording scripts run at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
-                throw; 
+                throw;
             }
         }
 
-        public virtual void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string repository_version, string repository_path)
+        public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string repository_version, string repository_path)
         {
-            var parameters = new List<IParameter<IDbDataParameter>>
-                                 {
-                                     create_parameter("repository_path", DbType.AnsiString, repository_path ?? string.Empty, 255), 
-                                     create_parameter("repository_version", DbType.AnsiString, repository_version ?? string.Empty, 35), 
-                                     create_parameter("script_name", DbType.AnsiString, script_name, 255), 
-                                     create_parameter("sql_to_run", DbType.AnsiString, sql_to_run, null), 
-                                     create_parameter("sql_erroneous_part", DbType.AnsiString, sql_erroneous_part, null), 
-                                     create_parameter("error_message", DbType.AnsiString, error_message, 255), 
-                                     create_parameter("user_name", DbType.AnsiString, user_name, 50)
-                                 };
+            ScriptsRunError script_run_error = new ScriptsRunError
+            {
+                version = repository_version ?? string.Empty,
+                script_name = script_name,
+                text_of_script = sql_to_run,
+                erroneous_part_of_script = sql_erroneous_part,
+                repository_path = repository_path ?? string.Empty,
+                error_message = error_message,
+            };
 
             try
             {
-                run_sql(sql_scripts.insert_script_run_error_parameterized(roundhouse_schema_name, scripts_run_errors_table_name), parameters);
+                repository.save_or_update(script_run_error);
             }
             catch (Exception ex)
             {
@@ -233,46 +246,51 @@ namespace roundhouse.databases
             }
         }
 
-        public virtual string get_version(string repository_path)
+        public string get_version(string repository_path)
         {
-            var parameters = new List<IParameter<IDbDataParameter>> { create_parameter("repository_path", DbType.AnsiString, repository_path ?? string.Empty, 255) };
+            string version = "0";
+
+            DetachedCriteria crit = DetachedCriteria.For<Version>()
+                .Add(Expression.Eq("repository_path", repository_path ?? string.Empty))
+                .AddOrder(Order.Desc("entry_date"))
+                .SetMaxResults(1);
 
             try
             {
-                return (string)run_sql_scalar(sql_scripts.get_version_parameterized(roundhouse_schema_name, version_table_name), parameters);
+                IList<Version> items = repository.get_with_criteria<Version>(crit);
+                if (items != null && items.Count > 0)
+                {
+                    version = items[0].version;
+                }
             }
             catch (Exception)
             {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "{0} with provider {1} does not provide a facility for retrieving versions at this time.",
+                Log.bound_to(this).log_a_warning_event_containing("{0} with provider {1} does not provide a facility for retrieving versions at this time.",
                     GetType(), provider);
-                return "0";
             }
+
+            return version;
         }
 
+        //get rid of the virtual
         public virtual long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
-            var insert_parameters = new List<IParameter<IDbDataParameter>>
-                                 {
-                                     create_parameter("repository_path", DbType.AnsiString, repository_path ?? string.Empty, 255), 
-                                     create_parameter("repository_version", DbType.AnsiString, repository_version ?? string.Empty, 35), 
-                                     create_parameter("user_name", DbType.AnsiString, user_name ?? string.Empty, 50)
-                                 };
-
             long version_id = 0;
+
+            Version version = new Version
+            {
+                version = repository_version ?? string.Empty,
+                repository_path = repository_path ?? string.Empty,
+            };
+
             try
             {
-                run_sql(sql_scripts.insert_version_parameterized(roundhouse_schema_name, version_table_name), insert_parameters);
-
-                var select_parameters = new List<IParameter<IDbDataParameter>> { create_parameter("repository_path", DbType.AnsiString, repository_path ?? string.Empty, 255) };
-                string version_id_temp = run_sql_scalar(sql_scripts.get_version_id_parameterized(roundhouse_schema_name, version_table_name), select_parameters).ToString();
-
-                long.TryParse(version_id_temp, out version_id);
+                repository.save_or_update(version);
+                version_id = version.id;
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_an_error_event_containing(
-                    "{0} with provider {1} does not provide a facility for inserting versions at this time.{2}{3}",
+                Log.bound_to(this).log_an_error_event_containing("{0} with provider {1} does not provide a facility for inserting versions at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
                 throw;
             }
@@ -280,40 +298,47 @@ namespace roundhouse.databases
             return version_id;
         }
 
-        public virtual string get_current_script_hash(string script_name)
+        public string get_current_script_hash(string script_name)
         {
-            var parameters = new List<IParameter<IDbDataParameter>> { create_parameter("script_name", DbType.AnsiString, script_name, 255) };
+            string hash = string.Empty;
+
+            DetachedCriteria crit = DetachedCriteria.For<ScriptsRun>()
+                .Add(Expression.Eq("script_name", script_name))
+                .SetMaxResults(1);
+
             try
             {
-                return (string)run_sql_scalar(sql_scripts.get_current_script_hash_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
+                IList<ScriptsRun> items = repository.get_with_criteria<ScriptsRun>(crit);
+                if (items != null && items.Count > 0)
+                {
+                    hash = items[0].text_hash;
+                }
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_an_error_event_containing(
-                    "{0} with provider {1} does not provide a facility for hashing (through recording scripts run) at this time.{2}{3}",
+                Log.bound_to(this).log_an_error_event_containing("{0} with provider {1} does not provide a facility for hashing (through recording scripts run) at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
                 throw;
             }
+
+            return hash;
         }
 
-        public virtual bool has_run_script_already(string script_name)
+        public bool has_run_script_already(string script_name)
         {
+            bool script_has_run = false;
+
+            DetachedCriteria crit = DetachedCriteria.For<ScriptsRun>()
+               .Add(Expression.Eq("script_name", script_name))
+               .SetMaxResults(1);
+
             try
             {
-                bool script_has_run = false;
-
-                IList<IParameter<IDbDataParameter>> parameters = new List<IParameter<IDbDataParameter>>
-                                                     {
-                                                         create_parameter("script_name", DbType.AnsiString, script_name, 255)
-                                                     };
-
-                DataTable data_table = execute_datatable(sql_scripts.has_script_run_parameterized(roundhouse_schema_name, scripts_run_table_name), parameters);
-                if (data_table.Rows.Count > 0)
+                IList<ScriptsRun> items = repository.get_with_criteria<ScriptsRun>(crit);
+                if (items != null && items.Count > 0)
                 {
                     script_has_run = true;
                 }
-
-                return script_has_run;
             }
             catch (Exception ex)
             {
@@ -322,18 +347,9 @@ namespace roundhouse.databases
                     GetType(), provider, Environment.NewLine, ex.Message);
                 throw;
             }
+
+            return script_has_run;
         }
-
-        public virtual object run_sql_scalar(string sql_to_run)
-        {
-            return run_sql_scalar(sql_to_run, null);
-        }
-
-        protected abstract object run_sql_scalar(string sql_to_run, IList<IParameter<IDbDataParameter>> parameters);
-
-        protected abstract DataTable execute_datatable(string sql_to_run, IEnumerable<IParameter<IDbDataParameter>> parameters);
-
-        protected abstract IParameter<IDbDataParameter> create_parameter(string name, DbType type, object value, int? size);
 
         public void Dispose()
         {

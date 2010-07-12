@@ -30,6 +30,7 @@ namespace roundhouse.infrastructure.app.builders
             {
                 database_to_migrate = new SqlServerLiteSpeedDatabase(database_to_migrate);
             }
+            database_to_migrate.configuration = configuration_property_holder;
             database_to_migrate.server_name = configuration_property_holder.ServerName;
             database_to_migrate.database_name = configuration_property_holder.DatabaseName;
             database_to_migrate.connection_string = configuration_property_holder.ConnectionString;

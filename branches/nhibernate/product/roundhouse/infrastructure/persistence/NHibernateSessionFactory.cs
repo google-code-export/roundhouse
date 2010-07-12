@@ -25,7 +25,9 @@ namespace roundhouse.infrastructure.persistence
             func_dictionary.Add("roundhouse.databases.sqlserver2000.SqlServerDatabase, roundhouse.databases.sqlserver2000", () => MsSqlConfiguration.MsSql2000.ConnectionString(configuration_holder.ConnectionString));
             func_dictionary.Add("roundhouse.databases.mysql.MySqlDatabase, roundhouse.databases.mysql", () => MySQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
             func_dictionary.Add("roundhouse.databases.oracle.OracleDatabase, roundhouse.databases.oracle", () => OracleClientConfiguration.Oracle9.ConnectionString(configuration_holder.ConnectionString));
-            //TODO: Access or OleDB? func_dictionary.Add("roundhouse.databases.oledb.OleDbDatabase, roundhouse.databases.oledb", () => Gen  OracleConfiguration.Oracle9.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.access.AccessDatabase, roundhouse.databases.access", () => JetDriverConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.sqlite.SQLiteDatabase, roundhouse.databases.sqlite", () => SQLiteConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.postgresql.PostgreSQLDatabase, roundhouse.databases.postgresql", () => PostgreSQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
         }
 
         public ISessionFactory build_session_factory()
@@ -42,21 +44,22 @@ namespace roundhouse.infrastructure.persistence
         public ISessionFactory build_session_factory(IPersistenceConfigurer db_configuration, Assembly assembly, Action<Configuration> additional_function)
         {
             Log.bound_to(this).log_a_debug_event_containing("Building Session Factory");
-            return Fluently.Configure()
+            var config = Fluently.Configure()
                 .Database(db_configuration)
                 .Mappings(m =>
-                {
-                    m.FluentMappings.AddFromAssembly(assembly)
-                        .Conventions.AddAssembly(assembly);
-                    m.HbmMappings.AddFromAssembly(assembly);
-                })
+                              {
+                                  m.FluentMappings.AddFromAssembly(assembly)
+                                  .Conventions.AddAssembly(assembly);
+                                  m.HbmMappings.AddFromAssembly(assembly);
+                              })
                 .ExposeConfiguration(cfg =>
                     {
                         cfg.SetListener(ListenerType.PreInsert, new AuditEventListener());
                         cfg.SetListener(ListenerType.PreUpdate, new AuditEventListener());
                     })
-                .ExposeConfiguration(additional_function)
-                .BuildSessionFactory();
+                .ExposeConfiguration(additional_function);
+
+            return config.BuildSessionFactory();
         }
 
         private static void no_operation(Configuration cfg)
