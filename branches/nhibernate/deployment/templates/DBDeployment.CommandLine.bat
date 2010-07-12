@@ -3,7 +3,7 @@
 SET DIR=%~d0%~p0%
 
 SET database.name="${database.name}"
-SET sql.files.directory="%DIR%${dirs.db}\${database.name}"
+SET sql.files.directory="%DIR%${dirs.db}\SQLServer\${database.name}"
 SET server.database="${server.database}"
 SET repository.path="${repository.path}"
 SET version.file="${file.version}"

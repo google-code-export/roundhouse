@@ -114,8 +114,9 @@
 
   <target name="create_copy_of_environment_file_for_sample">
     <copy 
-      file="${dirs.drop}\db\TestRoundhousE\permissions\LOCAL.GrantRobDataReaderDataWriterPermissions.ENV.sql"
-      tofile="${dirs.drop}\db\TestRoundhousE\permissions\TEST.GrantRobDataReaderDataWriterPermissions.ENV.sql" 
+      file="${dirs.drop}\db\SQLServer\TestRoundhousE\permissions\LOCAL.GrantRobDataReaderDataWriterPermissions.ENV.sql"
+      tofile="${dirs.drop}\db\SQLServer\TestRoundhousE\permissions\TEST.GrantRobDataReaderDataWriterPermissions.ENV.sql" 
+      failonerror="false"
       />
   </target>
   
