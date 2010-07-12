@@ -12,12 +12,12 @@ namespace roundhouse.infrastructure.persistence
     using NHibernate.Cfg;
     using NHibernate.Event;
 
-    public class NHibernateSessionFactory
+    public class NHibernateSessionFactoryBuilder
     {
         private readonly ConfigurationPropertyHolder configuration_holder;
         private readonly Dictionary<string, Func<IPersistenceConfigurer>> func_dictionary;
 
-        public NHibernateSessionFactory(ConfigurationPropertyHolder config)
+        public NHibernateSessionFactoryBuilder(ConfigurationPropertyHolder config)
         {
             configuration_holder = config;
             func_dictionary = new Dictionary<string, Func<IPersistenceConfigurer>>();
@@ -28,6 +28,13 @@ namespace roundhouse.infrastructure.persistence
             func_dictionary.Add("roundhouse.databases.access.AccessDatabase, roundhouse.databases.access", () => JetDriverConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
             func_dictionary.Add("roundhouse.databases.sqlite.SQLiteDatabase, roundhouse.databases.sqlite", () => SQLiteConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
             func_dictionary.Add("roundhouse.databases.postgresql.PostgreSQLDatabase, roundhouse.databases.postgresql", () => PostgreSQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.sqlserver.SqlServerDatabase, rh", () => MsSqlConfiguration.MsSql2005.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.sqlserver2000.SqlServerDatabase, rh", () => MsSqlConfiguration.MsSql2000.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.mysql.MySqlDatabase, rh", () => MySQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.oracle.OracleDatabase, rh", () => OracleClientConfiguration.Oracle9.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.access.AccessDatabase, rh", () => JetDriverConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.sqlite.SQLiteDatabase, rh", () => SQLiteConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.postgresql.PostgreSQLDatabase, rh", () => PostgreSQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
         }
 
         public ISessionFactory build_session_factory()
@@ -43,6 +50,7 @@ namespace roundhouse.infrastructure.persistence
 
         public ISessionFactory build_session_factory(IPersistenceConfigurer db_configuration, Assembly assembly, Action<Configuration> additional_function)
         {
+            //TODO: NHibernate Session Factory - Ignore everyone else in the merged mappings
             Log.bound_to(this).log_a_debug_event_containing("Building Session Factory");
             var config = Fluently.Configure()
                 .Database(db_configuration)

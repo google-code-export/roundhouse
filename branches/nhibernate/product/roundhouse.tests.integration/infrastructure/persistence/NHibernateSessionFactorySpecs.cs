@@ -14,12 +14,12 @@ namespace roundhouse.tests.integration.infrastructure.persistence
 
     public class NHibernateSessionFactorySpecs
     {
-        public abstract class concern_for_NHibernateSessionFactory : observations_for_a_sut_without_a_contract<NHibernateSessionFactory>
+        public abstract class concern_for_NHibernateSessionFactory : observations_for_a_sut_without_a_contract<NHibernateSessionFactoryBuilder>
         {
             protected static ConfigurationPropertyHolder config;
         }
 
-        [Concern(typeof(NHibernateSessionFactory))]
+        [Concern(typeof(NHibernateSessionFactoryBuilder))]
         public class when_nhibernate_session_factory_is_created_for_sql_server : concern_for_NHibernateSessionFactory
         {
             protected static object result;

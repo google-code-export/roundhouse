@@ -99,9 +99,10 @@ namespace roundhouse.databases
         void restore_database(string restore_from_path, string custom_restore_options);
         void delete_database_if_it_exists();
         void run_database_specific_tasks();
-        void create_roundhouse_version_table_if_it_doesnt_exist();
-        void create_roundhouse_scripts_run_table_if_it_doesnt_exist();
-        void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist();
+        void create_or_update_roundhouse_tables();
+        //void create_roundhouse_version_table_if_it_doesnt_exist();
+        //void create_roundhouse_scripts_run_table_if_it_doesnt_exist();
+        //void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist();
         void run_sql(string sql_to_run);
         void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id);
         void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string repository_version, string repository_path);

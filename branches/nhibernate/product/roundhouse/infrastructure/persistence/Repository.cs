@@ -4,14 +4,16 @@ namespace roundhouse.infrastructure.persistence
     using System.Collections.Generic;
     using logging;
     using NHibernate;
+    using NHibernate.Cfg;
     using NHibernate.Criterion;
     using NHibernate.Transform;
 
     public sealed class Repository : IRepository
     {
-        public Repository(ISessionFactory session_factory)
+        public Repository(ISessionFactory session_factory, Configuration cfg)
         {
             this.session_factory = session_factory;
+            this.nhibernate_configuration = cfg;
             if (session_factory == null)
             {
                 throw new ApplicationException("Repository cannot do any with a null session factory. Please provide a session factory.");
@@ -151,5 +153,7 @@ namespace roundhouse.infrastructure.persistence
         }
 
         public ISessionFactory session_factory { get; private set; }
+
+        public Configuration nhibernate_configuration { get; private set; }
     }
 }

@@ -49,7 +49,7 @@ namespace roundhouse.databases
                 transaction = server_connection.underlying_type().BeginTransaction();
             }
 
-            set_repository(configuration);
+            set_repository();
         }
 
         public override void close_connection()

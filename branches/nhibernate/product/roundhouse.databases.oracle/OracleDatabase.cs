@@ -94,11 +94,48 @@ namespace roundhouse.databases.oracle
                                      create_parameter("repository_version", DbType.AnsiString, repository_version, 35), 
                                      create_parameter("user_name", DbType.AnsiString, user_name, 50)
                                  };
-            run_sql(sql_scripts.insert_version_parameterized(roundhouse_schema_name, version_table_name), insert_parameters);
+            run_sql(insert_version(), insert_parameters);
 
             var select_parameters = new List<IParameter<IDbDataParameter>> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
-            return Convert.ToInt64((decimal)run_sql_scalar(sql_scripts.get_version_id_parameterized(roundhouse_schema_name, version_table_name), select_parameters));
+            return Convert.ToInt64((decimal)run_sql_scalar(get_version_id(), select_parameters));
         }
+
+        public string insert_version()
+        {
+            return string.Format(
+                @"
+                    INSERT INTO {0}_{1}
+                    (
+                        id
+                        ,repository_path
+                        ,version
+                        ,entered_by
+                    )
+                    VALUES
+                    (
+                        {0}_{1}id.NEXTVAL
+                        ,:repository_path
+                        ,:repository_version
+                        ,:user_name
+                    )
+                ",
+                roundhouse_schema_name, version_table_name);
+        }
+
+        public string get_version_id()
+        {
+            return string.Format(
+               @"
+                    SELECT id
+                    FROM (SELECT * FROM {0}_{1}
+                            WHERE 
+                                repository_path = :repository_path
+                            ORDER BY entry_date DESC)
+                    WHERE ROWNUM < 2
+                ",
+               roundhouse_schema_name, version_table_name);
+        }
+
 
         public override void run_sql(string sql_to_run)
         {
@@ -106,7 +143,7 @@ namespace roundhouse.databases.oracle
             base.run_sql(sql_to_run.Replace("\r\n", "\n"));
         }
 
-        protected object run_sql_scalar(string sql_to_run, IList<IParameter<IDbDataParameter>> parameters)
+        private object run_sql_scalar(string sql_to_run, IList<IParameter<IDbDataParameter>> parameters)
         {
             //http://www.barrydobson.com/2009/02/17/pls-00103-encountered-the-symbol-when-expecting-one-of-the-following/
             sql_to_run = sql_to_run.Replace("\r\n", "\n");
@@ -123,8 +160,7 @@ namespace roundhouse.databases.oracle
             return return_value;
         }
 
-
-        protected IParameter<IDbDataParameter> create_parameter(string name, DbType type, object value, int? size)
+        private IParameter<IDbDataParameter> create_parameter(string name, DbType type, object value, int? size)
         {
             IDbCommand command = server_connection.underlying_type().CreateCommand();
             var parameter = command.CreateParameter();

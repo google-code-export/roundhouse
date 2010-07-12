@@ -111,12 +111,10 @@ namespace roundhouse.migrators
             Log.bound_to(this).log_an_info_event_containing(" Running database type specific tasks.");
             database.run_database_specific_tasks();
             Log.bound_to(this).log_an_info_event_containing(" Creating [{0}] table if it doesn't exist.", database.version_table_name);
-            database.create_roundhouse_version_table_if_it_doesnt_exist();
             Log.bound_to(this).log_an_info_event_containing(" Creating [{0}] table if it doesn't exist.", database.scripts_run_table_name);
-            database.create_roundhouse_scripts_run_table_if_it_doesnt_exist();
             Log.bound_to(this).log_an_info_event_containing(" Creating [{0}] table if it doesn't exist.", database.scripts_run_errors_table_name);
-            database.create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist();
-
+            database.create_or_update_roundhouse_tables();
+           
             if (running_in_a_transaction)
             {
                 database.close_connection();

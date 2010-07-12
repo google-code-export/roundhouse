@@ -12,7 +12,11 @@ namespace roundhouse.databases
     using infrastructure.logging;
     using infrastructure.persistence;
     using model;
+    using NHibernate;
+    using NHibernate.Cfg;
     using NHibernate.Criterion;
+    using NHibernate.Tool.hbm2ddl;
+    using Environment = System.Environment;
 
     public abstract class DefaultDatabase<DBCONNECTION> : Database
     {
@@ -59,10 +63,12 @@ namespace roundhouse.databases
         public abstract void initialize_connections(ConfigurationPropertyHolder configuration_property_holder);
         public abstract void set_provider();
 
-        public void set_repository(ConfigurationPropertyHolder configuration)
+        public void set_repository()
         {
-            NHibernateSessionFactory session_factory = new NHibernateSessionFactory(configuration);
-            repository = new Repository(session_factory.build_session_factory());
+            NHibernateSessionFactoryBuilder session_factory_builder = new NHibernateSessionFactoryBuilder(configuration);
+            Configuration cfg = null;
+            ISessionFactory factory = session_factory_builder.build_session_factory(x => { cfg = x; });
+            repository = new Repository(factory, cfg);
         }
 
         public abstract void open_connection(bool with_transaction);
@@ -148,46 +154,10 @@ namespace roundhouse.databases
 
         public abstract void run_database_specific_tasks();
 
-        public void create_roundhouse_version_table_if_it_doesnt_exist()
+        public void create_or_update_roundhouse_tables()
         {
-            try
-            {
-                run_sql(sql_scripts.create_roundhouse_version_table(roundhouse_schema_name, version_table_name));
-            }
-            catch (Exception ex)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "Either the version table has already been created OR {0} with provider {1} does not provide a facility for creating roundhouse version table at this time.{2}{3}",
-                    GetType(), provider, Environment.NewLine, ex.Message);
-            }
-        }
-
-        public void create_roundhouse_scripts_run_table_if_it_doesnt_exist()
-        {
-            try
-            {
-                run_sql(sql_scripts.create_roundhouse_scripts_run_table(roundhouse_schema_name, version_table_name, scripts_run_table_name));
-            }
-            catch (Exception ex)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "Either the scripts run table has already been created OR {0} with provider {1} does not provide a facility for creating roundhouse scripts run table at this time.{2}{3}",
-                    GetType(), provider, Environment.NewLine, ex.Message);
-            }
-        }
-
-        public void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist()
-        {
-            try
-            {
-                run_sql(sql_scripts.create_roundhouse_scripts_run_errors_table(roundhouse_schema_name, scripts_run_errors_table_name));
-            }
-            catch (Exception ex)
-            {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "Either the scripts run errors table has already been created OR {0} with provider {1} does not provide a facility for creating roundhouse scripts run errors table at this time.{2}{3}",
-                    GetType(), provider, Environment.NewLine, ex.Message);
-            }
+            SchemaUpdate s = new SchemaUpdate(repository.nhibernate_configuration);
+            s.Execute(false, true);
         }
 
         public virtual void run_sql(string sql_to_run)

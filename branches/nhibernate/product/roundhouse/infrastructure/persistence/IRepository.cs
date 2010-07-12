@@ -2,6 +2,7 @@ namespace roundhouse.infrastructure.persistence
 {
     using System.Collections.Generic;
     using NHibernate;
+    using NHibernate.Cfg;
     using NHibernate.Criterion;
 
     public interface IRepository
@@ -14,6 +15,7 @@ namespace roundhouse.infrastructure.persistence
         void delete<T>(IList<T> list);
 
         ISessionFactory session_factory { get; }
+        Configuration nhibernate_configuration { get; }
         //string connection_string { get; }
     }
 }

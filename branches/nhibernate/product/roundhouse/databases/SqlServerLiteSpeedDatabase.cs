@@ -201,19 +201,9 @@ namespace roundhouse.databases
             database.run_database_specific_tasks();
         }
 
-        public void create_roundhouse_version_table_if_it_doesnt_exist()
+        public void create_or_update_roundhouse_tables()
         {
-            database.create_roundhouse_version_table_if_it_doesnt_exist();
-        }
-
-        public void create_roundhouse_scripts_run_table_if_it_doesnt_exist()
-        {
-            database.create_roundhouse_scripts_run_table_if_it_doesnt_exist();
-        }
-
-        public void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist()
-        {
-            database.create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist();
+            database.create_or_update_roundhouse_tables();
         }
 
         public void run_sql(string sql_to_run)

@@ -197,40 +197,9 @@ namespace roundhouse.databases
             }
         }
 
-        public void create_roundhouse_schema_if_it_doesnt_exist()
+        public void create_or_update_roundhouse_tables()
         {
-            if (database_exists)
-            {
-                //TODO : Implement a question for if the table exists
-                // database.create_roundhouse_schema_if_it_doesnt_exist();
-            }
-        }
-
-        public void create_roundhouse_version_table_if_it_doesnt_exist()
-        {
-            if (database_exists)
-            {
-                //TODO: Implment a question for if the table exists
-                //database.create_roundhouse_version_table_if_it_doesnt_exist();
-            }
-        }
-
-        public void create_roundhouse_scripts_run_table_if_it_doesnt_exist()
-        {
-            if (database_exists)
-            {
-                //TODO: Implment a question for if the table exists
-                //database.create_roundhouse_scripts_run_table_if_it_doesnt_exist();
-            }
-        }
-
-        public void create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist()
-        {
-            if (database_exists)
-            {
-                //TODO: Implment a question for if the table exists
-                //database.create_roundhouse_scripts_run_errors_table_if_it_doesnt_exist();
-            }
+            database.create_or_update_roundhouse_tables();
         }
 
         public void run_sql(string sql_to_run)

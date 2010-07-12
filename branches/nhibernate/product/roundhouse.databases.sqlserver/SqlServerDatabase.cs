@@ -92,7 +92,7 @@ namespace roundhouse.databases.sqlserver
         {
             try
             {
-                run_sql(sql_scripts.create_roundhouse_schema(roundhouse_schema_name));
+                run_sql(create_roundhouse_schema());
             }
             catch (Exception ex)
             {
@@ -100,6 +100,18 @@ namespace roundhouse.databases.sqlserver
                     "Either the schema has already been created OR {0} with provider {1} does not provide a facility for creating roundhouse schema at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
             }
+        }
+
+        public string create_roundhouse_schema()
+        {
+            return string.Format(
+                @"
+                    IF NOT EXISTS(SELECT * FROM sys.schemas WHERE [name] = '{0}')
+                      BEGIN
+	                    EXEC('CREATE SCHEMA [{0}]')
+                      END
+                "
+                , roundhouse_schema_name);
         }
     }
 }

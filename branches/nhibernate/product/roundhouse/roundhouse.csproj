@@ -109,7 +109,7 @@
     <Compile Include="infrastructure.app\builders\VersionResolverBuilder.cs" />
     <Compile Include="infrastructure\persistence\AuditEventListener.cs" />
     <Compile Include="infrastructure\persistence\IRepository.cs" />
-    <Compile Include="infrastructure\persistence\NHibernateSessionFactory.cs" />
+    <Compile Include="infrastructure\persistence\NHibernateSessionFactoryBuilder.cs" />
     <Compile Include="infrastructure\persistence\Repository.cs" />
     <Compile Include="model\Auditable.cs" />
     <Compile Include="model\ScriptsRun.cs" />
