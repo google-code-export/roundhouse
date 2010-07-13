@@ -173,12 +173,6 @@
     <Compile Include="migrators\DatabaseMigrator.cs" />
     <Compile Include="migrators\DefaultDatabaseMigrator.cs" />
     <Compile Include="databases\SqlServerLiteSpeedDatabase.cs" />
-    <Compile Include="sql\AccessSQLSpecific.cs" />
-    <Compile Include="sql\PLSQLSpecific.cs" />
-    <Compile Include="sql\DatabaseTypeSpecific.cs" />
-    <Compile Include="sql\DatabaseTypeSpecifics.cs" />
-    <Compile Include="sql\TSQL2000Specific.cs" />
-    <Compile Include="sql\TSQLSpecific.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="infrastructure.app\logging\log4net.config.xml" />

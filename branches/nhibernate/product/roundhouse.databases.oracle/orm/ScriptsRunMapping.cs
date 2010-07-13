@@ -11,12 +11,12 @@ namespace roundhouse.databases.oracle.orm
         public ScriptsRunMapping()
         {
             //HibernateMapping.Schema(ApplicationParameters.CurrentMappings.roundhouse_schema_name);
-            Table(ApplicationParameters.CurrentMappings.roundhouse_schema_name + "_" + ApplicationParameters.CurrentMappings.scripts_run_errors_table_name);
+            Table(ApplicationParameters.CurrentMappings.roundhouse_schema_name + "_" + ApplicationParameters.CurrentMappings.scripts_run_table_name);
             Not.LazyLoad();
             HibernateMapping.DefaultAccess.Property();
             HibernateMapping.DefaultCascade.SaveUpdate();
 
-            Id(x => x.id).Column("Id").GeneratedBy.Identity().UnsavedValue(0);
+            Id(x => x.id).Column("Id").GeneratedBy.Sequence(ApplicationParameters.CurrentMappings.roundhouse_schema_name + "_" + ApplicationParameters.CurrentMappings.scripts_run_table_name + "id").UnsavedValue(0);
             Map(x => x.version_id);
             Map(x => x.script_name);
             Map(x => x.text_of_script).CustomSqlType("Clob");

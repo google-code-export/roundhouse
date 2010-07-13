@@ -1,15 +1,10 @@
-using System;
-using System.Data;
-using System.Data.OleDb;
-using System.Text.RegularExpressions;
-using roundhouse.infrastructure.extensions;
-using roundhouse.infrastructure.logging;
-using roundhouse.sql;
-
 namespace roundhouse.databases.access
 {
+    using System;
+    using System.Data.OleDb;
     using connections;
     using infrastructure.app;
+    using infrastructure.extensions;
 
     public class AccessDatabase : AdoNetDatabase
     {
@@ -92,12 +87,7 @@ namespace roundhouse.databases.access
 
         public override void set_provider()
         {
-            provider = ((OleDbConnection)server_connection.underlying_type()).Provider;
-            DatabaseTypeSpecifics.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
-            if (sql_scripts == null)
-            {
-                sql_scripts = DatabaseTypeSpecifics.t_sql_specific;
-            }
+            provider = ((OleDbConnection) server_connection.underlying_type()).Provider;
         }
 
         private static string build_connection_string(string server_name, string database_name, string connection_options)
@@ -109,6 +99,25 @@ namespace roundhouse.databases.access
         {
             //TODO: Anything for Access?
         }
-  
+
+        public override string create_database_script()
+        {
+            return string.Empty;
+        }
+
+        public override string set_recovery_mode_script(bool simple)
+        {
+            return string.Empty;
+        }
+
+        public override string restore_database_script(string restore_from_path, string custom_restore_options)
+        {
+            return string.Empty;
+        }
+
+        public override string delete_database_script()
+        {
+            return string.Empty;
+        }
     }
 }

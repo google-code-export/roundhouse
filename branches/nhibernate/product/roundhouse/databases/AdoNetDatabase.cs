@@ -1,21 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Data.Common;
-using roundhouse.connections;
-using roundhouse.parameters;
-
-namespace roundhouse.databases
+﻿namespace roundhouse.databases
 {
+    using System.Collections.Generic;
     using System.Data;
-    using sql;
+    using System.Data.Common;
+    using connections;
+    using parameters;
 
     public abstract class AdoNetDatabase : DefaultDatabase<IDbConnection>
     {
         private bool split_batches_in_ado = true;
+
         public override bool split_batch_statements
         {
             get { return split_batches_in_ado; }
             set { split_batches_in_ado = value; }
         }
+
         protected IDbTransaction transaction;
 
         private DbProviderFactory provider_factory;
@@ -106,6 +106,5 @@ namespace roundhouse.databases
 
             return command;
         }
-
     }
 }

@@ -3,7 +3,6 @@ namespace roundhouse.databases.sqlserver2000
     using System.Text.RegularExpressions;
     using infrastructure.app;
     using infrastructure.extensions;
-    using sql;
 
     public class SqlServerDatabase : AdoNetDatabase
     {
@@ -67,11 +66,6 @@ namespace roundhouse.databases.sqlserver2000
         public override void set_provider()
         {
             provider = "System.Data.SqlClient";
-            DatabaseTypeSpecifics.sql_scripts_dictionary.TryGetValue("SQLServer2000", out sql_scripts);
-            if (sql_scripts == null)
-            {
-                sql_scripts = DatabaseTypeSpecifics.t_sql2000_specific;
-            }
         }
 
         private static string build_connection_string(string server_name, string database_name, string connection_options)
@@ -83,6 +77,68 @@ namespace roundhouse.databases.sqlserver2000
         {
             //this.roundhouse_schema_name;
             //TODO: Create user
+
+            //run_sql(set_recovery_mode_script(simple)
+        }
+
+        public override string create_database_script()
+        {
+            return string.Format(
+                @"USE master 
+                        IF NOT EXISTS(SELECT * FROM sysdatabases WHERE [name] = '{0}') 
+                         BEGIN 
+                            CREATE DATABASE [{0}] 
+                         END
+                        ",
+                database_name);
+        }
+
+        public override string set_recovery_mode_script(bool simple)
+        {
+            return string.Format(
+                @"USE master 
+                   ALTER DATABASE [{0}] SET RECOVERY {1}
+                    ",
+                database_name, simple ? "SIMPLE" : "FULL");
+        }
+
+        public override string restore_database_script(string restore_from_path, string custom_restore_options)
+        {
+            string restore_options = string.Empty;
+            if (!string.IsNullOrEmpty(custom_restore_options))
+            {
+                restore_options = custom_restore_options.to_lower().StartsWith(",") ? custom_restore_options : ", " + custom_restore_options;
+            }
+
+            return string.Format(
+                @"USE master 
+                        ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                        
+                        RESTORE DATABASE [{0}]
+                        FROM DISK = N'{1}'
+                        WITH NOUNLOAD
+                        , STATS = 10
+                        , RECOVERY
+                        , REPLACE
+                        {2};
+
+                        ALTER DATABASE [{0}] SET MULTI_USER;
+                        ",
+                database_name, restore_from_path,
+                restore_options
+                );
+        }
+
+        public override string delete_database_script()
+        {
+            return string.Format(
+                @"USE master 
+                        IF EXISTS(SELECT * FROM sysdatabases WHERE [name] = '{0}') 
+                        BEGIN 
+                            ALTER DATABASE [{0}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE                            
+                            DROP DATABASE [{0}] 
+                        END",
+                database_name);
         }
     }
 }

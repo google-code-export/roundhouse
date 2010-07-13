@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using roundhouse.connections;
-using roundhouse.parameters;
-using roundhouse.sql;
-
 namespace roundhouse.databases
 {
-    using System.Collections;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using connections;
     using infrastructure.app;
     using infrastructure.logging;
     using infrastructure.persistence;
@@ -16,7 +12,9 @@ namespace roundhouse.databases
     using NHibernate.Cfg;
     using NHibernate.Criterion;
     using NHibernate.Tool.hbm2ddl;
+    using parameters;
     using Environment = System.Environment;
+    using Version = model.Version;
 
     public abstract class DefaultDatabase<DBCONNECTION> : Database
     {
@@ -36,13 +34,14 @@ namespace roundhouse.databases
 
         public virtual string sql_statement_separator_regex_pattern
         {
-            get { return @"(?<KEEP1>^(?:.)*(?:-{2}).*$)|(?<KEEP1>/{1}\*{1}[\S\s]*?\*{1}/{1})|(?<KEEP1>'{1}(?:[^']|\n[^'])*?'{1})|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>\s)|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>$)"; }
+            get { return @"(?<KEEP1>^(?:.)*(?:-{2}).*$)|(?<KEEP1>/{1}\*{1}[\S\s]*?\*{1}/{1})|(?<KEEP1>'{1}(?:[^']|\n[^'])*?'{1})|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>\s)|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>$)";}
         }
 
         public string custom_create_database_script { get; set; }
         public int command_timeout { get; set; }
         public int restore_timeout { get; set; }
-        protected bool split_batches = false;
+        protected bool split_batches = true;
+
         public virtual bool split_batch_statements
         {
             get { return split_batches; }
@@ -57,7 +56,6 @@ namespace roundhouse.databases
         protected IConnection<DBCONNECTION> server_connection;
 
         private bool disposing;
-        protected DatabaseTypeSpecific sql_scripts;
 
         //this method must set the provider
         public abstract void initialize_connections(ConfigurationPropertyHolder configuration_property_holder);
@@ -78,11 +76,16 @@ namespace roundhouse.databases
 
         public abstract void rollback();
 
+        public abstract string create_database_script();
+        public abstract string set_recovery_mode_script(bool simple);
+        public abstract string restore_database_script(string restore_from_path, string custom_restore_options);
+        public abstract string delete_database_script();
+
         public void create_database_if_it_doesnt_exist()
         {
             try
             {
-                string create_script = sql_scripts.create_database(database_name);
+                string create_script = create_database_script();
                 if (!string.IsNullOrEmpty(custom_create_database_script))
                 {
                     create_script = custom_create_database_script;
@@ -101,7 +104,7 @@ namespace roundhouse.databases
         {
             try
             {
-                run_sql(sql_scripts.set_recovery_mode(database_name, simple));
+                run_sql(set_recovery_mode_script(simple));
             }
             catch (Exception ex)
             {
@@ -113,7 +116,8 @@ namespace roundhouse.databases
 
         public void backup_database(string output_path_minus_database)
         {
-            Log.bound_to(this).log_a_warning_event_containing("{0} with provider {1} does not provide a facility for backing up a database at this time.", GetType(), provider);
+            Log.bound_to(this).log_a_warning_event_containing("{0} with provider {1} does not provide a facility for backing up a database at this time.",
+                                                              GetType(), provider);
             //todo: backup database is not a script - it is a command
             //Server sql_server =
             //    new Server(new ServerConnection(new SqlConnection(build_connection_string(server_name, database_name))));
@@ -126,7 +130,7 @@ namespace roundhouse.databases
             {
                 int current_connection_timeout = command_timeout;
                 command_timeout = restore_timeout;
-                run_sql(sql_scripts.restore_database(database_name, restore_from_path, custom_restore_options));
+                run_sql(restore_database_script(restore_from_path, custom_restore_options));
                 command_timeout = current_connection_timeout;
             }
             catch (Exception ex)
@@ -141,7 +145,7 @@ namespace roundhouse.databases
         {
             try
             {
-                run_sql(sql_scripts.delete_database(database_name));
+                run_sql(delete_database_script());
             }
             catch (Exception ex)
             {
@@ -191,17 +195,18 @@ namespace roundhouse.databases
             }
         }
 
-        public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string repository_version, string repository_path)
+        public void insert_script_run_error(string script_name, string sql_to_run, string sql_erroneous_part, string error_message, string repository_version,
+                                            string repository_path)
         {
             ScriptsRunError script_run_error = new ScriptsRunError
-            {
-                version = repository_version ?? string.Empty,
-                script_name = script_name,
-                text_of_script = sql_to_run,
-                erroneous_part_of_script = sql_erroneous_part,
-                repository_path = repository_path ?? string.Empty,
-                error_message = error_message,
-            };
+                                                   {
+                                                       version = repository_version ?? string.Empty,
+                                                       script_name = script_name,
+                                                       text_of_script = sql_to_run,
+                                                       erroneous_part_of_script = sql_erroneous_part,
+                                                       repository_path = repository_path ?? string.Empty,
+                                                       error_message = error_message,
+                                                   };
 
             try
             {
@@ -221,7 +226,7 @@ namespace roundhouse.databases
             string version = "0";
 
             DetachedCriteria crit = DetachedCriteria.For<Version>()
-                .Add(Expression.Eq("repository_path", repository_path ?? string.Empty))
+                .Add(Restrictions.Eq("repository_path", repository_path ?? string.Empty))
                 .AddOrder(Order.Desc("entry_date"))
                 .SetMaxResults(1);
 
@@ -236,7 +241,7 @@ namespace roundhouse.databases
             catch (Exception)
             {
                 Log.bound_to(this).log_a_warning_event_containing("{0} with provider {1} does not provide a facility for retrieving versions at this time.",
-                    GetType(), provider);
+                                                                  GetType(), provider);
             }
 
             return version;
@@ -248,10 +253,10 @@ namespace roundhouse.databases
             long version_id = 0;
 
             Version version = new Version
-            {
-                version = repository_version ?? string.Empty,
-                repository_path = repository_path ?? string.Empty,
-            };
+                                  {
+                                      version = repository_version ?? string.Empty,
+                                      repository_path = repository_path ?? string.Empty,
+                                  };
 
             try
             {
@@ -261,7 +266,7 @@ namespace roundhouse.databases
             catch (Exception ex)
             {
                 Log.bound_to(this).log_an_error_event_containing("{0} with provider {1} does not provide a facility for inserting versions at this time.{2}{3}",
-                    GetType(), provider, Environment.NewLine, ex.Message);
+                                                                 GetType(), provider, Environment.NewLine, ex.Message);
                 throw;
             }
 
@@ -273,7 +278,7 @@ namespace roundhouse.databases
             string hash = string.Empty;
 
             DetachedCriteria crit = DetachedCriteria.For<ScriptsRun>()
-                .Add(Expression.Eq("script_name", script_name))
+                .Add(Restrictions.Eq("script_name", script_name))
                 .SetMaxResults(1);
 
             try
@@ -286,7 +291,8 @@ namespace roundhouse.databases
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_an_error_event_containing("{0} with provider {1} does not provide a facility for hashing (through recording scripts run) at this time.{2}{3}",
+                Log.bound_to(this).log_an_error_event_containing(
+                    "{0} with provider {1} does not provide a facility for hashing (through recording scripts run) at this time.{2}{3}",
                     GetType(), provider, Environment.NewLine, ex.Message);
                 throw;
             }
@@ -299,8 +305,8 @@ namespace roundhouse.databases
             bool script_has_run = false;
 
             DetachedCriteria crit = DetachedCriteria.For<ScriptsRun>()
-               .Add(Expression.Eq("script_name", script_name))
-               .SetMaxResults(1);
+                .Add(Restrictions.Eq("script_name", script_name))
+                .SetMaxResults(1);
 
             try
             {

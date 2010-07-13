@@ -11,7 +11,6 @@ namespace roundhouse.tests.sqlsplitters
     using roundhouse.databases.access;
     using roundhouse.databases.oracle;
     using roundhouse.databases.sqlserver;
-    using sql;
     using roundhouse.sqlsplitters;
 
     public class StatementSplitterSpecs

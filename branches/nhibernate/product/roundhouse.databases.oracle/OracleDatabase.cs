@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text.RegularExpressions;
-using roundhouse.infrastructure.extensions;
-using roundhouse.parameters;
-using roundhouse.sql;
-
 namespace roundhouse.databases.oracle
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Text.RegularExpressions;
     using infrastructure.app;
-    using infrastructure.persistence;
+    using infrastructure.extensions;
+    using parameters;
 
     public sealed class OracleDatabase : AdoNetDatabase
     {
@@ -74,68 +71,53 @@ namespace roundhouse.databases.oracle
         public override void set_provider()
         {
             provider = "System.Data.OracleClient";
-            DatabaseTypeSpecifics.sql_scripts_dictionary.TryGetValue(provider, out sql_scripts);
-            if (sql_scripts == null)
-            {
-                sql_scripts = DatabaseTypeSpecifics.pl_sql_specific;
-            }
         }
 
         public override void run_database_specific_tasks()
         {
-            //TODO: Create sequences
+            run_sql(create_sequence_script(version_table_name));
+            run_sql(create_sequence_script(scripts_run_table_name));
+            run_sql(create_sequence_script(scripts_run_errors_table_name));
+        }
+
+        public string create_sequence_script(string table_name)
+        {
+            return string.Format(
+                @"
+                    DECLARE
+                        sequenceExists Integer := 0;
+                    BEGIN
+                        SELECT COUNT(*) INTO sequenceExists FROM user_objects WHERE object_type = 'TABLE' AND UPPER(object_name) = UPPER('{0}_{1}id');
+                        IF sequenceExists = 0 THEN   
+                        
+                            EXECUTE IMMEDIATE 'CREATE SEQUENCE {0}_{1}id
+                            START WITH 1
+                            INCREMENT BY 1
+                            MINVALUE 1
+                            MAXVALUE 999999999999999999999999999
+                            CACHE 20
+                            NOCYCLE 
+                            NOORDER';
+                            
+                        END IF;
+                    END;
+              ",
+               roundhouse_schema_name, table_name);
         }
 
         public override long insert_version_and_get_version_id(string repository_path, string repository_version)
         {
             var insert_parameters = new List<IParameter<IDbDataParameter>>
-                                 {
-                                     create_parameter("repository_path", DbType.AnsiString, repository_path, 255), 
-                                     create_parameter("repository_version", DbType.AnsiString, repository_version, 35), 
-                                     create_parameter("user_name", DbType.AnsiString, user_name, 50)
-                                 };
-            run_sql(insert_version(), insert_parameters);
+                                        {
+                                            create_parameter("repository_path", DbType.AnsiString, repository_path, 255),
+                                            create_parameter("repository_version", DbType.AnsiString, repository_version, 35),
+                                            create_parameter("user_name", DbType.AnsiString, user_name, 50)
+                                        };
+            run_sql(insert_version_script(), insert_parameters);
 
-            var select_parameters = new List<IParameter<IDbDataParameter>> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
-            return Convert.ToInt64((decimal)run_sql_scalar(get_version_id(), select_parameters));
+            var select_parameters = new List<IParameter<IDbDataParameter>> {create_parameter("repository_path", DbType.AnsiString, repository_path, 255)};
+            return Convert.ToInt64((decimal) run_sql_scalar(get_version_id_script(), select_parameters));
         }
-
-        public string insert_version()
-        {
-            return string.Format(
-                @"
-                    INSERT INTO {0}_{1}
-                    (
-                        id
-                        ,repository_path
-                        ,version
-                        ,entered_by
-                    )
-                    VALUES
-                    (
-                        {0}_{1}id.NEXTVAL
-                        ,:repository_path
-                        ,:repository_version
-                        ,:user_name
-                    )
-                ",
-                roundhouse_schema_name, version_table_name);
-        }
-
-        public string get_version_id()
-        {
-            return string.Format(
-               @"
-                    SELECT id
-                    FROM (SELECT * FROM {0}_{1}
-                            WHERE 
-                                repository_path = :repository_path
-                            ORDER BY entry_date DESC)
-                    WHERE ROWNUM < 2
-                ",
-               roundhouse_schema_name, version_table_name);
-        }
-
 
         public override void run_sql(string sql_to_run)
         {
@@ -178,5 +160,82 @@ namespace roundhouse.databases.oracle
             return new AdoNetParameter(parameter);
         }
 
+        public string insert_version_script()
+        {
+            return string.Format(
+                @"
+                    INSERT INTO {0}_{1}
+                    (
+                        id
+                        ,repository_path
+                        ,version
+                        ,entered_by
+                    )
+                    VALUES
+                    (
+                        {0}_{1}id.NEXTVAL
+                        ,:repository_path
+                        ,:repository_version
+                        ,:user_name
+                    )
+                ",
+                roundhouse_schema_name, version_table_name);
+        }
+
+        public string get_version_id_script()
+        {
+            return string.Format(
+                @"
+                    SELECT id
+                    FROM (SELECT * FROM {0}_{1}
+                            WHERE 
+                                repository_path = :repository_path
+                            ORDER BY entry_date DESC)
+                    WHERE ROWNUM < 2
+                ",
+                roundhouse_schema_name, version_table_name);
+        }
+
+        public override string create_database_script()
+        {
+            return string.Format(
+           @"
+                DECLARE
+                    v_exists Integer := 0;
+                BEGIN
+                    SELECT COUNT(*) INTO v_exists FROM dba_users WHERE username = '{0}';
+                    IF v_exists = 0 THEN
+                        EXECUTE IMMEDIATE 'CREATE USER {0} IDENTIFIED BY {0}';
+                        EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO {0}';
+                        EXECUTE IMMEDIATE 'GRANT RESOURCE TO {0}';                            
+                    END IF;
+                END;                        
+                ", database_name.to_upper());
+        }
+
+        public override string set_recovery_mode_script(bool simple)
+        {
+            return string.Empty;
+        }
+
+        public override string restore_database_script(string restore_from_path, string custom_restore_options)
+        {
+            return string.Empty;
+        }
+
+        public override string delete_database_script()
+        {
+            return string.Format(
+            @" 
+                DECLARE
+                    v_exists Integer := 0;
+                BEGIN
+                    SELECT COUNT(*) INTO v_exists FROM dba_users WHERE username = '{0}';
+                    IF v_exists > 0 THEN
+                        EXECUTE IMMEDIATE 'DROP USER {0} CASCADE';
+                    END IF;
+                END;",
+            database_name.to_upper());
+        }
     }
 }
