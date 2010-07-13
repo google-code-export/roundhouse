@@ -16,6 +16,9 @@ namespace roundhouse.infrastructure.persistence
     {
         private readonly ConfigurationPropertyHolder configuration_holder;
         private readonly Dictionary<string, Func<IPersistenceConfigurer>> func_dictionary;
+        private bool is_merged = false;
+        private readonly string proxy_factory_normal = "NHibernate.ByteCode.Castle.ProxyFactoryFactory, NHibernate.ByteCode.Castle";
+        private readonly string proxy_factory_merged = "NHibernate.ByteCode.Castle.ProxyFactoryFactory, rh";
 
         public NHibernateSessionFactoryBuilder(ConfigurationPropertyHolder config)
         {
@@ -53,6 +56,7 @@ namespace roundhouse.infrastructure.persistence
             }
             catch (Exception)
             {
+                is_merged = true;
                 string key = configuration_holder.DatabaseType.Substring(0, configuration_holder.DatabaseType.IndexOf(',')) + ", rh";
                 return build_session_factory(func_dictionary[key](), DefaultAssemblyLoader.load_assembly("rh"), top_namespace, additional_function);
             }
@@ -61,20 +65,32 @@ namespace roundhouse.infrastructure.persistence
 
         public ISessionFactory build_session_factory(IPersistenceConfigurer db_configuration, Assembly assembly, string top_namespace, Action<Configuration> additional_function)
         {
-            //TODO: NHibernate Session Factory - Ignore everyone else in the merged mappings
             Log.bound_to(this).log_a_debug_event_containing("Building Session Factory");
             var config = Fluently.Configure()
                 .Database(db_configuration)
                 .Mappings(m =>
                               {
-                                  m.FluentMappings.Add(assembly.GetType(top_namespace + ".orm.VersionMapping",true,true))
+                                  m.FluentMappings.Add(assembly.GetType(top_namespace + ".orm.VersionMapping", true, true))
                                       .Add(assembly.GetType(top_namespace + ".orm.ScriptsRunMapping", true, true))
-                                      .Add(assembly.GetType(top_namespace + ".orm.ScriptsRunErrorMapping", true, true))
-                                  .Conventions.AddAssembly(assembly);
+                                      .Add(assembly.GetType(top_namespace + ".orm.ScriptsRunErrorMapping", true, true));
+                                  //.Conventions.AddAssembly(assembly);
                                   //m.HbmMappings.AddFromAssembly(assembly);
                               })
                 .ExposeConfiguration(cfg =>
                     {
+                        if (is_merged)
+                        {
+                            const string proxy_factory = "proxyfactory.factory_class";
+                            if (cfg.Properties.ContainsKey(proxy_factory))
+                            {
+                                cfg.Properties[proxy_factory] = proxy_factory_merged;
+                            }
+                            else
+                            {
+                                cfg.Properties.Add(proxy_factory, proxy_factory_merged);
+                            }
+                        }
+
                         cfg.SetListener(ListenerType.PreInsert, new AuditEventListener());
                         cfg.SetListener(ListenerType.PreUpdate, new AuditEventListener());
                     })
