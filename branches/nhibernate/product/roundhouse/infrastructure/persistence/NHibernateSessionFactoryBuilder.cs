@@ -44,11 +44,22 @@ namespace roundhouse.infrastructure.persistence
 
         public ISessionFactory build_session_factory(Action<Configuration> additional_function)
         {
+            string top_namespace = configuration_holder.DatabaseType.Substring(0, configuration_holder.DatabaseType.IndexOf(','));
+            top_namespace = top_namespace.Substring(0, top_namespace.LastIndexOf('.'));
             string assembly_name = configuration_holder.DatabaseType.Substring(configuration_holder.DatabaseType.IndexOf(',') + 1);
-            return build_session_factory(func_dictionary[configuration_holder.DatabaseType](), DefaultAssemblyLoader.load_assembly(assembly_name), additional_function);
+            try
+            {
+                return build_session_factory(func_dictionary[configuration_holder.DatabaseType](), DefaultAssemblyLoader.load_assembly(assembly_name), top_namespace, additional_function);
+            }
+            catch (Exception)
+            {
+                string key = configuration_holder.DatabaseType.Substring(0, configuration_holder.DatabaseType.IndexOf(',')) + ", rh";
+                return build_session_factory(func_dictionary[key](), DefaultAssemblyLoader.load_assembly("rh"), top_namespace, additional_function);
+            }
+
         }
 
-        public ISessionFactory build_session_factory(IPersistenceConfigurer db_configuration, Assembly assembly, Action<Configuration> additional_function)
+        public ISessionFactory build_session_factory(IPersistenceConfigurer db_configuration, Assembly assembly, string top_namespace, Action<Configuration> additional_function)
         {
             //TODO: NHibernate Session Factory - Ignore everyone else in the merged mappings
             Log.bound_to(this).log_a_debug_event_containing("Building Session Factory");
@@ -56,9 +67,11 @@ namespace roundhouse.infrastructure.persistence
                 .Database(db_configuration)
                 .Mappings(m =>
                               {
-                                  m.FluentMappings.AddFromAssembly(assembly)
+                                  m.FluentMappings.Add(assembly.GetType(top_namespace + ".orm.VersionMapping",true,true))
+                                      .Add(assembly.GetType(top_namespace + ".orm.ScriptsRunMapping", true, true))
+                                      .Add(assembly.GetType(top_namespace + ".orm.ScriptsRunErrorMapping", true, true))
                                   .Conventions.AddAssembly(assembly);
-                                  m.HbmMappings.AddFromAssembly(assembly);
+                                  //m.HbmMappings.AddFromAssembly(assembly);
                               })
                 .ExposeConfiguration(cfg =>
                     {

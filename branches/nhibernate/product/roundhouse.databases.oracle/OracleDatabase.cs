@@ -29,15 +29,15 @@ namespace roundhouse.databases.oracle
                 string[] parts = connection_string.Split(';');
                 foreach (string part in parts)
                 {
-                    if (string.IsNullOrEmpty(server_name) && (part.to_lower().Contains("server") || part.to_lower().Contains("data source")))
-                    {
-                        server_name = part.Substring(part.IndexOf("=") + 1);
-                    }
-
-                    if (string.IsNullOrEmpty(database_name) && (part.to_lower().Contains("initial catalog") || part.to_lower().Contains("database")))
+                    if (string.IsNullOrEmpty(server_name) && part.to_lower().Contains("data source"))
                     {
                         database_name = part.Substring(part.IndexOf("=") + 1);
                     }
+
+                    //if (string.IsNullOrEmpty(database_name) && (part.to_lower().Contains("user id")))
+                    //{
+                    //    database_name = part.Substring(part.IndexOf("=") + 1);
+                    //}
                 }
 
                 if (!connection_string.to_lower().Contains(connect_options.to_lower()))
@@ -45,27 +45,37 @@ namespace roundhouse.databases.oracle
                     connect_options = string.Empty;
                     foreach (string part in parts)
                     {
-                        if (!part.to_lower().Contains("server") && !part.to_lower().Contains("data source") && !part.to_lower().Contains("initial catalog") &&
-                            !part.to_lower().Contains("database"))
+                        if (!part.to_lower().Contains("data source"))
                         {
                             connect_options += part + ";";
                         }
                     }
                 }
             }
+            if (connect_options == "Integrated Security")
+            {
+                connect_options = "Integrated Security=yes;";
+            }
+
+            if (string.IsNullOrEmpty(connection_string))
+            {
+                connection_string = build_connection_string(database_name, connect_options);
+            }
+
             configuration_property_holder.ConnectionString = connection_string;
 
             set_provider();
-            admin_connection_string = configure_admin_connection_string();
-            //set_repository(configuration_property_holder);
+            if (string.IsNullOrEmpty(admin_connection_string))
+            {
+                admin_connection_string = Regex.Replace(connection_string, "Integrated Security=.*?;", "Integrated Security=yes;");
+                admin_connection_string = Regex.Replace(admin_connection_string, "User Id=.*?;", string.Empty);
+                admin_connection_string = Regex.Replace(admin_connection_string, "Password=.*?;", string.Empty);
+            }
         }
 
-        private string configure_admin_connection_string()
+        private static string build_connection_string(string database_name, string connection_options)
         {
-            string admin_string = Regex.Replace(connection_string, "User Id=.*?;", "User Id=System;");
-            admin_string = Regex.Replace(admin_string, "Password=.*?;", "Password=QAORACLE;");
-
-            return admin_string;
+            return string.Format("Data Source={0};{1}", database_name, connection_options);
         }
 
         public override void set_provider()
@@ -87,7 +97,7 @@ namespace roundhouse.databases.oracle
                     DECLARE
                         sequenceExists Integer := 0;
                     BEGIN
-                        SELECT COUNT(*) INTO sequenceExists FROM user_objects WHERE object_type = 'TABLE' AND UPPER(object_name) = UPPER('{0}_{1}id');
+                        SELECT COUNT(*) INTO sequenceExists FROM user_objects WHERE object_type = 'SEQUENCE' AND UPPER(object_name) = UPPER('{0}_{1}ID');
                         IF sequenceExists = 0 THEN   
                         
                             EXECUTE IMMEDIATE 'CREATE SEQUENCE {0}_{1}id
@@ -115,8 +125,8 @@ namespace roundhouse.databases.oracle
                                         };
             run_sql(insert_version_script(), insert_parameters);
 
-            var select_parameters = new List<IParameter<IDbDataParameter>> {create_parameter("repository_path", DbType.AnsiString, repository_path, 255)};
-            return Convert.ToInt64((decimal) run_sql_scalar(get_version_id_script(), select_parameters));
+            var select_parameters = new List<IParameter<IDbDataParameter>> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
+            return Convert.ToInt64((decimal)run_sql_scalar(get_version_id_script(), select_parameters));
         }
 
         public override void run_sql(string sql_to_run)

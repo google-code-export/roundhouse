@@ -59,7 +59,10 @@ namespace roundhouse.databases.sqlserver
             configuration_property_holder.ConnectionString = connection_string;
 
             set_provider();
-            admin_connection_string = Regex.Replace(connection_string, "initial catalog=.*?;", "initial catalog=master;");
+            if (string.IsNullOrEmpty(admin_connection_string))
+            {
+                admin_connection_string = Regex.Replace(connection_string, "initial catalog=.*?;", "initial catalog=master;");
+            }
             //set_repository(configuration_property_holder);
         }
 
