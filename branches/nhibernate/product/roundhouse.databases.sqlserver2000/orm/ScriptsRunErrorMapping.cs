@@ -11,7 +11,7 @@
         public ScriptsRunErrorMapping()
         {
             //HibernateMapping.Schema(ApplicationParameters.CurrentMappings.roundhouse_schema_name);
-            Table(ApplicationParameters.CurrentMappings.roundhouse_schema_name + "." + ApplicationParameters.CurrentMappings.scripts_run_errors_table_name);
+            Table(ApplicationParameters.CurrentMappings.scripts_run_errors_table_name);
             Not.LazyLoad();
             HibernateMapping.DefaultAccess.Property();
             HibernateMapping.DefaultCascade.SaveUpdate();
