@@ -92,6 +92,8 @@
     <nant buildfile="${dirs.current}\environmentBuilder.step" inheritall="true" />
     <nant buildfile="${dirs.current}\analyze.step" inheritall="true" />
     <nant buildfile="${dirs.current}\package.step" inheritall="true" />
+    <nant buildfile="${dirs.current}\gemsPrepare.step" inheritall="true" />
+    <nant buildfile="${dirs.current}\gemsBuild.step" inheritall="true" />
   </target>
 
   <target name="get_revision">
