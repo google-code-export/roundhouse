@@ -24,6 +24,10 @@ namespace roundhouse.infrastructure.app
 
         public static void set_defaults_if_properties_are_not_set(ConfigurationPropertyHolder configuration_property_holder)
         {
+            if (string.IsNullOrEmpty(configuration_property_holder.SqlFilesDirectory))
+            {
+                configuration_property_holder.SqlFilesDirectory = ApplicationParameters.default_files_directory;
+            }
             if (string.IsNullOrEmpty(configuration_property_holder.ServerName))
             {
                 configuration_property_holder.ServerName = ApplicationParameters.default_server_name;

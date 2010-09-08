@@ -22,7 +22,7 @@
             Map(x => x.script_name);
             Map(x => x.text_of_script).CustomSqlType("Clob");
             Map(x => x.erroneous_part_of_script).CustomSqlType("Clob");
-            Map(x => x.error_message);
+            Map(x => x.error_message).CustomSqlType("Clob");
 
             //audit
             Map(x => x.entry_date);

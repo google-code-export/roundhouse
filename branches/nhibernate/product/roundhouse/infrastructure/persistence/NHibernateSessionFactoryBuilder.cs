@@ -16,9 +16,8 @@ namespace roundhouse.infrastructure.persistence
     {
         private readonly ConfigurationPropertyHolder configuration_holder;
         private readonly Dictionary<string, Func<IPersistenceConfigurer>> func_dictionary;
-        private bool is_merged = false;
-        private readonly string proxy_factory_normal = "NHibernate.ByteCode.Castle.ProxyFactoryFactory, NHibernate.ByteCode.Castle";
-        private readonly string proxy_factory_merged = "NHibernate.ByteCode.Castle.ProxyFactoryFactory, rh";
+        private bool is_merged = true;
+        private const string proxy_factory_name = "NHibernate.ByteCode.Castle.ProxyFactoryFactory";
 
         public NHibernateSessionFactoryBuilder(ConfigurationPropertyHolder config)
         {
@@ -31,13 +30,15 @@ namespace roundhouse.infrastructure.persistence
             func_dictionary.Add("roundhouse.databases.access.AccessDatabase, roundhouse.databases.access", () => JetDriverConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
             func_dictionary.Add("roundhouse.databases.sqlite.SQLiteDatabase, roundhouse.databases.sqlite", () => SQLiteConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
             func_dictionary.Add("roundhouse.databases.postgresql.PostgreSQLDatabase, roundhouse.databases.postgresql", () => PostgreSQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
-            func_dictionary.Add("roundhouse.databases.sqlserver.SqlServerDatabase, rh", () => MsSqlConfiguration.MsSql2005.ConnectionString(configuration_holder.ConnectionString));
-            func_dictionary.Add("roundhouse.databases.sqlserver2000.SqlServerDatabase, rh", () => MsSqlConfiguration.MsSql2000.ConnectionString(configuration_holder.ConnectionString));
-            func_dictionary.Add("roundhouse.databases.mysql.MySqlDatabase, rh", () => MySQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
-            func_dictionary.Add("roundhouse.databases.oracle.OracleDatabase, rh", () => OracleClientConfiguration.Oracle9.ConnectionString(configuration_holder.ConnectionString));
-            func_dictionary.Add("roundhouse.databases.access.AccessDatabase, rh", () => JetDriverConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
-            func_dictionary.Add("roundhouse.databases.sqlite.SQLiteDatabase, rh", () => SQLiteConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
-            func_dictionary.Add("roundhouse.databases.postgresql.PostgreSQLDatabase, rh", () => PostgreSQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            // merged
+            string merged_assembly_name = ApplicationParameters.get_merged_assembly_name();
+            func_dictionary.Add("roundhouse.databases.sqlserver.SqlServerDatabase, " + merged_assembly_name, () => MsSqlConfiguration.MsSql2005.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.sqlserver2000.SqlServerDatabase, " + merged_assembly_name, () => MsSqlConfiguration.MsSql2000.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.mysql.MySqlDatabase, " + merged_assembly_name, () => MySQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.oracle.OracleDatabase, " + merged_assembly_name, () => OracleClientConfiguration.Oracle9.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.access.AccessDatabase, " + merged_assembly_name, () => JetDriverConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.sqlite.SQLiteDatabase, " + merged_assembly_name, () => SQLiteConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
+            func_dictionary.Add("roundhouse.databases.postgresql.PostgreSQLDatabase, " + merged_assembly_name, () => PostgreSQLConfiguration.Standard.ConnectionString(configuration_holder.ConnectionString));
         }
 
         public ISessionFactory build_session_factory()
@@ -50,17 +51,17 @@ namespace roundhouse.infrastructure.persistence
             string top_namespace = configuration_holder.DatabaseType.Substring(0, configuration_holder.DatabaseType.IndexOf(','));
             top_namespace = top_namespace.Substring(0, top_namespace.LastIndexOf('.'));
             string assembly_name = configuration_holder.DatabaseType.Substring(configuration_holder.DatabaseType.IndexOf(',') + 1);
+            
             try
             {
-                return build_session_factory(func_dictionary[configuration_holder.DatabaseType](), DefaultAssemblyLoader.load_assembly(assembly_name), top_namespace, additional_function);
+                string key = configuration_holder.DatabaseType.Substring(0, configuration_holder.DatabaseType.IndexOf(',')) + ", " + ApplicationParameters.get_merged_assembly_name();
+                return build_session_factory(func_dictionary[key](), DefaultAssemblyLoader.load_assembly(ApplicationParameters.get_merged_assembly_name()), top_namespace, additional_function);
             }
             catch (Exception)
             {
-                is_merged = true;
-                string key = configuration_holder.DatabaseType.Substring(0, configuration_holder.DatabaseType.IndexOf(',')) + ", rh";
-                return build_session_factory(func_dictionary[key](), DefaultAssemblyLoader.load_assembly("rh"), top_namespace, additional_function);
+                is_merged = false;
+                return build_session_factory(func_dictionary[configuration_holder.DatabaseType](), DefaultAssemblyLoader.load_assembly(assembly_name), top_namespace, additional_function);
             }
-
         }
 
         public ISessionFactory build_session_factory(IPersistenceConfigurer db_configuration, Assembly assembly, string top_namespace, Action<Configuration> additional_function)
@@ -81,13 +82,14 @@ namespace roundhouse.infrastructure.persistence
                         if (is_merged)
                         {
                             const string proxy_factory = "proxyfactory.factory_class";
+                            string proxy_factory_merged_name = proxy_factory_name + ", " + ApplicationParameters.get_merged_assembly_name();
                             if (cfg.Properties.ContainsKey(proxy_factory))
                             {
-                                cfg.Properties[proxy_factory] = proxy_factory_merged;
+                                cfg.Properties[proxy_factory] = proxy_factory_merged_name;
                             }
                             else
                             {
-                                cfg.Properties.Add(proxy_factory, proxy_factory_merged);
+                                cfg.Properties.Add(proxy_factory, proxy_factory_merged_name);
                             }
                         }
 

@@ -88,16 +88,17 @@
                 .Add("d=|db=|database=|databasename=",
                     "REQUIRED: DatabaseName - The database you want to create/migrate.",
                     option => configuration.DatabaseName = option)
+                .Add("c=|cs=|connstring=|connectionstring=",
+                    string.Format("As an alternative to ServerName and Database - You can provide an entire connection string instead."),
+                    option => configuration.ConnectionString = option)
                 .Add("f=|files=|sqlfilesdirectory=",
-                    "REQUIRED: SqlFilesDirectory - The directory where your SQL scripts are.",
+                    string.Format("SqlFilesDirectory - The directory where your SQL scripts are. Defaults to \"{0}\".",
+                        ApplicationParameters.default_files_directory),
                     option => configuration.SqlFilesDirectory = option)
                 .Add("s=|server=|servername=|instance=|instancename=",
                     string.Format("ServerName - The server and instance you would like to run on. (local) and (local)\\SQL2008 are both valid values. Defaults to \"{0}\".",
                         ApplicationParameters.default_server_name),
                     option => configuration.ServerName = option)
-                .Add("c=|cs=|connstring=|connectionstring=",
-                    string.Format("As an alternative to ServerName and Database - You can provide an entire connection string instead."),
-                    option => configuration.ConnectionString = option)
                 .Add("csa=|connstringadmin=|connectionstringadministration=",
                     string.Format("This is used for connecting to master when you may have a different uid and password than normal."),
                     option => configuration.ConnectionStringAdmin = option)
@@ -244,11 +245,12 @@
             if (help)
             {
                 the_logger.Info("Usage of RoundhousE (RH)");
-                const string usage_message =
-                    "rh.exe /d[atabase] VALUE /[sql]f[ilesdirectory] VALUE " +
+                string usage_message =
+                    string.Format(
+                    "rh.exe /d[atabase] VALUE OR rh.exe /c[onnection]s[tring] VALUE followed by all the optional parameters {0}" +
                     "[" +
+                    "/[sql]f[ilesdirectory] VALUE " +
                     "/s[ervername] VALUE " +
-                    "/c[onnection]s[tring] VALUE " +
                     "/c[onnection]s[tring]a[dministration] VALUE " +
                     "/r[epositorypath] VALUE /v[ersion]f[ile] VALUE /v[ersion]x[path] VALUE " +
                     "/u[pfoldername] VALUE /do[wnfoldername] VALUE " +
@@ -271,13 +273,13 @@
                     "/runallanytimescripts " +
                     "/baseline " +
                     "/dryrun " +
-                    "]";
+                    "]", Environment.NewLine);
                 show_help(usage_message, option_set);
             }
 
-            if (string.IsNullOrEmpty(configuration.DatabaseName) || string.IsNullOrEmpty(configuration.SqlFilesDirectory))
+            if (string.IsNullOrEmpty(configuration.DatabaseName) && string.IsNullOrEmpty(configuration.ConnectionString))
             {
-                show_help("Error: You must specify Database Name (/d) AND Sql Files Directory (/f) at a minimum to use RoundhousE.", option_set);
+                show_help("Error: You must specify Database Name (/d) OR Connection String (/cs) at a minimum to use RoundhousE.", option_set);
             }
         }
 

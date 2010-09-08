@@ -22,7 +22,7 @@
             Map(x => x.script_name);
             Map(x => x.text_of_script).Length(255);
             Map(x => x.erroneous_part_of_script).Length(255);
-            Map(x => x.error_message);
+            Map(x => x.error_message).Length(255);
 
             //audit
             Map(x => x.entry_date);
