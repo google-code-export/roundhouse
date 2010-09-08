@@ -56,6 +56,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\references\log4net\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Magnum, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\references\Magnum\Magnum.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnum.Infrastructure, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\references\Magnum\Magnum.Infrastructure.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build.Framework">
       <Private>True</Private>
     </Reference>
