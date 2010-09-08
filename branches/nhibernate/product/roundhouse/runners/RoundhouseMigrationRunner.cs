@@ -54,12 +54,13 @@ namespace roundhouse.runners
 
         public void run()
         {
-            Log.bound_to(this).log_an_info_event_containing("Running {0} v{1} against {2} - {3}. Looking in {4} for scripts to run.",
+            Log.bound_to(this).log_an_info_event_containing("Running {0} v{1} against {2} - {3}.",
                     ApplicationParameters.name,
                     infrastructure.VersionInformation.get_current_assembly_version(),
                     database_migrator.database.server_name,
-                    database_migrator.database.database_name,
-                    known_folders.up.folder_path);
+                    database_migrator.database.database_name);
+            
+            Log.bound_to(this).log_an_info_event_containing("Looking in {0} for scripts to run.",known_folders.up.folder_path);
             if (!silent)
             {
                 Log.bound_to(this).log_an_info_event_containing("Please press enter when ready to kick...");
