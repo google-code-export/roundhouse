@@ -88,16 +88,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\product\roundhouse.databases.sqlserver\roundhouse.databases.sqlserver.csproj">
-      <Project>{F02B7642-3EC4-4374-BBBE-7857A93EA5D9}</Project>
-      <Name>roundhouse.databases.sqlserver</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SampleProject\SampleProject.csproj">
-      <Project>{D1C278C6-301B-4EEE-BD47-F15847DDECAF}</Project>
-      <Name>SampleProject</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

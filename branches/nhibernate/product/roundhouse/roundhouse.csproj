@@ -115,6 +115,7 @@
     <Compile Include="databases\MockDatabase.cs" />
     <Compile Include="infrastructure.app\builders\LogBuilder.cs" />
     <Compile Include="infrastructure.app\builders\VersionResolverBuilder.cs" />
+    <Compile Include="infrastructure.app\persistence\NHibernateMigrationSessionFactory.cs" />
     <Compile Include="infrastructure\persistence\AuditEventListener.cs" />
     <Compile Include="infrastructure\persistence\IRepository.cs" />
     <Compile Include="infrastructure\persistence\NHibernateSessionFactoryBuilder.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="model\Version.cs" />
     <Compile Include="parameters\AdoNetParameter.cs" />
     <Compile Include="parameters\IParameter.cs" />
+    <Compile Include="runners\RoundhouseNHibernateCompareRunner.cs" />
     <Compile Include="runners\RoundhouseRedGateCompareRunner.cs" />
     <Compile Include="sqlsplitters\StatementSplitter.cs" />
     <Compile Include="consoles\ConsoleConfiguration.cs" />

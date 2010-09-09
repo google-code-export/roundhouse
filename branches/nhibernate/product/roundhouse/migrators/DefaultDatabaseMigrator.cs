@@ -162,7 +162,7 @@ namespace roundhouse.migrators
                 Log.bound_to(this).log_a_warning_event_containing("{0} is a one time script that has changed since it was run.", script_name);
             }
 
-            if (if_this_is_an_environment_file_its_in_the_right_environment(script_name, environment)
+            if (this_is_an_environment_file_and_its_in_the_right_environment(script_name, environment)
                 && this_script_should_run(script_name, sql_to_run, run_this_script_once, run_this_script_every_time))
             {
                 Log.bound_to(this).log_an_info_event_containing(" Running {0} on {1} - {2}.", script_name, database.server_name, database.database_name);
@@ -284,7 +284,7 @@ namespace roundhouse.migrators
             return this_script_has_changed_since_last_run(script_name, sql_to_run);
         }
 
-        private bool if_this_is_an_environment_file_its_in_the_right_environment(string script_name, Environment environment)
+        private bool this_is_an_environment_file_and_its_in_the_right_environment(string script_name, Environment environment)
         {
             Log.bound_to(this).log_a_debug_event_containing("Checking to see if {0} is an environment file. We are in the {1} environment.", script_name, environment.name);
             if (!script_name.to_lower().Contains(".env."))

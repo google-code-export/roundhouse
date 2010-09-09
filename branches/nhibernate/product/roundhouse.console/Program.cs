@@ -89,7 +89,7 @@
                     "REQUIRED: DatabaseName - The database you want to create/migrate.",
                     option => configuration.DatabaseName = option)
                 .Add("c=|cs=|connstring=|connectionstring=",
-                    string.Format("As an alternative to ServerName and Database - You can provide an entire connection string instead."),
+                    string.Format("REQUIRED: ConnectionString - As an alternative to ServerName and Database - You can provide an entire connection string instead."),
                     option => configuration.ConnectionString = option)
                 .Add("f=|files=|sqlfilesdirectory=",
                     string.Format("SqlFilesDirectory - The directory where your SQL scripts are. Defaults to \"{0}\".",
@@ -100,7 +100,7 @@
                         ApplicationParameters.default_server_name),
                     option => configuration.ServerName = option)
                 .Add("csa=|connstringadmin=|connectionstringadministration=",
-                    string.Format("This is used for connecting to master when you may have a different uid and password than normal."),
+                    string.Format("ConnectionStringAdministration - This is used for connecting to master when you may have a different uid and password than normal."),
                     option => configuration.ConnectionStringAdmin = option)
                 //database type
                 .Add("dt=|dbt=|databasetype=",
@@ -150,15 +150,15 @@
                     option => configuration.PermissionsFolderName = option)
                 // roundhouse items
                 .Add("sc=|schema=|schemaname=",
-                    string.Format("SchemaName - This is the schema where RH stores it's two tables. Once you set this a certain way, do not change this. This is definitelly running with scissors and very sharp. I am allowing you to have flexibility, but because this is a knife you can still get cut if you use it wrong. I'm just saying. You've been warned. Defaults to \"{0}\".",
+                    string.Format("SchemaName - This is the schema where RH stores it's tables. Once you set this a certain way, do not change this. This is definitely running with scissors and very sharp. I am allowing you to have flexibility, but because this is a knife you can still get cut if you use it wrong. I'm just saying. You've been warned. Defaults to \"{0}\".",
                         ApplicationParameters.default_roundhouse_schema_name),
                     option => configuration.SchemaName = option)
                 .Add("vt=|versiontable=|versiontablename=",
-                    string.Format("VersionTableName - This is the table where RH stores versioning information. Once you set this, do not change this. This is definitelly running with scissors and very sharp. Defaults to \"{0}\".",
+                    string.Format("VersionTableName - This is the table where RH stores versioning information. Once you set this, do not change this. This is definitely running with scissors and very sharp. Defaults to \"{0}\".",
                         ApplicationParameters.default_version_table_name),
                     option => configuration.VersionTableName = option)
                 .Add("srt=|scriptsruntable=|scriptsruntablename=",
-                    string.Format("ScriptsRunTableName - This is the table where RH stores information about scripts that have been run. Once you set this a certain way, do not change this. This is definitelly running with scissors and very sharp. Defaults to \"{0}\".",
+                    string.Format("ScriptsRunTableName - This is the table where RH stores information about scripts that have been run. Once you set this a certain way, do not change this. This is definitely running with scissors and very sharp. Defaults to \"{0}\".",
                         ApplicationParameters.default_scripts_run_table_name),
                     option => configuration.ScriptsRunTableName = option)
                 .Add("sret=|scriptsrunerrorstable=|scriptsrunerrorstablename=",
