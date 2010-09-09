@@ -59,22 +59,25 @@
 
         public static void run_initial_database_setup()
         {
-            create_the_database(ROUNDHOUSE_EXE,DB_SERVER, DB_NAME);
+            create_the_database(ROUNDHOUSE_EXE, DB_SERVER, DB_NAME);
             build_database_schema(DB_SERVER, DB_NAME);
-            run_roundhouse_drop_create(ROUNDHOUSE_EXE,DB_SERVER, DB_NAME, PATH_TO_SCRIPTS);
+            run_roundhouse_drop_create(ROUNDHOUSE_EXE, DB_SERVER, DB_NAME, PATH_TO_SCRIPTS);
         }
 
         private static void create_the_database(string roundhouse_exe, string server_name, string db_name)
         {
-            CommandRunner.run(roundhouse_exe, String.Format("/s={0} /db={1} /f={2} /silent /simple", server_name, db_name, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)), true);
+            CommandRunner.run(roundhouse_exe,
+                              String.Format("/s={0} /db={1} /f={2} /silent /simple", server_name, db_name,
+                                            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)), true);
         }
 
         private static void build_database_schema(string db_server, string db_name)
         {
-            Assembly mapping_assembly = Assembly.LoadFile(Path.GetFullPath(MAPPINGS_ASSEMBLY));
-            Assembly convention_assembly = Assembly.LoadFile(Path.GetFullPath(CONVENTIONS_ASSEMBLY));
+            //Assembly mapping_assembly = Assembly.LoadFile(Path.GetFullPath(MAPPINGS_ASSEMBLY));
+            //Assembly convention_assembly = Assembly.LoadFile(Path.GetFullPath(CONVENTIONS_ASSEMBLY));
 
-            ISessionFactory sf = NHibernateSessionFactory.build_session_factory(db_server, db_name,mapping_assembly,convention_assembly, build_schema);
+            //ISessionFactory sf = NHibernateSessionFactory.build_session_factory(db_server, db_name,mapping_assembly,convention_assembly, build_schema);
+            ISessionFactory sf = NHibernateSessionFactory.build_session_factory(db_server, db_name, build_schema);
         }
 
         private static void build_schema(Configuration cfg)
@@ -90,7 +93,6 @@
             CommandRunner.run(roundhouse_exe, String.Format("/s={0} /db={1} /f={2} /silent /simple", server_name, db_name, path_to_scripts), true);
         }
 
-
         #endregion
 
         #region maintenance database setup
@@ -100,11 +102,8 @@
         }
 
         #endregion
-
     }
 }
-
-
 
 //#Region "After A Release To Production"
 
