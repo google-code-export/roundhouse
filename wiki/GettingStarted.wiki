@@ -6,6 +6,14 @@ So you want to learn how to use RoundhousE (RH)? RH uses SQL Scripts to do migra
 
 Let's start with the basics.
 
+== What does RoundhousE do? ==
+
+=== 1. Migrations ===
+
+=== 2. Differencing of Databases Using Red Gate ===
+
+=== 3. Differencing using NHibernate ===
+
 
 = Details =
 
