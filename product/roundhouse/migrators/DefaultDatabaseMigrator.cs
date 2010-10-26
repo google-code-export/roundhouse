@@ -82,8 +82,7 @@ namespace roundhouse.migrators
 
         public void restore_database(string restore_from_path, string restore_options)
         {
-            Log.bound_to(this).log_an_info_event_containing("Restoring {0} database on {1} server from path {2}.", database.database_name, database.server_name,
-                                                            restore_from_path);
+            Log.bound_to(this).log_an_info_event_containing("Restoring {0} database on {1} server from path {2}.", database.database_name, database.server_name,restore_from_path);
             database.restore_database(restore_from_path, restore_options);
         }
 
