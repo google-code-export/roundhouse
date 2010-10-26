@@ -4,6 +4,7 @@
     using System.Configuration;
     using System.IO;
     using System.Reflection;
+    using System.Text;
     using NHibernate;
     using NHibernate.Tool.hbm2ddl;
     using Configuration = NHibernate.Cfg.Configuration;
@@ -15,6 +16,7 @@
         private static string DB_NAME;
         private static string PATH_TO_SCRIPTS;
         private static string NAME_OF_SCRIPT;
+        private static string NAME_OF_UPDATE_SCRIPT;
         private static string PATH_TO_RESTORE;
         private static bool INITIAL_DEVELOPMENT;
         private static string MAPPINGS_ASSEMBLY;
@@ -29,6 +31,7 @@
                 DB_NAME = ConfigurationManager.AppSettings["db_name"];
                 PATH_TO_SCRIPTS = ConfigurationManager.AppSettings["path_to_scripts"];
                 NAME_OF_SCRIPT = ConfigurationManager.AppSettings["name_of_script"];
+                NAME_OF_UPDATE_SCRIPT = ConfigurationManager.AppSettings["name_of_update_script"];
                 PATH_TO_RESTORE = ConfigurationManager.AppSettings["path_to_restore"];
                 INITIAL_DEVELOPMENT = ConfigurationManager.AppSettings["has_this_installed_into_prod"] == "false";
                 MAPPINGS_ASSEMBLY = ConfigurationManager.AppSettings["mapping_assembly_name"];
@@ -55,7 +58,7 @@
             }
         }
 
-        #region initial database setup
+        // initial database setup
 
         public static void run_initial_database_setup()
         {
@@ -66,9 +69,7 @@
 
         private static void create_the_database(string roundhouse_exe, string server_name, string db_name)
         {
-            CommandRunner.run(roundhouse_exe,
-                              String.Format("/s={0} /db={1} /f={2} /silent /simple", server_name, db_name,
-                                            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)), true);
+            CommandRunner.run(roundhouse_exe, string.Format("/s={0} /db={1} /f={2} /silent /simple", server_name, db_name, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)), true);
         }
 
         private static void build_database_schema(string db_server, string db_name)
@@ -89,73 +90,42 @@
 
         private static void run_roundhouse_drop_create(string roundhouse_exe, string server_name, string db_name, string path_to_scripts)
         {
-            CommandRunner.run(roundhouse_exe, String.Format("/s={0} /db={1} /f={2} /silent /drop", server_name, db_name, path_to_scripts), true);
-            CommandRunner.run(roundhouse_exe, String.Format("/s={0} /db={1} /f={2} /silent /simple", server_name, db_name, path_to_scripts), true);
+            CommandRunner.run(roundhouse_exe, string.Format("/s={0} /db={1} /f={2} /silent /drop", server_name, db_name, path_to_scripts), true);
+            CommandRunner.run(roundhouse_exe, string.Format("/s={0} /db={1} /f={2} /silent /simple", server_name, db_name, path_to_scripts), true);
         }
 
-        #endregion
-
-        #region maintenance database setup
+        // maintenance database setup
 
         public static void run_maintenance_database_setup()
         {
+           // restore_the_database(ROUNDHOUSE_EXE, DB_SERVER, DB_NAME, PATH_TO_SCRIPTS, PATH_TO_RESTORE);
+            upgrade_database_schema(DB_SERVER, DB_NAME);
+            run_roundhouse_updates(ROUNDHOUSE_EXE, DB_SERVER, DB_NAME, PATH_TO_SCRIPTS);
         }
 
-        #endregion
+        private static void restore_the_database(string roundhouse_exe, string server_name, string db_name, string path_to_scripts, string path_to_restore)
+        {
+            CommandRunner.run(roundhouse_exe, string.Format("/s={0} /db={1} /f={2} /silent /restore /restorefrompath=\"{3}\"", server_name, db_name, path_to_scripts, path_to_restore), true);
+        }
+
+        private static void upgrade_database_schema(string db_server, string db_name)
+        {
+            ISessionFactory sf = NHibernateSessionFactory.build_session_factory(db_server, db_name, update_schema);
+        }
+
+        public static void update_schema(Configuration cfg)
+        {
+            SchemaUpdate s = new SchemaUpdate(cfg);
+            StringBuilder sb = new StringBuilder();
+            s.Execute(x => sb.Append(x), false);
+            string updateScriptFileName = Path.Combine(PATH_TO_SCRIPTS, Path.Combine("Up", NAME_OF_UPDATE_SCRIPT));
+            if (File.Exists(updateScriptFileName)) { File.Delete(updateScriptFileName); }
+            File.WriteAllText(updateScriptFileName, sb.ToString());
+        }
+
+        private static void run_roundhouse_updates(string roundhouse_exe, string server_name, string db_name, string path_to_scripts)
+        {
+            CommandRunner.run(roundhouse_exe, string.Format("/s={0} /db={1} /f={2} /silent", server_name, db_name, path_to_scripts), true);
+        }
     }
 }
-
-//#Region "After A Release To Production"
-
-//    Private Sub RunMaintenanceDevelopmentDatabaseSetup()
-//        RestoreTheDatabase()
-//        UpdateDatabaseSchema()
-//        RunRoundhouseUpdates()
-//    End Sub
-
-//    Private Sub RestoreTheDatabase()
-//        Dim psi As New ProcessStartInfo(PATH_TO_ROUNDHOUSE, String.Format(" /db={0} /dt=2005 /f={1} /restore /rfp={2} /ni", DB_NAME, PATH_TO_SCRIPTS, PATH_TO_RESTORE))
-//        psi.WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly.Location)
-//        psi.UseShellExecute = False
-//        psi.RedirectStandardOutput = False
-//        psi.CreateNoWindow = False
-
-//        Using p As Process = New Process
-//            p.StartInfo = psi
-//            p.Start()
-//            p.WaitForExit()
-//        End Using
-//    End Sub
-
-//    Private Sub UpdateDatabaseSchema()
-//        Dim sf As ISessionFactory = NHibernateSetup.Configure(Of CollateralMap)(SERVER_NAME, DB_NAME, AddressOf UpdateSchema).WithoutAuditColumns().WithoutChangeTracking().BuildSessionFactory
-//    End Sub
-
-//    Private Sub UpdateSchema(ByVal cfg As Cfg.Configuration)
-//        Dim s As New SchemaUpdate(cfg)
-//        Dim sb As New StringBuilder
-
-//        s.Execute(AddressOf sb.Append, False)
-
-//        Dim updateScriptFileName As String = PATH_TO_SCRIPTS + "\Up\" + UPDATE_SCRIPT_NAME
-//        If File.Exists(updateScriptFileName) Then File.Delete(updateScriptFileName)
-
-//        File.WriteAllText(updateScriptFileName, sb.ToString)
-//    End Sub
-
-//    Private Sub RunRoundhouseUpdates()
-//        Dim psi As New ProcessStartInfo(PATH_TO_ROUNDHOUSE, String.Format(" /db={0} /dt=2005 /f={1} /ni", DB_NAME, PATH_TO_SCRIPTS))
-//        psi.WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly.Location)
-//        psi.UseShellExecute = False
-//        psi.RedirectStandardOutput = False
-//        psi.CreateNoWindow = False
-//        Using p As Process = New Process
-//            p.StartInfo = psi
-//            p.Start()
-//            p.WaitForExit()
-//        End Using
-//    End Sub
-
-//#End Region
-
-//End Module

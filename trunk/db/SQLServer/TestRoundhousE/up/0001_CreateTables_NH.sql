@@ -3,7 +3,8 @@
 
     create table dbo.SampleItems (
         Id BIGINT IDENTITY NOT NULL,
-       name BIGINT null,
-       lastname BIGINT null,
+       name NVARCHAR(255) null,
+       firstname NVARCHAR(255) null,
+       lastname NVARCHAR(255) null,
        primary key (Id)
     )

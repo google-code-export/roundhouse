@@ -1,6 +1,7 @@
 namespace roundhouse.infrastructure.app
 {
     using System;
+    using System.IO;
     using builders;
     using containers;
     using containers.custom;
@@ -20,8 +21,6 @@ namespace roundhouse.infrastructure.app
 
     public static class ApplicationConfiguraton
     {
-        //TODO: Need to have a session factory built AFTER we've built the container
-
         public static void set_defaults_if_properties_are_not_set(ConfigurationPropertyHolder configuration_property_holder)
         {
             if (string.IsNullOrEmpty(configuration_property_holder.SqlFilesDirectory))
@@ -99,6 +98,10 @@ namespace roundhouse.infrastructure.app
             if (configuration_property_holder.RestoreTimeout == 0)
             {
                 configuration_property_holder.RestoreTimeout = ApplicationParameters.default_restore_timeout;
+            }
+
+            if (!string.IsNullOrEmpty(configuration_property_holder.RestoreFromPath)) {
+                configuration_property_holder.RestoreFromPath = Path.GetFullPath(configuration_property_holder.RestoreFromPath);    
             }
         }
 
