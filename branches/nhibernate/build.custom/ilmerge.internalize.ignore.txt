@@ -1,5 +1,0 @@
-roundhouse.databases.Database
-roundhouse.*
-FluentNHibernate.*
-NHibernate.*
-StructureMap.InstanceBuilder
