@@ -17,17 +17,8 @@
   <property name="path.file.test_databases" value="${dirs.current}\..\product\testdatabase" />
   <property name="folder.sample" value="sample" overwrite="false" />
 
-  <target name="go" depends="copy_nant_to_deploy, cleanup_roundhouse_drop, restructure_roundhouse_drop_folder, copy_roundhouse_files_to_deploy_console, copy_test_databases_to_deploy, create_copy_of_environment_file_for_sample, move_sample_to_drop, copy_notices" description="Packaging" />
+  <target name="go" depends="cleanup_roundhouse_drop, restructure_roundhouse_drop_folder, copy_roundhouse_files_to_deploy_console, copy_test_databases_to_deploy, create_copy_of_environment_file_for_sample, move_sample_to_drop, copy_notices" description="Packaging" />
 
-  <target name="copy_nant_to_deploy">
-    <echo message="Copying NAnt folder items to ${dirs.deployment}\NAnt."/>
-    <copy todir="${dirs.deployment}">
-      <fileset basedir="${dirs.lib}">
-        <include name="NAnt/**" />
-      </fileset>
-    </copy>
-  </target>
-  
   <target name="cleanup_roundhouse_drop">
     <echo message="Cleaning up ${dirs.drop}\${folder.app.drop} to remove unused items." />
     <delete> 
