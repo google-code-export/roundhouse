@@ -98,7 +98,7 @@
 
         public static void run_maintenance_database_setup()
         {
-           // restore_the_database(ROUNDHOUSE_EXE, DB_SERVER, DB_NAME, PATH_TO_SCRIPTS, PATH_TO_RESTORE);
+            //restore_the_database(ROUNDHOUSE_EXE, DB_SERVER, DB_NAME, PATH_TO_SCRIPTS, PATH_TO_RESTORE);
             upgrade_database_schema(DB_SERVER, DB_NAME);
             run_roundhouse_updates(ROUNDHOUSE_EXE, DB_SERVER, DB_NAME, PATH_TO_SCRIPTS);
         }
