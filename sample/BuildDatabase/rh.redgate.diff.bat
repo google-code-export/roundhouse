@@ -1,8 +1,8 @@
-@echo off
+B@echo off
 ::"C:\Program Files (x86)\Red Gate\SQL Compare 8\sqlcompare.exe" /database1:"TestRoundhousE" /scripts2:"C:\code\RoundhousE\db\TestRoundhouse" /include:table /exclude:table:\[Version\]^|\[ScriptsRun\]^|\[ScriptsRunErrors\] /options:Default,IgnoreConstraintNames,IgnorePermissions /ignoreparsererrors /f /scriptfile:"C:\Users\robz\Desktop\Diff.sql"
 
 SET DIR=%~d0%~p0%
-SET DIR=C:\code\roundhouse-nhibernate\code_drop\sample\deployment\
+SET DIR=C:\code\roundhouse\code_drop\sample\deployment\
 
 SET database.name="TestRoundhousE"
 SET sql.files.directory="%DIR%..\..\..\db\SQLServer\TestRoundhousE"
