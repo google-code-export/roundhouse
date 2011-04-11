@@ -47,10 +47,8 @@ namespace roundhouse.tasks
             get { return this; }
         }
 
-
         public string ServerName { get; set; }
 
-        [Required]
         public string DatabaseName { get; set; }
 
         public string ConnectionString { get; set; }
