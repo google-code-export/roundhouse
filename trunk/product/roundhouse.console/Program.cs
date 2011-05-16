@@ -1,4 +1,6 @@
-﻿namespace roundhouse.console
+﻿using roundhouse.infrastructure.logging.custom;
+
+namespace roundhouse.console
 {
     using System;
     using consoles;
@@ -64,7 +66,8 @@
 
         public static ConfigurationPropertyHolder set_up_configuration_and_build_the_container(string[] args)
         {
-            ConfigurationPropertyHolder configuration = new ConsoleConfiguration(the_logger);
+
+            ConfigurationPropertyHolder configuration = new ConsoleConfiguration{Logger = new Log4NetLogFactory().create_logger_bound_to(typeof(Program))};
             parse_arguments_and_set_up_configuration(configuration, args);
             if (configuration.Debug)
             {
@@ -280,6 +283,12 @@
             if (string.IsNullOrEmpty(configuration.DatabaseName) && string.IsNullOrEmpty(configuration.ConnectionString))
             {
                 show_help("Error: You must specify Database Name (/d) OR Connection String (/cs) at a minimum to use RoundhousE.", option_set);
+            }
+
+            if (configuration.Restore && string.IsNullOrEmpty(configuration.RestoreFromPath))
+            {
+                show_help(
+                    "If you set Restore to true, you must specify a location for the database to be restored from (RestoreFromPath /restorefrompath).",option_set);
             }
         }
 
