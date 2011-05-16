@@ -125,7 +125,6 @@
     <Compile Include="consoles\CommandExecutor.cs" />
     <Compile Include="databases\DefaultDatabase.cs" />
     <Compile Include="databases\MockDatabase.cs" />
-    <Compile Include="infrastructure.app\builders\LogBuilder.cs" />
     <Compile Include="infrastructure.app\builders\VersionResolverBuilder.cs" />
     <Compile Include="infrastructure.app\persistence\NHibernateMigrationSessionFactory.cs" />
     <Compile Include="infrastructure\persistence\AuditEventListener.cs" />

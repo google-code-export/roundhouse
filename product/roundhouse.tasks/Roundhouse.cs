@@ -1,4 +1,6 @@
 ﻿using roundhouse.infrastructure.app.logging;
+using roundhouse.infrastructure.logging;
+using roundhouse.infrastructure.logging.custom;
 
 namespace roundhouse.tasks
 {
@@ -16,7 +18,6 @@ namespace roundhouse.tasks
 
     public sealed class Roundhouse : ITask, ConfigurationPropertyHolder
     {
-        private readonly ILog the_logger = LogManager.GetLogger(typeof(Roundhouse));
 
         #region MSBuild
 
@@ -37,15 +38,7 @@ namespace roundhouse.tasks
 
         #region Properties
 
-        public ILog Log4NetLogger
-        {
-            get { return the_logger; }
-        }
-
-        public ITask MSBuildTask
-        {
-            get { return this; }
-        }
+        public Logger Logger { get; set; }
 
         public string ServerName { get; set; }
 
@@ -132,7 +125,7 @@ namespace roundhouse.tasks
             if (Restore && string.IsNullOrEmpty(RestoreFromPath))
             {
                 throw new Exception(
-                    "If you set Restore to true, you must specify a location for the database to be restored from. That property is RestoreFromPath in MSBuild and restoreFromPath in NAnt.");
+                    "If you set Restore to true, you must specify a location for the database to be restored from. That property is RestoreFromPath in MSBuild.");
             }
 
             ApplicationConfiguraton.build_the_container(this);

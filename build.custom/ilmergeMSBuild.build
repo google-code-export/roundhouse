@@ -26,7 +26,7 @@
   <property name="file.internalize.ignore" value="ilmerge.internalize.ignore.txt" />
   <property name="path.file.internalize.ignore" value="${dirs.build_scripts_custom}\${file.internalize.ignore}" />
   <!-- overwrite this property -->
-  <property name="file.merge.name" value="roundhouse.tasks.dll" />
+  <property name="file.merge.name" value="roundhouse.dll" />
   <!-- exe winexe dll -->
   <!-- overwrite this property -->
   <property name="merge.target.type" value="dll" />
@@ -53,6 +53,7 @@
           <exclude name="${dirs.merge.from}\${file.merge.name}" />
           <exclude name="${dirs.merge.from}\log4net.dll" />
           <exclude name="${dirs.merge.from}\Microsoft.Build.Framework.dll" />
+          <exclude name="${dirs.merge.from}\roundhouse.tasks.dll" />
           <include name="${dirs.merge.from}\*.dll" />
           <include name="${dirs.merge.from}\*.exe" />
         </items>
@@ -88,6 +89,7 @@
       <fileset basedir="${dirs.merge.from}" >
         <exclude name="log4net*" />
         <exclude name="Microsoft.Build.Framework.dll" />
+        <exclude name="${dirs.merge.from}\roundhouse.tasks.dll" />
         <exclude name="*.proj" />
         <exclude name="samples.xml" />
         <include name="*.dll" />
