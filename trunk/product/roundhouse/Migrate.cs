@@ -20,9 +20,9 @@ namespace roundhouse
             configuration = new consoles.ConsoleConfiguration();
         }
 
-        public void SetCustomLogging(Logger logger)
+        public Migrate SetCustomLogging(Logger logger)
         {
-            Set(c => c.Logger = logger);
+            return Set(c => c.Logger = logger);
         }
 
         /// <summary>
