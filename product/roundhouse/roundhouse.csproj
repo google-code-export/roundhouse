@@ -137,6 +137,7 @@
     <Compile Include="model\Version.cs" />
     <Compile Include="parameters\AdoNetParameter.cs" />
     <Compile Include="parameters\IParameter.cs" />
+    <Compile Include="Migrate.cs" />
     <Compile Include="runners\RoundhouseNHibernateCompareRunner.cs" />
     <Compile Include="runners\RoundhouseRedGateCompareRunner.cs" />
     <Compile Include="sqlsplitters\StatementSplitter.cs" />

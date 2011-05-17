@@ -9,7 +9,6 @@ namespace roundhouse.tasks
     using infrastructure.app;
     using infrastructure.containers;
     using infrastructure.filesystem;
-    using log4net;
     using Microsoft.Build.Framework;
     using migrators;
     using resolvers;
