@@ -3,8 +3,6 @@ using roundhouse.infrastructure.logging;
 namespace roundhouse.consoles
 {
     using infrastructure.app;
-    using log4net;
-    using Microsoft.Build.Framework;
 
     public sealed class ConsoleConfiguration : ConfigurationPropertyHolder
     {

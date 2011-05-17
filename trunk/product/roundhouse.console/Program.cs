@@ -53,8 +53,6 @@ namespace roundhouse.console
                 the_logger.Info(ex.Message);
                 Environment.Exit(1);
             }
-
-
         }
 
         public static void report_version()
@@ -67,7 +65,7 @@ namespace roundhouse.console
         public static ConfigurationPropertyHolder set_up_configuration_and_build_the_container(string[] args)
         {
 
-            ConfigurationPropertyHolder configuration = new ConsoleConfiguration{Logger = new Log4NetLogFactory().create_logger_bound_to(typeof(Program))};
+            ConfigurationPropertyHolder configuration = new ConsoleConfiguration();
             parse_arguments_and_set_up_configuration(configuration, args);
             if (configuration.Debug)
             {

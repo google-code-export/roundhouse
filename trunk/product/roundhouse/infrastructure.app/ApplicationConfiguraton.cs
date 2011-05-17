@@ -171,6 +171,12 @@ namespace roundhouse.infrastructure.app
 
             Logger log4net_logger = new Log4NetLogger(LogManager.GetLogger("roundhouse"));
             loggers.Add(log4net_logger);
+
+            if (configuration_property_holder.Logger != null)
+            {
+                loggers.Add(configuration_property_holder.Logger);
+            }
+
             return new MultipleLogger(loggers);
         }
 
