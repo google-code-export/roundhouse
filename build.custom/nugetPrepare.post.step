@@ -29,7 +29,17 @@
     <echo message="Moving ${dirs.drop.nuget}\lib\MSBuild to ${dirs.drop.nuget}\roundhouse.msbuild\lib." />
     <move todir="${dirs.drop.nuget}\roundhouse.msbuild\lib" overwrite="true">
       <fileset basedir="${dirs.drop.nuget}\lib\MSBuild">
+        <exclude name="log4net*" />
+        <exclude name="Microsoft.Build.Framework.dll" />
+        <exclude name="*.proj" />
+        <exclude name="samples.xml" />
         <include name="**/*.*" />
+      </fileset>
+    </move>
+    <move todir="${dirs.drop.nuget}\roundhouse.msbuild\content" overwrite="true">
+      <fileset basedir="${dirs.drop.nuget}\lib\MSBuild">
+        <include name="*.proj" />
+        <include name="samples.xml" />
       </fileset>
     </move>
     <delete dir="${dirs.drop.nuget}\lib\MSBuild" />
