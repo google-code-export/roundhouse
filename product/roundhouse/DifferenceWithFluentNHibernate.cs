@@ -26,6 +26,7 @@
             name_of_script_to_create = nameOfOutputScriptToCreateOrReplace;
             var configuration = databaseMigrator.GetConfiguration();
             configuration.Silent = true;
+            configuration.Restore = false;
             ApplicationConfiguraton.set_defaults_if_properties_are_not_set(configuration);
             path_to_sql_scripts_up_folder = Path.Combine(configuration.SqlFilesDirectory, configuration.UpFolderName);
 
@@ -81,6 +82,7 @@
 
             if (restoring_the_database)
             {
+                configuration.Restore = true;
                 migrator.RunRestore();
             }
 
