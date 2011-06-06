@@ -15,23 +15,17 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 // ==============================================================================
-
-using log4net.Config;
-[assembly: XmlConfigurator(Watch = true)]
-
 namespace $rootnamespace$
 {
     using System;
     using System.Reflection;
-    using log4net;
     using roundhouse;
-    using roundhouse.infrastructure.logging.custom;
 
-    internal class RefreshDatabase
+    public class RefreshDatabase
     {
         //Note: This should be added to a console application that is set to x86.
 
-        private static bool _isThisInitialDevelopment = false;
+        private static bool _isThisInitialDevelopment = true;
         private static string _nameOfInitialScript = "0001_CreateTables_NH.sql";
         private static string _nameOfUpdateScript = "0002_AlterTables_NH.sql";
 
@@ -66,7 +60,6 @@ namespace $rootnamespace$
             var conventionsAssembly = Assembly.LoadFrom(_conventionsAssemblyPath);
 
             var migrator = new Migrate().Set(c => {
-                                                c.Logger = new Log4NetLogger(LogManager.GetLogger("RefreshDatabase"));
                                                 c.DatabaseName = _databaseName;
                                                 c.RepositoryPath = _repositoryPath;
                                                 c.SqlFilesDirectory = _pathToSqlScripts;
