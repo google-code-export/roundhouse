@@ -77,9 +77,6 @@
 
         private void run_maintenance_database_setup(bool restoring_the_database, Migrate migrator, ConfigurationPropertyHolder configuration, Assembly mappings_assembly, Assembly conventions_assembly)
         {
-            var files_directory = configuration.SqlFilesDirectory;
-            configuration.SqlFilesDirectory = ".";
-
             if (restoring_the_database)
             {
                 configuration.Restore = true;
@@ -89,7 +86,6 @@
             upgrade_database_schema(configuration.DatabaseName, mappings_assembly, conventions_assembly);
 
             configuration.Restore = false;
-            configuration.SqlFilesDirectory = files_directory;
             migrator.Run();
         }
 
