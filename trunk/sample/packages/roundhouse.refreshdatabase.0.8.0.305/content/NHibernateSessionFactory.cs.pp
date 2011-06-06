@@ -1,6 +1,6 @@
 // ==============================================================================
 // 
-// Fervent Coder Copyright ? 2011 - Released under the Apache 2.0 License
+// Fervent Coder Copyright © 2011 - Released under the Apache 2.0 License
 // 
 // Copyright 2007-2008 The Apache Software Foundation.
 //  
@@ -15,7 +15,7 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 // ==============================================================================
-namespace BuildDatabase
+namespace $rootnamespace$
 {
     using System;
     using System.Reflection;
@@ -31,7 +31,7 @@ namespace BuildDatabase
         private const string proxy_factory = Environment.ProxyFactoryFactoryClass;
         private const string proxy_factory_name = "NHibernate.ByteCode.Castle.ProxyFactoryFactory";
         private const string db_server = "(local)";
-        private static bool is_merged = false;
+        private static bool is_merged = true;
 
         public static ISessionFactory build_session_factory(string db_name, Assembly mappings_assembly, Assembly conventions_assembly, Action<Configuration> additional_function)
         {
