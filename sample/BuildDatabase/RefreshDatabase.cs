@@ -1,6 +1,6 @@
 // ==============================================================================
 // 
-// Fervent Coder Copyright Â© 2011 - Released under the Apache 2.0 License
+// Fervent Coder Copyright © 2011 - Released under the Apache 2.0 License
 // 
 // Copyright 2007-2008 The Apache Software Foundation.
 //  
@@ -15,7 +15,7 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 // ==============================================================================
-namespace $rootnamespace$
+namespace BuildDatabase
 {
     using System;
     using System.Reflection;
@@ -29,16 +29,16 @@ namespace $rootnamespace$
         private static string _nameOfInitialScript = "0001_CreateTables_NH.sql";
         private static string _nameOfUpdateScript = "0002_AlterTables_NH.sql";
 
-        private static string _databaseName = "__REPLACE__";
-        private static string _pathToSqlScripts = @"..\..\..\__REPLACE__";
-        private static string _repositoryPath = "__REPLACE__";
+        private static string _databaseName = "TestRoundhousE";
+        private static string _pathToSqlScripts = @"..\..\..\..\db\SQLServer\TestRoundhousE";
+        private static string _repositoryPath = "http://roundhouse.googlecode.com/svn";
 
         private static bool _restoreDuringMaintenance = true;
-        private static string _pathToRestore = @"\\__REPLACE__.bak";
+        private static string _pathToRestore = @"..\..\..\..\code_drop\sample\deployment\TestRoundhousE.bak";
 
         //Note: Add a reference to the project that has the Mappings/Conventions
-        private static string _mappingsAssemblyPath = @".\__REPLACE__.dll";
-        private static string _conventionsAssemblyPath = @".\__REPLACE__.dll";
+        private static string _mappingsAssemblyPath = @".\SampleProject.dll";
+        private static string _conventionsAssemblyPath = @".\SampleProject.dll";
 
         private static void Main(string[] args)
         {
