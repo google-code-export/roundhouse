@@ -83,7 +83,8 @@
     <Reference Include="NHibernate.ByteCode.Castle">
       <HintPath>..\packages\NHibernate.Castle.3.1.0.4000\lib\Net35\NHibernate.ByteCode.Castle.dll</HintPath>
     </Reference>
-    <Reference Include="roundhouse, Version=0.8.0.305, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="roundhouse, Version=0.8.0.312, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\roundhouse.lib.0.8.0.305\lib\roundhouse.dll</HintPath>
     </Reference>
     <Reference Include="System" />
