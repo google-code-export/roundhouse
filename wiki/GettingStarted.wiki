@@ -2,25 +2,3 @@
 
 
 Go HERE: https://github.com/chucknorris/roundhouse/wiki
-
-= Introduction =
-
-So you want to learn how to use RoundhousE (RH)? RH uses SQL Scripts to do migrations.  
-
-Let's start with the basics.
-
-== What does RoundhousE do? ==
-
-=== 1. Migrations ===
-
-=== 2. Differencing of Databases Using Red Gate ===
-
-=== 3. Differencing using NHibernate ===
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
