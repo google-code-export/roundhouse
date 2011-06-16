@@ -1,5 +1,8 @@
 #summary So you want to use RoundhousE?
 
+
+Go HERE: https://github.com/chucknorris/roundhouse/wiki
+
 = Introduction =
 
 So you want to learn how to use RoundhousE (RH)? RH uses SQL Scripts to do migrations.  
