@@ -62,6 +62,7 @@ It helps keep to the product updated, pays for site hosting, etc. https://www.pa
 
 # RELEASE NOTES
 =0.8.0.x=  
+* FIX: Included sample for Oracle doesn't work. See [issue 55] (http://code.google.com/p/roundhouse/issues/detail?id=55) for details. (r322)  
 * RH now works with MySQL. Thanks Diyan. See details https://github.com/chucknorris/roundhouse/pull/3 (r317)  
   
 =0.8.0.300=  
