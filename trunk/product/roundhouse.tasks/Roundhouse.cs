@@ -55,6 +55,8 @@ namespace roundhouse.tasks
 
         public string VersionXPath { get; set; }
 
+        public string AlterDatabaseFolderName { get; set; }
+
         public string UpFolderName { get; set; }
 
         public string DownFolderName { get; set; }
@@ -66,6 +68,8 @@ namespace roundhouse.tasks
         public string ViewsFolderName { get; set; }
 
         public string SprocsFolderName { get; set; }
+
+        public string IndexesFolderName { get; set; }
 
         public string RunAfterOtherAnyTimeScriptsFolderName { get; set; }
 

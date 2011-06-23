@@ -1,4 +1,6 @@
-﻿namespace roundhouse.databases
+﻿using roundhouse.infrastructure.app;
+
+namespace roundhouse.databases
 {
     using System.Collections.Generic;
     using System.Data;
@@ -30,13 +32,13 @@
 
         public override void open_admin_connection()
         {
-            server_connection = GetAdoNetConnection(admin_connection_string);
-            server_connection.open();
+            admin_connection = GetAdoNetConnection(admin_connection_string);
+            admin_connection.open();
         }
 
         public override void close_admin_connection()
         {
-            server_connection.close();
+            admin_connection.close();
         }
 
         public override void open_connection(bool with_transaction)
@@ -83,20 +85,26 @@
             }
         }
 
-        protected override void run_sql(string sql_to_run, IList<IParameter<IDbDataParameter>> parameters)
+        protected override void run_sql(string sql_to_run, ConnectionType connection_type, IList<IParameter<IDbDataParameter>> parameters)
         {
             if (string.IsNullOrEmpty(sql_to_run)) return;
 
-            using (IDbCommand command = setup_database_command(sql_to_run, parameters))
+            using (IDbCommand command = setup_database_command(sql_to_run,connection_type, parameters))
             {
                 command.ExecuteNonQuery();
                 command.Dispose();
             }
         }
 
-        protected IDbCommand setup_database_command(string sql_to_run, IEnumerable<IParameter<IDbDataParameter>> parameters)
+        protected IDbCommand setup_database_command(string sql_to_run,ConnectionType connection_type, IEnumerable<IParameter<IDbDataParameter>> parameters)
         {
             IDbCommand command = server_connection.underlying_type().CreateCommand();
+
+            if (connection_type == ConnectionType.Admin)
+            {
+                command = admin_connection.underlying_type().CreateCommand();
+            }
+
             if (parameters != null)
             {
                 foreach (IParameter<IDbDataParameter> parameter in parameters)

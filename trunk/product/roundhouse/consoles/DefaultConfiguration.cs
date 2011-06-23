@@ -3,7 +3,7 @@ namespace roundhouse.consoles
     using infrastructure.app;
     using infrastructure.logging;
 
-    public sealed class ConsoleConfiguration : ConfigurationPropertyHolder
+    public sealed class DefaultConfiguration : ConfigurationPropertyHolder
     {
         public Logger Logger { get; set; }
         public string ServerName { get; set; }
@@ -14,12 +14,14 @@ namespace roundhouse.consoles
         public string RepositoryPath { get; set; }
         public string VersionFile { get; set; }
         public string VersionXPath { get; set; }
+        public string AlterDatabaseFolderName { get; set; }
         public string UpFolderName { get; set; }
         public string DownFolderName { get; set; }
         public string RunFirstAfterUpFolderName { get; set; }
         public string FunctionsFolderName { get; set; }
         public string ViewsFolderName { get; set; }
         public string SprocsFolderName { get; set; }
+        public string IndexesFolderName { get; set; }
         public string RunAfterOtherAnyTimeScriptsFolderName { get; set; }
         public string PermissionsFolderName { get; set; }
         public string SchemaName { get; set; }

@@ -147,7 +147,7 @@ namespace roundhouse.migrators
             return database.insert_version_and_get_version_id(repository_path, repository_version);
         }
 
-        public bool run_sql(string sql_to_run, string script_name, bool run_this_script_once, bool run_this_script_every_time, long version_id, Environment environment, string repository_version, string repository_path)
+        public bool run_sql(string sql_to_run, string script_name, bool run_this_script_once, bool run_this_script_every_time, long version_id, Environment environment, string repository_version, string repository_path,ConnectionType connection_type)
         {
             bool this_sql_ran = false;
 
@@ -172,7 +172,7 @@ namespace roundhouse.migrators
                 {
                     try
                     {
-                        database.run_sql(sql_statement);
+                        database.run_sql(sql_statement,connection_type);
                     }
                     catch (Exception ex)
                     {

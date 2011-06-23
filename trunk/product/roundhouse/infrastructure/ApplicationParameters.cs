@@ -8,12 +8,14 @@ namespace roundhouse.infrastructure
     {
         public static string name = "RoundhousE";
         // defaults
+        public static readonly string default_alter_database_folder_name = "alterDatabase";
         public static readonly string default_up_folder_name = "up";
         public static readonly string default_down_folder_name = "down";
         public static readonly string default_run_first_after_up_folder_name = "runFirstAfterUp";
         public static readonly string default_functions_folder_name = "functions";
         public static readonly string default_views_folder_name = "views";
         public static readonly string default_sprocs_folder_name = "sprocs";
+        public static readonly string default_indexes_folder_name = "indexes";
         public static readonly string default_runAfterOtherAnyTime_folder_name = "runAfterOtherAnyTimeScripts";
         public static readonly string default_permissions_folder_name = "permissions";
         public static readonly string default_environment_name = "LOCAL";

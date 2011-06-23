@@ -201,7 +201,7 @@ namespace roundhouse.databases
             database.create_or_update_roundhouse_tables();
         }
 
-        public void run_sql(string sql_to_run)
+        public void run_sql(string sql_to_run,ConnectionType connection_type)
         {
             Log.bound_to(this).log_an_info_event_containing("Running statemtent: {0}{1}", Environment.NewLine, sql_to_run);
             //database.run_sql(sql_to_run);
