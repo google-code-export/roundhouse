@@ -13,12 +13,14 @@ namespace roundhouse.infrastructure.app
         string RepositoryPath { get; set; }
         string VersionFile { get; set; }
         string VersionXPath { get; set; }
+        string AlterDatabaseFolderName { get; set; }
         string UpFolderName { get; set; }
         string DownFolderName { get; set; }
         string RunFirstAfterUpFolderName { get; set; }
         string FunctionsFolderName { get; set; }
         string ViewsFolderName { get; set; }
         string SprocsFolderName { get; set; }
+        string IndexesFolderName { get; set; }
         string RunAfterOtherAnyTimeScriptsFolderName { get; set; }
         string PermissionsFolderName { get; set; }
         string SchemaName { get; set; }

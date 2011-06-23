@@ -35,7 +35,7 @@ namespace roundhouse.databases
 
         public virtual string sql_statement_separator_regex_pattern
         {
-            get { return @"(?<KEEP1>^(?:.)*(?:-{2}).*$)|(?<KEEP1>/{1}\*{1}[\S\s]*?\*{1}/{1})|(?<KEEP1>'{1}(?:[^']|\n[^'])*?'{1})|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>\s)|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>$)";}
+            get { return @"(?<KEEP1>^(?:.)*(?:-{2}).*$)|(?<KEEP1>/{1}\*{1}[\S\s]*?\*{1}/{1})|(?<KEEP1>'{1}(?:[^']|\n[^'])*?'{1})|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>\s)|(?<KEEP1>\s)(?<BATCHSPLITTER>\;)(?<KEEP2>$)"; }
         }
 
         public string custom_create_database_script { get; set; }
@@ -55,6 +55,7 @@ namespace roundhouse.databases
         }
 
         protected IConnection<DBCONNECTION> server_connection;
+        protected IConnection<DBCONNECTION> admin_connection;
 
         private bool disposing;
 
@@ -89,9 +90,9 @@ namespace roundhouse.databases
                 string create_script = create_database_script();
                 if (!string.IsNullOrEmpty(custom_create_database_script))
                 {
-                    create_script = TokenReplacer.replace_tokens(configuration,custom_create_database_script);
+                    create_script = TokenReplacer.replace_tokens(configuration, custom_create_database_script);
                 }
-                run_sql(create_script);
+                run_sql(create_script, ConnectionType.Admin);
             }
             catch (Exception ex)
             {
@@ -105,7 +106,7 @@ namespace roundhouse.databases
         {
             try
             {
-                run_sql(set_recovery_mode_script(simple));
+                run_sql(set_recovery_mode_script(simple), ConnectionType.Admin);
             }
             catch (Exception ex)
             {
@@ -131,7 +132,7 @@ namespace roundhouse.databases
             {
                 int current_connection_timeout = command_timeout;
                 command_timeout = restore_timeout;
-                run_sql(restore_database_script(restore_from_path, custom_restore_options));
+                run_sql(restore_database_script(restore_from_path, custom_restore_options), ConnectionType.Admin);
                 command_timeout = current_connection_timeout;
             }
             catch (Exception ex)
@@ -146,7 +147,7 @@ namespace roundhouse.databases
         {
             try
             {
-                run_sql(delete_database_script());
+                run_sql(delete_database_script(), ConnectionType.Admin);
             }
             catch (Exception ex)
             {
@@ -165,12 +166,12 @@ namespace roundhouse.databases
             s.Execute(false, true);
         }
 
-        public virtual void run_sql(string sql_to_run)
+        public virtual void run_sql(string sql_to_run, ConnectionType connection_type)
         {
-            run_sql(sql_to_run, null);
+            run_sql(sql_to_run, connection_type, null);
         }
 
-        protected abstract void run_sql(string sql_to_run, IList<IParameter<IDbDataParameter>> parameters);
+        protected abstract void run_sql(string sql_to_run, ConnectionType connection_type, IList<IParameter<IDbDataParameter>> parameters);
 
         public void insert_script_run(string script_name, string sql_to_run, string sql_to_run_hash, bool run_this_script_once, long version_id)
         {
@@ -308,7 +309,7 @@ namespace roundhouse.databases
 
             DetachedCriteria crit = DetachedCriteria.For<ScriptsRun>()
                 .Add(Restrictions.Eq("script_name", script_name))
-				.AddOrder(Order.Desc("id"))
+                .AddOrder(Order.Desc("id"))
                 .SetMaxResults(1);
 
             try

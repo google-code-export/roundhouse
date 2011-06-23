@@ -18,7 +18,7 @@ namespace roundhouse
 
         public Migrate()
         {
-            configuration = new consoles.ConsoleConfiguration();
+            configuration = new consoles.DefaultConfiguration();
             Log4NetAppender.configure();
         }
 

@@ -90,7 +90,7 @@ namespace roundhouse.databases.sqlserver
         {
             try
             {
-                run_sql(create_roundhouse_schema_script());
+                run_sql(create_roundhouse_schema_script(),ConnectionType.Default);
             }
             catch (Exception ex)
             {
