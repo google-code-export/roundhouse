@@ -65,13 +65,14 @@ namespace roundhouse.databases.access
 
             set_provider();
             admin_connection_string = connection_string;
+            configuration_property_holder.ConnectionStringAdmin = admin_connection_string;
             //set_repository(configuration_property_holder);
         }
 
         public override void open_admin_connection()
         {
-            server_connection = new AdoNetConnection(new OleDbConnection(admin_connection_string));
-            server_connection.open();
+            admin_connection = new AdoNetConnection(new OleDbConnection(admin_connection_string));
+            admin_connection.open();
         }
 
         public override void open_connection(bool with_transaction)

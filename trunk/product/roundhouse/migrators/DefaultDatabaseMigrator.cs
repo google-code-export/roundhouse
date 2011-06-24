@@ -94,18 +94,12 @@ namespace roundhouse.migrators
             database.close_connection();
         }
 
-        //public void transfer_to_database_for_changes()
-        //{
-        //    database.use_database(database.database_name);
-        //}
-
         public void run_roundhouse_support_tasks()
         {
             if (running_in_a_transaction)
             {
                 database.close_connection();
                 database.open_connection(false);
-                //transfer_to_database_for_changes();
             }
 
             Log.bound_to(this).log_an_info_event_containing(" Running database type specific tasks.");

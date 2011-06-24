@@ -54,6 +54,7 @@
                 builder.Database = "information_schema";
                 admin_connection_string = builder.ConnectionString;
             }
+            configuration_property_holder.ConnectionStringAdmin = admin_connection_string;
         }
 
         public override void set_provider()
