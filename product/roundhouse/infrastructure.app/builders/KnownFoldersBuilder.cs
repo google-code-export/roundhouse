@@ -23,7 +23,7 @@ namespace roundhouse.infrastructure.app.builders
             MigrationsFolder sprocs_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
                                                                          configuration_property_holder.SprocsFolderName, false, false);
             MigrationsFolder indexes_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
-                                                                         configuration_property_holder.SprocsFolderName, false, false);
+                                                                         configuration_property_holder.IndexesFolderName, false, false);
 
             MigrationsFolder runAfterOtherAnyTimeScripts_folder = new DefaultMigrationsFolder(file_system, configuration_property_holder.SqlFilesDirectory,
                                                                          configuration_property_holder.RunAfterOtherAnyTimeScriptsFolderName, false, false);
