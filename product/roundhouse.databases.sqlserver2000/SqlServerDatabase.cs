@@ -64,6 +64,8 @@ namespace roundhouse.databases.sqlserver2000
                 admin_connection_string = Regex.Replace(connection_string, "initial catalog=.*?;", "initial catalog=master;", RegexOptions.IgnoreCase);
                 admin_connection_string = Regex.Replace(admin_connection_string, "database=.*?;", "database=master;", RegexOptions.IgnoreCase);
             }
+            configuration_property_holder.ConnectionStringAdmin = admin_connection_string;
+
             //set_repository(configuration_property_holder);
         }
 

@@ -71,6 +71,7 @@ namespace roundhouse.databases.oracle
                 admin_connection_string = Regex.Replace(admin_connection_string, "User Id=.*?;", string.Empty);
                 admin_connection_string = Regex.Replace(admin_connection_string, "Password=.*?;", string.Empty);
             }
+            configuration_property_holder.ConnectionStringAdmin = admin_connection_string;
         }
 
         private static string build_connection_string(string database_name, string connection_options)
@@ -152,6 +153,9 @@ namespace roundhouse.databases.oracle
             return return_value;
         }
 
+        /// <summary>
+        /// This DOES NOT use the ADMIN connection. Use sparingly.
+        /// </summary>
         private IParameter<IDbDataParameter> create_parameter(string name, DbType type, object value, int? size)
         {
             IDbCommand command = server_connection.underlying_type().CreateCommand();

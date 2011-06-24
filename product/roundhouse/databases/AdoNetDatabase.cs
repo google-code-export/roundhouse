@@ -98,13 +98,25 @@ namespace roundhouse.databases
 
         protected IDbCommand setup_database_command(string sql_to_run,ConnectionType connection_type, IEnumerable<IParameter<IDbDataParameter>> parameters)
         {
-            IDbCommand command = server_connection.underlying_type().CreateCommand();
-
-            if (connection_type == ConnectionType.Admin)
+            IDbCommand command = null;
+            switch (connection_type)
             {
-                command = admin_connection.underlying_type().CreateCommand();
+                case ConnectionType.Default :
+                    if (server_connection == null)
+                    {
+                        open_connection(false);
+                    }
+                    command  = server_connection.underlying_type().CreateCommand(); 
+                    break;
+                case ConnectionType.Admin :
+                    if (admin_connection == null)
+                    {
+                        open_admin_connection();
+                    }
+                    command = admin_connection.underlying_type().CreateCommand();
+                    break;
             }
-
+            
             if (parameters != null)
             {
                 foreach (IParameter<IDbDataParameter> parameter in parameters)

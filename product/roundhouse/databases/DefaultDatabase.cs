@@ -335,12 +335,23 @@ namespace roundhouse.databases
         {
             if (!disposing)
             {
-                if (server_connection != null)
-                {
-                    server_connection.Dispose();
-                }
+                dispose_connection(server_connection);
+                dispose_connection(admin_connection);
 
                 disposing = true;
+            }
+        }
+
+        private void dispose_connection(IConnection<DBCONNECTION> connection)
+        {
+            if (connection != null)
+            {
+                IDbConnection conn = (IDbConnection)connection.underlying_type();
+                if (conn.State != ConnectionState.Closed)
+                {
+                    conn.Close();
+                }
+                connection.Dispose();
             }
         }
     }
