@@ -19,7 +19,7 @@ namespace roundhouse
         public Migrate()
         {
             configuration = new consoles.DefaultConfiguration();
-            Log4NetAppender.configure();
+            //Log4NetAppender.configure_without_console();
         }
 
         /// <summary>
