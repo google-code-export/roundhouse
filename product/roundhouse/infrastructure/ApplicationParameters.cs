@@ -34,6 +34,7 @@ namespace roundhouse.infrastructure
         public static readonly string log4net_configuration_resource = @"roundhouse.infrastructure.app.logging.log4net.config.xml";
         public static readonly string log4net_configuration_resource_no_console = @"roundhouse.infrastructure.app.logging.log4net.config.no.console.xml";
         public static readonly int default_command_timeout = 60;
+        public static readonly int default_admin_command_timeout = 300;
         public static readonly int default_restore_timeout = 900;
 
         public static string get_merged_assembly_name()

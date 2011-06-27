@@ -40,6 +40,7 @@ namespace roundhouse.databases
 
         public string custom_create_database_script { get; set; }
         public int command_timeout { get; set; }
+        public int admin_command_timeout { get; set; }
         public int restore_timeout { get; set; }
         protected bool split_batches = true;
 
