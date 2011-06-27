@@ -46,6 +46,8 @@
       DatabaseName="YOURDATABASENAME"
       ConnectionString=""
       SqlFilesDirectory="..\..\db"
+      CommandTimeout="60"
+      CommandTimeoutAdmin="300"
       RepositoryPath="http://tellmewherethisis.com/svn/"
       VersionFile="..\_BuildInfo.xml"
       VersionXPath="//buildInfo/version"

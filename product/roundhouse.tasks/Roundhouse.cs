@@ -47,6 +47,10 @@ namespace roundhouse.tasks
 
         public string ConnectionStringAdmin { get; set; }
 
+        public int CommandTimeout { get; set; }
+
+        public int CommandTimeoutAdmin { get; set; }
+
         public string SqlFilesDirectory { get; set; }
 
         public string RepositoryPath { get; set; }
