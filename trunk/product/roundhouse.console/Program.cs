@@ -103,6 +103,14 @@ namespace roundhouse.console
                 .Add("csa=|connstringadmin=|connectionstringadministration=",
                     string.Format("ConnectionStringAdministration - This is used for connecting to master when you may have a different uid and password than normal."),
                     option => configuration.ConnectionStringAdmin = option)
+                .Add("ct=|commandtimeout=",
+                    string.Format("CommandTimeout - This is the timeout when commands are run. This is not for admin commands or restore. Defaults to \"{0}\".",
+                        ApplicationParameters.default_command_timeout),
+                    option => configuration.CommandTimeout = int.Parse(option))
+                .Add("cta=|commandtimeoutadmin=",
+                    string.Format("CommandTimeoutAdministration - This is the timeout when administration commands are run (except for restore, which has its own). Defaults to \"{0}\".",
+                        ApplicationParameters.default_admin_command_timeout),
+                    option => configuration.CommandTimeoutAdmin = int.Parse(option))
                 //database type
                 .Add("dt=|dbt=|databasetype=",
                     string.Format("DatabaseType - Tells RH what type of database it is running on. This is a plugin model. This is the fully qualified name of a class that implements the interface roundhouse.sql.Database, roundhouse. If you have your own assembly, just set it next to rh.exe and set this value appropriately. Defaults to 'sqlserver' which is a synonym for '{0}'.",
@@ -265,6 +273,7 @@ namespace roundhouse.console
                     "/[sql]f[ilesdirectory] VALUE " +
                     "/s[ervername] VALUE " +
                     "/c[onnection]s[tring]a[dministration] VALUE " +
+                    "/c[ommand]t[imeout] VALUE /c[ommand]t[imeout]a[dmin] VALUE " +
                     "/r[epositorypath] VALUE /v[ersion]f[ile] VALUE /v[ersion]x[path] VALUE " +
                     "/a[lter]d[atabasefoldername] VALUE /u[pfoldername] VALUE /do[wnfoldername] VALUE " +
                     "/r[un]f[irstafterupdatefoldername] VALUE /fu[nctionsfoldername] VALUE /v[ie]w[sfoldername] VALUE " +

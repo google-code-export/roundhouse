@@ -35,6 +35,14 @@ namespace roundhouse.infrastructure.app
             {
                 configuration_property_holder.ServerName = ApplicationParameters.default_server_name;
             }
+            if (configuration_property_holder.CommandTimeout == 0)
+            {
+                configuration_property_holder.CommandTimeout = ApplicationParameters.default_command_timeout;
+            }
+            if (configuration_property_holder.CommandTimeoutAdmin == 0)
+            {
+                configuration_property_holder.CommandTimeoutAdmin = ApplicationParameters.default_admin_command_timeout;
+            }
             if (string.IsNullOrEmpty(configuration_property_holder.AlterDatabaseFolderName))
             {
                 configuration_property_holder.AlterDatabaseFolderName = ApplicationParameters.default_alter_database_folder_name;

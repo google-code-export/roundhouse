@@ -29,6 +29,8 @@
         DatabaseName="$(DBName)"
         ConnectionString="$(DBConnectionString)"
         SqlFilesDirectory="$(DBSqlFilesPath)"
+        CommandTimeout="60"
+        CommandTimeoutAdmin="300"
         RepositoryPath="$(RepositoryPath)"
         VersionFile="$(VersionFile)"
         VersionXPath="$(VersionFileXPath)"
