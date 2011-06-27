@@ -96,6 +96,12 @@ namespace roundhouse.databases
             set { database.command_timeout = value; }
         }
 
+        public int admin_command_timeout
+        {
+            get { return database.admin_command_timeout; }
+            set { database.admin_command_timeout = value; }
+        }
+
         public int restore_timeout
         {
             get { return database.restore_timeout; }

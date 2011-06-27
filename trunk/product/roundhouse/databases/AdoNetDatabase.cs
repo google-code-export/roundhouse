@@ -106,7 +106,8 @@ namespace roundhouse.databases
                     {
                         open_connection(false);
                     }
-                    command  = server_connection.underlying_type().CreateCommand(); 
+                    command  = server_connection.underlying_type().CreateCommand();
+                    command.CommandTimeout = command_timeout;
                     break;
                 case ConnectionType.Admin :
                     if (admin_connection == null)
@@ -114,6 +115,7 @@ namespace roundhouse.databases
                         open_admin_connection();
                     }
                     command = admin_connection.underlying_type().CreateCommand();
+                    command.CommandTimeout = admin_command_timeout;
                     break;
             }
             
@@ -127,7 +129,6 @@ namespace roundhouse.databases
             command.Transaction = transaction;
             command.CommandText = sql_to_run;
             command.CommandType = CommandType.Text;
-            command.CommandTimeout = command_timeout;
 
             return command;
         }

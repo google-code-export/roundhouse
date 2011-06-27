@@ -81,6 +81,7 @@ namespace roundhouse.databases
         string sql_statement_separator_regex_pattern { get; }
         string custom_create_database_script { get; set; }
         int command_timeout { get; set; }
+        int admin_command_timeout { get; set; }
         int restore_timeout { get; set; }
         bool split_batch_statements { get; set; }
         bool supports_ddl_transactions { get; }
