@@ -1,3 +1,5 @@
+using roundhouse.infrastructure.logging;
+
 namespace roundhouse.databases.sqlserver2000
 {
     using System.Text.RegularExpressions;
@@ -81,6 +83,8 @@ namespace roundhouse.databases.sqlserver2000
 
         public override void run_database_specific_tasks()
         {
+
+            Log.bound_to(this).log_a_debug_event_containing("FUTURE ENHANCEMENT: Should create a user by the name of RoundhousE.");
             //this.roundhouse_schema_name;
             //TODO: Create user
 

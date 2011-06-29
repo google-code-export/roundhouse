@@ -83,6 +83,7 @@ namespace roundhouse.databases.sqlserver
             Log.bound_to(this).log_an_info_event_containing(" Creating {0} schema if it doesn't exist.", roundhouse_schema_name);
             create_roundhouse_schema_if_it_doesnt_exist();
 
+            Log.bound_to(this).log_a_debug_event_containing("FUTURE ENHANCEMENT: This should remove a user named RoundhousE if one exists (migration from SQL2000 up)");
             //TODO: Delete RoundhousE user if it exists (i.e. migration from SQL2000 to 2005)
         }
 
@@ -94,9 +95,10 @@ namespace roundhouse.databases.sqlserver
             }
             catch (Exception ex)
             {
-                Log.bound_to(this).log_a_warning_event_containing(
-                    "Either the schema has already been created OR {0} with provider {1} does not provide a facility for creating roundhouse schema at this time.{2}{3}",
-                    GetType(), provider, Environment.NewLine, ex.Message);
+                throw;
+                //Log.bound_to(this).log_a_warning_event_containing(
+                //    "Either the schema has already been created OR {0} with provider {1} does not provide a facility for creating roundhouse schema at this time.{2}{3}",
+                //    GetType(), provider, Environment.NewLine, ex.Message);
             }
         }
 

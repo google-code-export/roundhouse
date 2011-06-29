@@ -1,4 +1,6 @@
-﻿using roundhouse.infrastructure.app;
+﻿using System;
+using roundhouse.infrastructure.app;
+using roundhouse.infrastructure.logging;
 
 namespace roundhouse.databases
 {
@@ -32,17 +34,20 @@ namespace roundhouse.databases
 
         public override void open_admin_connection()
         {
+            Log.bound_to(this).log_a_debug_event_containing("Opening admin connection to '{0}'", admin_connection_string);
             admin_connection = GetAdoNetConnection(admin_connection_string);
             admin_connection.open();
         }
 
         public override void close_admin_connection()
         {
+            Log.bound_to(this).log_a_debug_event_containing("Closing admin connection");
             admin_connection.close();
         }
 
         public override void open_connection(bool with_transaction)
         {
+            Log.bound_to(this).log_a_debug_event_containing("Opening connection to '{0}'", connection_string);
             server_connection = GetAdoNetConnection(connection_string);
             server_connection.open();
 
@@ -57,20 +62,28 @@ namespace roundhouse.databases
 
         public override void close_connection()
         {
+            Log.bound_to(this).log_a_debug_event_containing("Closing connection");
             if (transaction != null)
             {
                 transaction.Commit();
                 transaction = null;
             }
-
-            repository.finish();
-
-            server_connection.close();
+            if (repository != null)
+            {
+                repository.finish();    
+            }
+            
+            if (server_connection != null)
+            {
+                server_connection.close();    
+            }
         }
 
-        public override void rollback() {
+        public override void rollback()
+        {
+            Log.bound_to(this).log_a_debug_event_containing("Rolling back changes");
             repository.rollback();
- 
+
             if (transaction != null)
             {
                 //rollback previous transaction
@@ -89,36 +102,53 @@ namespace roundhouse.databases
         {
             if (string.IsNullOrEmpty(sql_to_run)) return;
 
-            using (IDbCommand command = setup_database_command(sql_to_run,connection_type, parameters))
+            //really naive retry logic. Consider Lokad retry policy
+            //this is due to sql server holding onto a connection http://social.msdn.microsoft.com/Forums/en-US/adodotnetdataproviders/thread/99963999-a59b-4614-a1b9-869c6dff921e
+            try
+            {
+                run_command_with(sql_to_run, connection_type, parameters);
+            }
+            catch (Exception ex)
+            {
+                Log.bound_to(this).log_a_debug_event_containing("Failure executing command, trying again. {0}{1}",Environment.NewLine,ex.ToString());
+                run_command_with(sql_to_run, connection_type, parameters);
+            }
+        }
+
+        private void run_command_with(string sql_to_run,ConnectionType connection_type, IList<IParameter<IDbDataParameter>> parameters)
+        {
+             using (IDbCommand command = setup_database_command(sql_to_run, connection_type, parameters))
             {
                 command.ExecuteNonQuery();
                 command.Dispose();
             }
         }
 
-        protected IDbCommand setup_database_command(string sql_to_run,ConnectionType connection_type, IEnumerable<IParameter<IDbDataParameter>> parameters)
+        protected IDbCommand setup_database_command(string sql_to_run, ConnectionType connection_type, IEnumerable<IParameter<IDbDataParameter>> parameters)
         {
             IDbCommand command = null;
             switch (connection_type)
             {
-                case ConnectionType.Default :
-                    if (server_connection == null)
+                case ConnectionType.Default:
+                    if (server_connection == null || server_connection.underlying_type().State != ConnectionState.Open)
                     {
                         open_connection(false);
                     }
-                    command  = server_connection.underlying_type().CreateCommand();
+                    Log.bound_to(this).log_a_debug_event_containing("Setting up command for normal connection");
+                    command = server_connection.underlying_type().CreateCommand();
                     command.CommandTimeout = command_timeout;
                     break;
-                case ConnectionType.Admin :
-                    if (admin_connection == null)
+                case ConnectionType.Admin:
+                    if (admin_connection == null || admin_connection.underlying_type().State != ConnectionState.Open)
                     {
                         open_admin_connection();
                     }
+                    Log.bound_to(this).log_a_debug_event_containing("Setting up command for admin connection");
                     command = admin_connection.underlying_type().CreateCommand();
                     command.CommandTimeout = admin_command_timeout;
                     break;
             }
-            
+
             if (parameters != null)
             {
                 foreach (IParameter<IDbDataParameter> parameter in parameters)

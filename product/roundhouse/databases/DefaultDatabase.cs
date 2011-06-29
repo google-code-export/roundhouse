@@ -336,7 +336,9 @@ namespace roundhouse.databases
         {
             if (!disposing)
             {
+                Log.bound_to(this).log_a_debug_event_containing("Database is disposing normal connection.");
                 dispose_connection(server_connection);
+                Log.bound_to(this).log_a_debug_event_containing("Database is disposing admin connection.");
                 dispose_connection(admin_connection);
 
                 disposing = true;
