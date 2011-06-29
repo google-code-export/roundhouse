@@ -1,3 +1,5 @@
+using roundhouse.infrastructure.logging;
+
 namespace roundhouse.databases.oracle
 {
     using System;
@@ -86,8 +88,11 @@ namespace roundhouse.databases.oracle
 
         public override void run_database_specific_tasks()
         {
-            run_sql(create_sequence_script(version_table_name),ConnectionType.Default);
+            Log.bound_to(this).log_an_info_event_containing("Creating a sequence for the '{0}' table.", version_table_name);
+            run_sql(create_sequence_script(version_table_name), ConnectionType.Default);
+            Log.bound_to(this).log_an_info_event_containing("Creating a sequence for the '{0}' table.", scripts_run_table_name);
             run_sql(create_sequence_script(scripts_run_table_name), ConnectionType.Default);
+            Log.bound_to(this).log_an_info_event_containing("Creating a sequence for the '{0}' table.", scripts_run_errors_table_name);
             run_sql(create_sequence_script(scripts_run_errors_table_name), ConnectionType.Default);
         }
 
@@ -124,27 +129,29 @@ namespace roundhouse.databases.oracle
                                             create_parameter("repository_version", DbType.AnsiString, repository_version, 35),
                                             create_parameter("user_name", DbType.AnsiString, user_name, 50)
                                         };
-            run_sql(insert_version_script(),ConnectionType.Default, insert_parameters);
+            run_sql(insert_version_script(), ConnectionType.Default, insert_parameters);
 
             var select_parameters = new List<IParameter<IDbDataParameter>> { create_parameter("repository_path", DbType.AnsiString, repository_path, 255) };
-            return Convert.ToInt64((decimal)run_sql_scalar(get_version_id_script(),ConnectionType.Default, select_parameters));
+            return Convert.ToInt64((decimal)run_sql_scalar(get_version_id_script(), ConnectionType.Default, select_parameters));
         }
 
-        public override void run_sql(string sql_to_run,ConnectionType connection_type)
+        public override void run_sql(string sql_to_run, ConnectionType connection_type)
         {
+            Log.bound_to(this).log_a_debug_event_containing("Replacing script text \r\n with \n to be compliant with Oracle.");
             // http://www.barrydobson.com/2009/02/17/pls-00103-encountered-the-symbol-when-expecting-one-of-the-following/
-            base.run_sql(sql_to_run.Replace("\r\n", "\n"),connection_type);
+            base.run_sql(sql_to_run.Replace("\r\n", "\n"), connection_type);
         }
 
         private object run_sql_scalar(string sql_to_run, ConnectionType connection_type, IList<IParameter<IDbDataParameter>> parameters)
         {
+            Log.bound_to(this).log_a_debug_event_containing("Replacing \r\n with \n to be compliant with Oracle.");
             //http://www.barrydobson.com/2009/02/17/pls-00103-encountered-the-symbol-when-expecting-one-of-the-following/
             sql_to_run = sql_to_run.Replace("\r\n", "\n");
             object return_value = new object();
 
             if (string.IsNullOrEmpty(sql_to_run)) return return_value;
 
-            using (IDbCommand command = setup_database_command(sql_to_run,connection_type, parameters))
+            using (IDbCommand command = setup_database_command(sql_to_run, connection_type, parameters))
             {
                 return_value = command.ExecuteScalar();
                 command.Dispose();

@@ -1,3 +1,5 @@
+using roundhouse.infrastructure.logging;
+
 namespace roundhouse.databases.access
 {
     using System;
@@ -101,6 +103,7 @@ namespace roundhouse.databases.access
 
         public override void run_database_specific_tasks()
         {
+            Log.bound_to(this).log_a_debug_event_containing("Access has no specific database tasks. Returning...");
             //TODO: Anything for Access?
         }
 

@@ -190,6 +190,7 @@ namespace roundhouse.runners
                     database_migrator.open_admin_connection();
                     database_migrator.delete_database();
                     database_migrator.close_admin_connection();
+                    database_migrator.close_connection();
                     Log.bound_to(this).log_an_info_event_containing("{0}{0}{1} has removed database ({2}). All changes and backups can be found at \"{3}\".",
                                                 System.Environment.NewLine,
                                                 ApplicationParameters.name,

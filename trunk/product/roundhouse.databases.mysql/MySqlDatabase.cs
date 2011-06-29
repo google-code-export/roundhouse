@@ -1,4 +1,6 @@
-﻿namespace roundhouse.databases.mysql
+﻿using roundhouse.infrastructure.logging;
+
+namespace roundhouse.databases.mysql
 {
     using System;
     using infrastructure.app;
@@ -79,7 +81,7 @@
 
         public override void run_database_specific_tasks()
         {
-            //nothing to see here. move along now.
+            Log.bound_to(this).log_a_debug_event_containing("MySQL has no database specific tasks. Moving along now...");
         }
 
         // http://bugs.mysql.com/bug.php?id=46429
