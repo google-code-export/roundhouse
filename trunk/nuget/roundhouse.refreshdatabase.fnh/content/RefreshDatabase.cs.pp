@@ -21,7 +21,7 @@ namespace $rootnamespace$
     using System.Reflection;
     using roundhouse;
 
-    public class RefreshDatabase
+    public partial class RefreshDatabase
     {
         //https://github.com/chucknorris/roundhouse/wiki/Roundhouserefreshdatabasefnh
         //Note: This should be added to a console application that is set to x86.
