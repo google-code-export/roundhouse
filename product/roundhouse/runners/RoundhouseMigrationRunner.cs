@@ -278,6 +278,11 @@ namespace roundhouse.runners
 
         private string replace_tokens(string sql_text)
         {
+            if (configuration.DisableTokenReplacement)
+            {
+                return sql_text;
+            }
+
             return TokenReplacer.replace_tokens(configuration,sql_text);
         }
 
