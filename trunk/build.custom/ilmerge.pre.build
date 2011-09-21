@@ -31,7 +31,7 @@
   </target>
  
   <target name="clean_out_sql_dlls">
-    <echo level="Warn" message="Before merging - removing the Microsoft.SqlServer dlls from ${dirs.merge.from}."/>
+    <echo level="Warning" message="Before merging - removing the Microsoft.SqlServer dlls from ${dirs.merge.from}."/>
     <delete>
       <fileset basedir="${dirs.merge.from}" >
         <exclude name="${file.merge.name}" />
