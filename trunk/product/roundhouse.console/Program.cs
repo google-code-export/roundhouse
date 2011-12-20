@@ -3,6 +3,7 @@
     using System;
     using System.Reflection;
     using consoles;
+    using databases;
     using folders;
     using infrastructure;
     using infrastructure.app;
@@ -14,6 +15,7 @@
     using log4net;
     using log4net.Core;
     using log4net.Repository;
+    using log4net.Repository.Hierarchy;
     using migrators;
     using resolvers;
     using runners;
@@ -61,14 +63,15 @@
         {
             ConfigurationPropertyHolder configuration = new DefaultConfiguration();
             parse_arguments_and_set_up_configuration(configuration, args);
+           
+            ApplicationConfiguraton.set_defaults_if_properties_are_not_set(configuration);
+            ApplicationConfiguraton.build_the_container(configuration);
+
             if (configuration.Debug)
             {
                 change_log_to_debug_level();
             }
-
-            ApplicationConfiguraton.set_defaults_if_properties_are_not_set(configuration);
-            ApplicationConfiguraton.build_the_container(configuration);
-
+            
             return configuration;
         }
 
@@ -254,10 +257,13 @@
                 .Add("t|trx|transaction|wt|withtransaction",
                      "WithTransaction - This instructs RH to run inside of a transaction. Defaults to false.",
                      option => configuration.WithTransaction = option != null)
-                //simple
+                //recovery mode
                 .Add("simple",
                      "RecoveryModeSimple - This instructs RH to set the database recovery mode to simple recovery. Defaults to false.",
                      option => configuration.RecoveryModeSimple = option != null)
+                .Add("rcm=|recoverymode=",
+                    "RecoveryMode - This instructs RH to set the database recovery mode to Simple|Full|NoChange. Defaults to NoChange.",
+                    option => configuration.RecoveryMode = (RecoveryMode)Enum.Parse(typeof(RecoveryMode),option,true))
                 //debug
                 .Add("debug",
                      "Debug - This instructs RH to write out all messages. Defaults to false.",
@@ -319,7 +325,7 @@
                         "/drop " +
                         "/d[onot]c[reatedatabase] " +
                         "/t[ransaction] " +
-                        "/simple " +
+                        "/r[e]c[overy]m[ode] NoChange|Simple|Full" +
                         "/debug " +
                         "/runallanytimescripts " +
                         "/disabletokenreplacement " +
@@ -355,6 +361,14 @@
         {
             ILoggerRepository log_repository = LogManager.GetRepository(Assembly.GetCallingAssembly());
             log_repository.Threshold = Level.Debug;
+            foreach (ILogger log in log_repository.GetCurrentLoggers())
+            {
+                var logger = log as log4net.Repository.Hierarchy.Logger;
+                if (logger != null)
+                {
+                    logger.Level = log4net.Core.Level.Debug;
+                }
+            }
         }
 
         public static void run_migrator(ConfigurationPropertyHolder configuration)
