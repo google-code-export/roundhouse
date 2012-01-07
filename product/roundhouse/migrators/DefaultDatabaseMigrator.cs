@@ -307,17 +307,18 @@ namespace roundhouse.migrators
                 return true;
             }
 
-            if (this_script_has_run_already(script_name) && run_this_script_once)
-            {
-                return false;
-            }
-
             if (is_running_all_any_time_scripts && !run_this_script_once)
             {
                 return true;
             }
 
-            return this_script_has_changed_since_last_run(script_name, sql_to_run);
+            if (this_script_has_run_already(script_name)
+                && !this_script_has_changed_since_last_run(script_name, sql_to_run))
+            {
+                return false;
+            }
+            
+            return true;
         }
 
         public bool this_is_an_environment_file_and_its_in_the_right_environment(string script_name, Environment environment)
