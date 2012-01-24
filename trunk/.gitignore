@@ -4,10 +4,12 @@ code_drop
 bin
 obj
 _ReSharper*
+/packages
 
 *.suo
 *.user 
 *.csproj.user
+*.DotSettings.user
 *.resharper.user
 *.ReSharper.user
 *.cache
