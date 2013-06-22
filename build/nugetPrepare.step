@@ -41,8 +41,8 @@
   <property name="version.use.build_date" value="false" overwrite="false" />
   <property name="pkg.build.date" value="20100801" overwrite="false" />
   <property name="file.nuget.version" value="${dirs.drop.nuget}${path.separator}version.xml" />
-	<property name="nuget.version" value="${version.major}.${version.minor}.${version.build}.${version.revision}" />
-	<property name="nuget.version" value="${version.major}.${version.minor}.${version.patch}"  if="${version.use_semanticversioning}" />
+  <property name="nuget.version" value="${version.major}.${version.minor}.${version.build}.${version.revision}" />
+  <property name="nuget.version" value="${version.major}.${version.minor}.${version.patch}"  if="${version.use_semanticversioning}" />
   
   <property name="is.replaced" value="false" />
   <property name="fail.build.on.error" value="false" />
@@ -138,11 +138,11 @@
     <property name="pkg.current.date.day" value="${'0' + pkg.current.date.day}" if="${string::get-length(pkg.current.date.day) == 1}" />
     <property name="pkg.build.date" value="${'' + pkg.current.date.year + pkg.current.date.month + pkg.current.date.day}" />
   </target>
-  
+
   <target name="update_version">
     <property name="nuget.version" value="${nuget.version + '-' + version.nuget.prerelease}" if="${version.nuget.prerelease != ''}" />
     <property name="nuget.version" value="${nuget.version + '.' + pkg.build.date}" if="${version.use.build_date and version.use_semanticversioning and version.nuget.prerelease == ''}" />
-    <property name="nuget.version" value="${nuget.version + '-' + pkg.build.date}" if="${version.use.build_date and version.nuget.prerelease != ''}" />
+    <property name="nuget.version" value="${nuget.version + '-' + version.nuget.prerelease + '-' + pkg.build.date}" if="${version.use.build_date and version.nuget.prerelease != ''}" />
     <!-- version.use.build_date -->
     <echo level="Warning" message="Using ${nuget.version} as the version for the nuget package(s)." />
   </target>
