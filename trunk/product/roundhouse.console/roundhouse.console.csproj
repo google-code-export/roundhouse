@@ -155,7 +155,6 @@
     <None Include="..\..\docs\logo\roundhouse.ico">
       <Link>roundhouse.ico</Link>
     </None>
-    <None Include="app.config" />
     <None Include="Statements.txt" />
     <None Include="targets\Microsoft.Application.targets" />
   </ItemGroup>
